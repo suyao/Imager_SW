@@ -633,8 +633,8 @@ public native int NumberOfDevicesInScanChain();
   static
  {
 		try {
-			System.load("C:/Program Files (x86)/Macraigor Systems/JTAG Commander/jtag_usb2.dll");
-			System.load("C:/Program Files (x86)/Macraigor Systems/JTAG Commander/MacraigorJtagio.dll");
+			System.load("D:/Program Files (x86)/Macraigor Systems/JTAG Commander/JTAG_USB2.dll");
+			System.load("D:/Program Files (x86)/Macraigor Systems/JTAG Commander/MacraigorJtagio.dll");
 		} catch (UnsatisfiedLinkError e) {
 			System.err.println("Native code library failed to load.\n" + e);
 			System.exit(1);

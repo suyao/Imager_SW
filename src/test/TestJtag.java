@@ -21,7 +21,7 @@ public class TestJtag {
 	static void flashLed(MacraigorJtagio jtag, int times, int interval) {
 		assert (jtag.Initialized());
 		try {
-			for (int i = 0; i < 3; i++) {
+			for (int i = 0; i < 5; i++) {
 				jtag.UsbLed(false);
 				Thread.sleep(500);
 				jtag.UsbLed(true);

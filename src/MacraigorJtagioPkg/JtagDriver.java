@@ -60,10 +60,10 @@ public class JtagDriver extends MacraigorJtagio {
 
 	/* IMPORTANT JTAG controller parameters must match real hardware. */
 	private int jtag_inst_width = 5;
-	private int sc_data_width = 64;
+	private int sc_data_width = 16;
 	private int sc_addr_width = 16;
 	private int sc_op_width = 2;
-	private int tc_data_width = 16;
+	private int tc_data_width = 32;
 	private int tc_addr_width = 12;
 	private int tc_op_width = 2;
 
