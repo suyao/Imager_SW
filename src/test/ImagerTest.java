@@ -8,8 +8,9 @@
  */
 package test;
 
-import MacraigorJtagioPkg.ArrayDriver;
+//import MacraigorJtagioPkg.ArrayDriver;
 import MacraigorJtagioPkg.JtagDriver;
+import MacraigorJtagioPkg.MacraigorJtagio;
 import MacraigorJtagioPkg.JtagDriver.ClockDomain;
 
 /**
@@ -23,11 +24,25 @@ public class ImagerTest {
 	/* SAGEChip configuration. */
 	static int rows = 32;
 	static int cols = 50;
-	static int tc_data_width = 8;
-	static int tc_addr_width = 8;
+	static int tc_data_width = 32;
+	static int tc_addr_width = 12;
 	static int sc_data_width = 16;
-	static int sc_addr_width = 16;
+	static int sc_addr_width = 8;
 
+	
+	static void flashLed(MacraigorJtagio jtag, int times, int interval) {
+		assert (jtag.Initialized());
+		try {
+			for (int i = 0; i < 5; i++) {
+				jtag.UsbLed(false);
+				Thread.sleep(500);
+				jtag.UsbLed(true);
+				Thread.sleep(500);
+			}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
 //    REGISTER SETUP AND ENCODING
 //    REG 0 - duty 0 LSB
 //    REG 1 - duty 1 
@@ -60,39 +75,28 @@ public class ImagerTest {
 	 * @param adrv
 	 *            array driver
 	 */
-	static void checkArrayRegs(JtagDriver jdrv, ArrayDriver adrv) {
+	static void checkArrayRegs(JtagDriver jdrv) {
 		// reset system
 		jdrv.writeReg(ClockDomain.tc_domain, "00", "01");
 		jdrv.writeReg(ClockDomain.tc_domain, "00", "00");
-		adrv.reset();
-		// write random SENSOR_SEL
-		for (int i = 0; i < rows; i++)
-			for (int j = 0; j < cols; j++) {
-				adrv.writeBit(i, j, 7, false); // PIXEL_EN
-				adrv.writeBit(i, j, 8, Math.random() > 0.5); // SENSOR_SEL 0
-				adrv.writeBit(i, j, 9, Math.random() > 0.5); // SENSOR_SEL 1
-				adrv.writeBit(i, j, 10, Math.random() > 0.5); // SENSOR_SEL 2
-			}
-
-		// Check array consistency
-		if (adrv.checkConsistency())
-			System.out.println("Passed array register check.");
+		
 
 		// reset system at the end
 		jdrv.writeReg(ClockDomain.tc_domain, "00", "01");
 		jdrv.writeReg(ClockDomain.tc_domain, "00", "00");
-		adrv.reset();
+
 	}
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		JtagDriver jdrv = new JtagDriver(16, 16, 8, 8);
-		ArrayDriver adrv = new ArrayDriver(jdrv);
+		JtagDriver jdrv = new JtagDriver(16, 8, 32, 12);
 
 		// Initialize jtag
+		MacraigorJtagio jtag = new MacraigorJtagio();
 		jdrv.InitializeController("USB", "USB0", 1);
+		flashLed(jtag, 5, 500);
 		// Reset JTAG
 		jdrv.reset();
 		// Read IDCODE
@@ -102,14 +106,7 @@ public class ImagerTest {
 		jdrv.writeReg(ClockDomain.tc_domain, "00", "01"); // two hex digits b/c_data_width=8
 		jdrv.writeReg(ClockDomain.tc_domain, "00", "00");
 
-		// Check array consistency after reset
-		adrv.checkConsistency();
 
-		// checkArrayRegs(jdrv, adrv);
-		// adrv.turnOn(10, 10);
-		// adrv.turnOff(10, 10);
-		// adrv.disable(10, 10);
-		// adrv.enable(10, 10);
 
 		jdrv.CloseController();
 	}
