@@ -9,7 +9,7 @@
 package test;
 
 import MacraigorJtagioPkg.MacraigorJtagio;
-
+import java.io.*;
 /**
  * Test the MacraigorJtagio class on FPChip board
  * 
@@ -21,7 +21,7 @@ public class TestJtag {
 	static void flashLed(MacraigorJtagio jtag, int times, int interval) {
 		assert (jtag.Initialized());
 		try {
-			for (int i = 0; i < 5; i++) {
+			for (int i = 0; i < 3; i++) {
 				jtag.UsbLed(false);
 				Thread.sleep(500);
 				jtag.UsbLed(true);
@@ -51,7 +51,15 @@ public class TestJtag {
 		jtag.SetTRST(false);
 		// STATE RESET IDLE;
 		jtag.StateMove("RunTestIdle");
-
+	   	
+		try {
+		  Runtime.getRuntime().exec("cmd /c yvonneutil < C:/Users/sony/Documents/sensor_scripts/Imager_SW/src/yvone/test.txt");
+		  
+		} catch (IOException e) {
+            System.out.println("exception happened - here's what I know: ");
+            e.printStackTrace();
+            System.exit(-1);
+        }
 
 		//!Shift 5bit ID request instr JTAG_IDCODE = 0x01 (== 1?) into tap 0.
 		//SIR 5 TDI (01);
