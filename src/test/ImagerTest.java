@@ -12,7 +12,7 @@ package test;
 import MacraigorJtagioPkg.JtagDriver;
 import MacraigorJtagioPkg.MacraigorJtagio;
 import MacraigorJtagioPkg.JtagDriver.ClockDomain;
-
+import java.io.*;
 /**
  * Test the ArrayDriver and JtagDriver class on SAGE board
  * 
