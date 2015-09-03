@@ -53,18 +53,6 @@ public class ImagerTest {
 	 * @param jdrv
 	 *            JTAG driver
 
-	static void checkArrayRegs(JtagDriver jdrv) {
-		// reset system
-		jdrv.writeReg(ClockDomain.tc_domain, "00", "01");
-		jdrv.writeReg(ClockDomain.tc_domain, "00", "00");
-		
-
-		// reset system at the end
-		jdrv.writeReg(ClockDomain.tc_domain, "00", "01");
-		jdrv.writeReg(ClockDomain.tc_domain, "00", "00");
-
-	}
-
 	/**
 	 * @param args
 	 */
@@ -80,22 +68,23 @@ public class ImagerTest {
 		System.out.println("IDCODE: " + jdrv.readID());
 
 		// System reset
-		jdrv.writeReg(ClockDomain.tc_domain, "00", "01"); // two hex digits b/c_data_width=8
-		jdrv.writeReg(ClockDomain.tc_domain, "00", "00");
+		jdrv.writeReg(ClockDomain.tc_domain, "000", "00000001"); // eight hex digits b/c_data_width=32
+		jdrv.writeReg(ClockDomain.tc_domain, "000", "00000000");
 		
 		
 		//Set DAC Values
-		InitDAC();
+		DACCntr yvonne = InitDAC();
 		//Analog Sampler test
 		
 		//ADC calibration
-		
+		int dummyFlag = 1; // 1 if dummy ADC, 0 if ADC
+		CalibrateADC(dummyFlag, 100, yvonne, jdrv); //repeat every analog value for 100 conversions
 		
 		jdrv.CloseController();
 	}
 	
 	
-	static void InitDAC() {
+	static DACCntr InitDAC() {
 		//Set DAC Values
 		double pvdd = 3.3;
 		double ana33 = 3.3;
@@ -108,6 +97,46 @@ public class ImagerTest {
 		double vrst = 0.6; 
 		double dac_values[] = {pvdd,ana33,v0, ana18, vrefp, vrefn, Iin, vcm, vrst};
 		DACCntr yvonne = new DACCntr(dac_values);
+		return yvonne;
+	}
+	
+	static void CalibrateADC(int dummyFlag, int itr_times, DACCntr yvonne, JtagDriver jdrv){
+		try {
+			File file = new File("./outputs/CalibrateADC/ADC_output.txt");
+			if (!file.exists()) {
+				file.createNewFile();
+			}
+			FileWriter fw = new FileWriter(file.getAbsoluteFile());
+			BufferedWriter bw = new BufferedWriter(fw);
+			String jtag_adc_out_addr ="";
+			if (dummyFlag ==1) {
+				jdrv.writeReg(ClockDomain.tc_domain, "420", "00000000"); //disable adc		
+				jdrv.writeReg(ClockDomain.tc_domain, "424", "00000001"); //enable dummy adc
+				jtag_adc_out_addr = "004";
+				
+			}
+			else{
+				jdrv.writeReg(ClockDomain.tc_domain, "420", "00000001"); //enable adc		
+				jdrv.writeReg(ClockDomain.tc_domain, "424", "00000000"); //disable dummy adc
+				jdrv.writeReg(ClockDomain.tc_domain, "404", "00000001"); //adc input is from ana18
+			}
+			int idx = yvonne.FindIdxofName("ana18");
+			for (int reg_int = 0; reg_int < DACCntr.levels; reg_int ++){
+				String reg_str = Integer.toHexString(reg_int);
+				reg_str = "0000".substring(reg_str.length()) + reg_str;
+				yvonne.WriteDACReg(idx, reg_str);
+				String ADC_out_str = "";
+				for (int itr = 0 ; itr < itr_times; itr++){
+				    ADC_out_str = jdrv.readReg(ClockDomain.sc_domain, jtag_adc_out_addr);
+					bw.write(Integer.toString(reg_int) + " " + ADC_out_str +"\n");
+				}
+				System.out.println("Input: " + reg_str + ", Output: " + ADC_out_str);
+			}
+			bw.close();
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}		
 	}
 
 }
