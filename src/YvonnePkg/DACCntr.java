@@ -8,7 +8,6 @@
  */
 package YvonnePkg;
 
-import java.util.Arrays;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -86,7 +85,18 @@ public class DACCntr
 				System.out.println("Finish writing DAC registers.");
 			} catch (IOException e) {
 				e.printStackTrace();
-			}		
+			}
+			
+			// Execute YvonneUtil
+			try {
+				  Runtime.getRuntime().exec("cmd /c yvonneutil < ./src/YvonneCmds/DAC_regs.txt");
+				  
+				} catch (IOException e) {
+		            System.out.println("exception happened - here's what I know: ");
+		            e.printStackTrace();
+		            System.exit(-1);
+		        }
+			
 		}	
 	
 }

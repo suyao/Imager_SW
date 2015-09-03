@@ -12,18 +12,18 @@ package test;
 import MacraigorJtagioPkg.JtagDriver;
 import MacraigorJtagioPkg.MacraigorJtagio;
 import MacraigorJtagioPkg.JtagDriver.ClockDomain;
+import YvonnePkg.DACCntr;
+
 import java.io.*;
 /**
- * Test the ArrayDriver and JtagDriver class on SAGE board
+ * Test the ArrayDriver and JtagDriver class on image sensor board
  * 
- * @author jingpu
+ * @author suyao
  *
  */
 public class ImagerTest {
 
-	/* SAGEChip configuration. */
-	static int rows = 32;
-	static int cols = 50;
+	/* ImagerChip configuration. */
 	static int tc_data_width = 32;
 	static int tc_addr_width = 12;
 	static int sc_data_width = 16;
@@ -33,7 +33,7 @@ public class ImagerTest {
 	static void flashLed(MacraigorJtagio jtag, int times, int interval) {
 		assert (jtag.Initialized());
 		try {
-			for (int i = 0; i < 5; i++) {
+			for (int i = 0; i < times; i++) {
 				jtag.UsbLed(false);
 				Thread.sleep(500);
 				jtag.UsbLed(true);
@@ -43,27 +43,7 @@ public class ImagerTest {
 			e.printStackTrace();
 		}
 	}
-//    REGISTER SETUP AND ENCODING
-//    REG 0 - duty 0 LSB
-//    REG 1 - duty 1 
-//    REG 2 - duty 2
-//    REG 3 - duty 3
-//    REG 4 - duty 4
-//    REG 5 - duty 5
-//    REG 6 - duty 6 MSB
-//    REG 7 - PIXEL_EN
-//    REG 8 - SENSOR_SEL 0 LSB
-//    REG 9 - SENSOR_SEL 1
-//    REG 10 - SENSOR_SEL 2 MSB
-//    REG 11 - IN_HV
-//    REG 12 - EN_HV         (default is HIGH)
-//    REG 13 - EN_HIZ_HV
-//    REG 14 - PD_GAINB 0 LSB
-//    REG 15 - PD_GAINB 1    (default is HIGH)
-//    REG 16 - IT_GAINB 0 LSB
-//    REG 17 - IT_GAINB 1    (default is HIGH)
-//    REG 18 - IC_GAINB 0 LSB
-//    REG 19 - IC_GAINB 1    (default is HIGH)
+
 	
 	/**
 	 * This task writes a random SENSOR_SEL value into each pixel in the array,
@@ -72,9 +52,7 @@ public class ImagerTest {
 	 * 
 	 * @param jdrv
 	 *            JTAG driver
-	 * @param adrv
-	 *            array driver
-	 */
+
 	static void checkArrayRegs(JtagDriver jdrv) {
 		// reset system
 		jdrv.writeReg(ClockDomain.tc_domain, "00", "01");
@@ -92,11 +70,10 @@ public class ImagerTest {
 	 */
 	public static void main(String[] args) {
 		JtagDriver jdrv = new JtagDriver(16, 8, 32, 12);
-
 		// Initialize jtag
 		MacraigorJtagio jtag = new MacraigorJtagio();
 		jdrv.InitializeController("USB", "USB0", 1);
-		flashLed(jtag, 5, 500);
+		flashLed(jtag, 3, 500);
 		// Reset JTAG
 		jdrv.reset();
 		// Read IDCODE
@@ -105,10 +82,32 @@ public class ImagerTest {
 		// System reset
 		jdrv.writeReg(ClockDomain.tc_domain, "00", "01"); // two hex digits b/c_data_width=8
 		jdrv.writeReg(ClockDomain.tc_domain, "00", "00");
-
-
-
+		
+		
+		//Set DAC Values
+		InitDAC();
+		//Analog Sampler test
+		
+		//ADC calibration
+		
+		
 		jdrv.CloseController();
+	}
+	
+	
+	static void InitDAC() {
+		//Set DAC Values
+		double pvdd = 3.3;
+		double ana33 = 3.3;
+		double v0 = 1;
+		double ana18 = 1;
+		double vrefp = 1.4;
+		double vrefn = 0.9;
+		double Iin = 1.8;
+		double vcm = 1;
+		double vrst = 0.6; 
+		double dac_values[] = {pvdd,ana33,v0, ana18, vrefp, vrefn, Iin, vcm, vrst};
+		DACCntr yvonne = new DACCntr(dac_values);
 	}
 
 }
