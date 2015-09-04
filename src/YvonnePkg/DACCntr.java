@@ -34,12 +34,45 @@ public class DACCntr
 		for (int i = 0; i < ch_length; i++) {
 			Encoder(i, dac_reg, dac_values[i]);
 		}
-		/* Encoder(0, 1, 3.8, 0, dac_reg, dac_values);
-		Encoder(2, 6, 1.8, 0, dac_reg, dac_values);
-		Encoder(7, 8, 1.4, 0, dac_reg, dac_values); */
 		WriteAllDAC(dac_reg);
 	} // CONSTRUCTOR
-		
+	
+	/*
+	 * Given the register name, this function finds its 
+	 * corresponding register address.
+	 */
+	public int FindIdxofName(String name){
+		int idx;
+		switch (name) {
+    	case "PVDD":  idx = 0;
+    			 break;
+    	case "ana33":  idx = 1;
+		 		 break;
+    	case "v0":  idx = 2;
+                 break;
+    	case "ana18":  idx = 3;
+        		 break;
+    	case "vrefp":  idx = 4;
+		 		 break;
+    	case "vrefn":  idx = 5;
+		 		 break;
+    	case "Iin":  idx = 6;
+		 		 break;
+    	case "vcm":  idx = 7;
+		 		 break;
+    	case "vrst":  idx = 8;
+		 		 break;
+        default: idx = 0;
+        	System.out.println( "ERROR: Unkown DAC register name " + name + " !!! ");
+                 break;
+		}
+		return idx;
+	}
+
+	/*
+	 * This function encodes value of register idx and store 
+	 * it at reg[idx].
+	 */
 	public void Encoder(int idx, String reg[], double value) {
 		double min = 0;
 		double max; 
@@ -66,6 +99,10 @@ public class DACCntr
 	
 	}
 	
+	/*
+	 * This function writes all encoded register Hex values in 
+	 * to a Yvonne cmd template file, and execute Yvonne process. 
+	 */
 	public void WriteAllDAC(String reg[]){
 		try {
 			File file = new File("./src/YvonneCmds/DAC_regs.txt");
@@ -103,7 +140,12 @@ public class DACCntr
             System.exit(-1);
 	    }		
 	}
-		
+	
+	/*
+	 * Given the register name and value of it to be encoded, this 
+	 * function will write the encoded register to Yvonne cmd 
+	 * template and executes it right away.
+	 */
 	public void WriteDACValue(String name, double value, String reg[]  ){
 		int idx = FindIdxofName(name);
 		Encoder(idx, reg, value);
@@ -111,6 +153,11 @@ public class DACCntr
 		System.out.println("Write to " + name + "with value " + value + "(" + reg + ")");
 	}
 	
+	/*
+	 * Given the register address and its Hex value to be written,
+	 * This function generates the corresponding Yvonne cmd template
+	 * and executes it right away.
+	 */
 	public void WriteDACReg(int idx, String reg){
 		try {
 			File file = new File("./src/YvonneCmds/DAC_single_reg.txt");
@@ -149,31 +196,4 @@ public class DACCntr
 	    }	
 	}
 	
-	public int FindIdxofName(String name){
-		int idx;
-		switch (name) {
-    	case "PVDD":  idx = 0;
-    			 break;
-    	case "ana33":  idx = 1;
-		 		 break;
-    	case "v0":  idx = 2;
-                 break;
-    	case "ana18":  idx = 3;
-        		 break;
-    	case "vrefp":  idx = 4;
-		 		 break;
-    	case "vrefn":  idx = 5;
-		 		 break;
-    	case "Iin":  idx = 6;
-		 		 break;
-    	case "vcm":  idx = 7;
-		 		 break;
-    	case "vrst":  idx = 8;
-		 		 break;
-        default: idx = 0;
-        	System.out.println( "ERROR: Unkown DAC register name " + name + " !!! ");
-                 break;
-		}
-		return idx;
-	}
 }

@@ -8,8 +8,8 @@
  */
 package test;
 
-//import MacraigorJtagioPkg.ArrayDriver;
 import MacraigorJtagioPkg.JtagDriver;
+import MacraigorJtagioPkg.ImagerCntr;
 import MacraigorJtagioPkg.MacraigorJtagio;
 import MacraigorJtagioPkg.JtagDriver.ClockDomain;
 import YvonnePkg.DACCntr;
@@ -80,10 +80,18 @@ public class ImagerTest {
 		int dummyFlag = 1; // 1 if dummy ADC, 0 if ADC
 		CalibrateADC(dummyFlag, 100, yvonne, jdrv); //repeat every analog value for 100 conversions
 		
+		//
+		
 		jdrv.CloseController();
 	}
 	
-	
+	static void InitJTAG(JtagDriver jdrv){
+		ImagerCntr imager = new ImagerCntr(jdrv);
+		double tsmp = 96*Math.pow(10, -9); //96ns
+		imager.ScanMode(true);
+		imager.SetSmpPeriod(tsmp);
+		
+	}
 	static DACCntr InitDAC() {
 		//Set DAC Values
 		double pvdd = 3.3;
@@ -123,11 +131,11 @@ public class ImagerTest {
 			int idx = yvonne.FindIdxofName("ana18");
 			for (int reg_int = 0; reg_int < DACCntr.levels; reg_int ++){
 				String reg_str = Integer.toHexString(reg_int);
-				reg_str = "0000".substring(reg_str.length()) + reg_str;
-				yvonne.WriteDACReg(idx, reg_str);
+				reg_str = "0000".substring(reg_str.length()) + reg_str; 
+				yvonne.WriteDACReg(idx, reg_str); //Write to Yvonne
 				String ADC_out_str = "";
-				for (int itr = 0 ; itr < itr_times; itr++){
-				    ADC_out_str = jdrv.readReg(ClockDomain.sc_domain, jtag_adc_out_addr);
+				for (int itr = 0 ; itr < itr_times; itr++){ //average readings to eliminate noise
+				    ADC_out_str = jdrv.readReg(ClockDomain.sc_domain, jtag_adc_out_addr); //JTAG readout
 					bw.write(Integer.toString(reg_int) + " " + ADC_out_str +"\n");
 				}
 				System.out.println("Input: " + reg_str + ", Output: " + ADC_out_str);
