@@ -68,8 +68,8 @@ public class ImagerTest {
 		System.out.println("IDCODE: " + jdrv.readID());
 
 		// System reset
-		jdrv.writeReg(ClockDomain.tc_domain, "000", "00000001"); // eight hex digits b/c_data_width=32
-		jdrv.writeReg(ClockDomain.tc_domain, "000", "00000000");
+		//jdrv.writeReg(ClockDomain.tc_domain, "000", "00000001"); // eight hex digits b/c_data_width=32
+		//jdrv.writeReg(ClockDomain.tc_domain, "000", "00000000");
 		
 		
 		//Set DAC Values
@@ -77,8 +77,8 @@ public class ImagerTest {
 		//Analog Sampler test
 		
 		//ADC calibration
-		int dummyFlag = 1; // 1 if dummy ADC, 0 if ADC
-		CalibrateADC(dummyFlag, 100, yvonne, jdrv); //repeat every analog value for 100 conversions
+		//int dummyFlag = 1; // 1 if dummy ADC, 0 if ADC
+		//CalibrateADC(dummyFlag, 100, yvonne, jdrv); //repeat every analog value for 100 conversions
 		
 		//
 		
@@ -97,11 +97,11 @@ public class ImagerTest {
 		double pvdd = 3.3;
 		double ana33 = 3.3;
 		double v0 = 1;
-		double ana18 = 1;
+		double ana18 = 1.5004;
 		double vrefp = 1.4;
 		double vrefn = 0.9;
-		double Iin = 1.8;
-		double vcm = 1;
+		double Iin = 1.0;
+		double vcm = 1.3;
 		double vrst = 0.6; 
 		double dac_values[] = {pvdd,ana33,v0, ana18, vrefp, vrefn, Iin, vcm, vrst};
 		DACCntr yvonne = new DACCntr(dac_values);

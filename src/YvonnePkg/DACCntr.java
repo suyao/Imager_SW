@@ -74,25 +74,45 @@ public class DACCntr
 	 * it at reg[idx].
 	 */
 	public void Encoder(int idx, String reg[], double value) {
-		double min = 0;
+		double min;
 		double max; 
-        switch (idx) {
-        	case 0:  max = 3.8;
+        switch (idx) { // board #3
+        	case 0:  max = 2.8050;	//PVDD
+        			 min = 0.93424;
         			 break;
-            case 1:  max = 3.8;
+            case 1:  max = 2.8118;	//ana33
+            		 min = 0.93903;
                      break;
-            case 7:  max = 1.4;
+            case 2:  max = 1.5234;  //v0
+   		 			 min = 0.50556; 
+   		 			 break;  
+            case 3:  max = 1.527;   //ana18
+   		 			 min = 0.50782;
+   		 			 break;
+            case 4:  max = 1.5290;  //vrefp
+   		 			 min = 0.5103;
+   		 			 break;		 
+            case 5:  max = 1.5285;  //vrefn
+   		 			 min = 0.50886;
+   		 			 break;	
+            case 6:  max = 1.5311;  //Iin
+   		 			 min = 0.51323;
+   		 			 break;	
+            case 7:  max = 1.02667; //vcm
+            		 min = 0.34162;
                      break;
-            case 8:  max = 1.4;
+            case 8:  max = 1.02633; //vrst
+            	 	 min = 0.3393;
             		 break;
-            default: max = 1.8;
+            default: max = 1.527;
+            		 min = 0.50782;
                      break;
         }
-		double rsl = (max-min)/levels;	
+		double rsl = (max-min)/levels*2;	
 		double value1 = value;
-		if (value1 >=max) value1 = max-rsl;
-		if (value1 <=min) value1 = min;
-		int reg_int = (int) Math.round((value1-min)/rsl);
+		//if (value1 >=max) value1 = max-rsl;
+		//if (value1 <=min) value1 = min;
+		int reg_int = (int) Math.round((value1-min)/rsl) + levels/4;
 		reg[idx] = Integer.toHexString(reg_int);
 		reg[idx] = "0000".substring(reg[idx].length()) + reg[idx];	
 		System.out.println( idx + "  " + value + " " + reg[idx]);
@@ -119,7 +139,7 @@ public class DACCntr
 			}
 			// channel 1;
 			for (int i = 7; i <= 8; i++) {
-				bw.append("v ").append("13").append(Integer.toString(i-6));		
+				bw.append("v ").append("13").append(Integer.toString(i-7));		
 				bw.append(reg[i]);
 				bw.write("0\n");
 			}

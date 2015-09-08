@@ -53,7 +53,7 @@ public class TestJtag {
 		jtag.StateMove("RunTestIdle");
 	   	
 		try {
-		  Runtime.getRuntime().exec("cmd /c yvonneutil < C:/Users/sony/Documents/sensor_scripts/Imager_SW/src/yvone/test_HV.txt");
+		  Runtime.getRuntime().exec("cmd /c yvonneutil < C:/Users/sony/Documents/sensor_scripts/Imager_SW/src/yvone/test_hv.txt");
 		  
 		} catch (IOException e) {
             System.out.println("exception happened - here's what I know: ");
