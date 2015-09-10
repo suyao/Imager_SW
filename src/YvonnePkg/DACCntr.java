@@ -216,4 +216,8 @@ public class DACCntr
 	    }	
 	}
 	
+	public int GetChannelNum(){
+		return ch_length;
+	}
+	
 }

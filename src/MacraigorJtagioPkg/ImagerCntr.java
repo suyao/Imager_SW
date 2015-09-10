@@ -217,7 +217,7 @@ public class ImagerCntr extends MacraigorJtagio {
 		jdrv.writeReg(ClockDomain.tc_domain, "048", Int2HexStr(p));
 	}
 	
-	public void SamplerEnable (int a, int b){	
+	public void EnableSampler (int a, int b){	
 		int width = 27;
 		int max = (int) Math.pow(2, width);
 		if (a >= max || b>=max ) {
@@ -225,11 +225,22 @@ public class ImagerCntr extends MacraigorJtagio {
 			return;
 		}	
 		int p = 1 << a + 1 << b;	
-		jdrv.writeReg(ClockDomain.tc_domain, "050", Binary2HexStr(p));
+		jdrv.writeReg(ClockDomain.tc_domain, "04c", Binary2HexStr(p));
+	}
+	
+	public void EnableSingleSampler (int a){	
+		int width = 27;
+		int max = (int) Math.pow(2, width);
+		if (a >= max ) {
+			System.out.println("ERROR: Sampler enable register is wrong! ");
+			return;
+		}	
+		int p = 1 << a ;	
+		jdrv.writeReg(ClockDomain.tc_domain, "04c", Binary2HexStr(p));
 	}
 	
 	public void SetSamplerMode (int p){		
-		jdrv.writeReg(ClockDomain.tc_domain, "050", Binary2HexStr(p));
+		jdrv.writeReg(ClockDomain.tc_domain, "050", Int2HexStr(p));
 	}
 	
 	public void SetSmpADCDelayTime (double delay){
@@ -270,7 +281,7 @@ public class ImagerCntr extends MacraigorJtagio {
 		if (p >= max ) {		
 			System.out.println("ERROR: Output Sel must be 0 or 1! ");
 		}	
-		jdrv.writeReg(ClockDomain.tc_domain, "058", Int2HexStr(p));
+		jdrv.writeReg(ClockDomain.tc_domain, "060", Int2HexStr(p));
 	}
 	
 	public void IsDigClk (boolean p){
@@ -428,5 +439,17 @@ public class ImagerCntr extends MacraigorJtagio {
 		String h = Integer.toHexString(decimal);
 		s = "00000000".substring(h.length()) + h;	
 		return s;
+	}
+
+	public String ReadDummyADC(){
+		return jdrv.readReg(ClockDomain.sc_domain, "04");
+	}
+	
+	public String ReadADCatRST(){
+		return jdrv.readReg(ClockDomain.sc_domain, "00");
+	}
+	
+	public String ReadADCatTX(){
+		return jdrv.readReg(ClockDomain.sc_domain, "02");
 	}
 }
