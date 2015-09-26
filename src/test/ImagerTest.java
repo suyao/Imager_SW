@@ -69,8 +69,8 @@ public class ImagerTest {
 		System.out.println("IDCODE: " + jdrv.readID());
 
 		// System reset
-		jdrv.writeReg(ClockDomain.tc_domain, "000", "00000001"); // eight hex digits b/c_data_width=32
-		jdrv.writeReg(ClockDomain.tc_domain, "000", "00000000");
+		jdrv.writeReg(ClockDomain.tc_domain, "0000", "00000001"); // eight hex digits b/c_data_width=32
+		jdrv.writeReg(ClockDomain.tc_domain, "0000", "00000000");
 		
 		
 		//Set DAC Values
