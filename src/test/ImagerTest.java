@@ -234,7 +234,7 @@ public class ImagerTest {
 	 * 15	bl_to_adc[1]－－－－－－－－－
 	 * 16    ana_sampler_trig_sig-----------
 	 * 17    ana_sampler_trig_sig
-	 * 18   dout_trigger_tp
+	 * 18   dout_trigger_tp -------------
 	 * 19  AVDD18 ------------------
 	 * 20  AVDD18 ------------------
 	 * 21  VDD -------------------
