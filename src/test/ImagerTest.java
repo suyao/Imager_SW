@@ -80,22 +80,22 @@ public class ImagerTest {
 		// Analog Sampler Test
 		/*
 		 * analog test point:
-		 * 0	cmp_b   －－－－－－－－－－
+		 * 0	cmp_b  ---------------------------
 		 * 1	clk_sar
 		 * 2	clk_smp_sync
-		 * 3	conv_per_b－－－－－－－－
+		 * 3	conv_per_b------------------------
 		 * 4	dac_rst
 		 * 5	clk_pre_amp
-		 * 6	clk_latch       －－－－－－－－
-		 * 7	pre_amp1_outp－－－－－－－
+		 * 6	clk_latch      ----------------------------------
+		 * 7	pre_amp1_outp ---------------------------
 		 * 8	pre_amp1_outn
-		 * 9	pre_amp2_outp－－－－－－－
+		 * 9	pre_amp2_outp-------------------------------
 		 * 10	pre_amp2_outn
-		 * 11	mux[239]－－－－－－－－－－－
+		 * 11	mux[239] ----------------------------------
 		 * 12	bl_rst
 		 * 13	bitline[0]
-		 * 14	bl_to_adc[0]－－－－－－－－－
-		 * 15	bl_to_adc[1]－－－－－－－－－
+		 * 14	bl_to_adc[0] ---------------------------------
+		 * 15	bl_to_adc[1] --------------------------------
 		 * 16    ana_sampler_trig_sig-----------
 		 * 17    ana_sampler_trig_sig
 		 * 18   dout_trigger_tp
@@ -105,11 +105,11 @@ public class ImagerTest {
 		 * 22  AVSS
 		 * 23  AVSS
 		 * 24  VSS
-		 * 25  ———————
+		 * 25  ------------------
 		 * 26
 		 */
 		int sampler_idx = 0;
-		CalibrateSampler(sampler_idx, yvonne, imager);
+		//CalibrateSampler(sampler_idx, yvonne, imager);
 
 		/* Ana_sampler_cali_mode
 		 * 0: both samplers at signal mode;
@@ -117,15 +117,15 @@ public class ImagerTest {
   		   2: sampler 0 at signal mode, sampler 1 at calibration mode
 		   3: both samplers at calibration mode
 		 */
-		imager.SetSamplerMode(3);
-		AnalogSampler(0,1,imager);
+		//imager.SetSamplerMode(3);
+		//AnalogSampler(0,1,imager);
 		
 		
 		//ADC calibration
-		CalibrateDummyADC(100, yvonne, imager); //repeat every analog value for 100 conversions
+		//CalibrateDummyADC(100, yvonne, imager); //repeat every analog value for 100 conversions
 		
 		//Pixel Readout
-		ImagerDebugModeTest(imager);
+		//ImagerDebugModeTest(imager);
 		
 		jdrv.CloseController();
 	}
@@ -133,7 +133,7 @@ public class ImagerTest {
 	static void InitJTAG(JtagDriver jdrv){
 		ImagerCntr imager = new ImagerCntr(jdrv);
 		double tsmp = 96*Math.pow(10, -9); //96ns
-		imager.ScanMode(true);
+		imager.ScanMode(false);
 		imager.SetSmpPeriod(tsmp);
 		
 	}
@@ -216,22 +216,22 @@ public class ImagerTest {
 	}
 	/*
 	 * analog test point:
-	 * 0	cmp_b   －－－－－－－－－－
+	 * 0	cmp_b  ------------
 	 * 1	clk_sar
 	 * 2	clk_smp_sync
-	 * 3	conv_per_b－－－－－－－－
+	 * 3	conv_per_b --------------
 	 * 4	dac_rst
 	 * 5	clk_pre_amp
-	 * 6	clk_latch       －－－－－－－－
-	 * 7	pre_amp1_outp－－－－－－－
+	 * 6	clk_latch       ---------------------
+	 * 7	pre_amp1_outp ---------------------------------
 	 * 8	pre_amp1_outn
-	 * 9	pre_amp2_outp－－－－－－－
+	 * 9	pre_amp2_outp -------------------------------
 	 * 10	pre_amp2_outn
-	 * 11	mux[239]－－－－－－－－－－－
+	 * 11	mux[239] ----------------------------
 	 * 12	bl_rst
 	 * 13	bitline[0]
-	 * 14	bl_to_adc[0]－－－－－－－－－
-	 * 15	bl_to_adc[1]－－－－－－－－－
+	 * 14	bl_to_adc[0] ----------------------------------
+	 * 15	bl_to_adc[1] --------------------------------
 	 * 16    ana_sampler_trig_sig-----------
 	 * 17    ana_sampler_trig_sig
 	 * 18   dout_trigger_tp -------------
@@ -241,7 +241,7 @@ public class ImagerTest {
 	 * 22  AVSS
 	 * 23  AVSS
 	 * 24  VSS
-	 * 25  ———————
+	 * 25  --------------------------
 	 * 26
 	 */
 
