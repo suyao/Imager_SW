@@ -36,6 +36,7 @@ public class ImagerCntr extends MacraigorJtagio {
 	 */
 	public ImagerCntr(JtagDriver jdrv) {
 		super();	
+		this.jdrv = jdrv;
 	}
 	
 	public void ScanMode (boolean scan){
