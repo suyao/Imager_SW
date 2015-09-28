@@ -122,7 +122,7 @@ public class ImagerTest {
 		
 		
 		//ADC calibration
-		//CalibrateDummyADC(100, yvonne, imager); //repeat every analog value for 100 conversions
+		//CalibrateDummyADC(1, yvonne, imager); //repeat every analog value for 100 conversions
 		
 		//Pixel Readout
 		//ImagerDebugModeTest(imager);
@@ -134,20 +134,24 @@ public class ImagerTest {
 		ImagerCntr imager = new ImagerCntr(jdrv);
 		String RO = jdrv.readReg(ClockDomain.tc_domain, "0004");
 		System.out.println("Read from JTAG TC 004: " + RO);
+		//jdrv.reset();
 		double tsmp = 96*Math.pow(10, -9); //96ns
 		imager.ScanMode(false);
+		imager.IsDigClk(true);
+		imager.EnableDout(false);
+		imager.EnableClkGate(false);
 		RO = jdrv.readReg(ClockDomain.tc_domain, "0064");
 		System.out.println("Read from JTAG TC 064: " + RO);
 		
-		jdrv.writeReg(ClockDomain.sc_domain, "00", "1234");
-		RO = jdrv.readReg(ClockDomain.sc_domain, "00");
-		System.out.println("Read from JTAG SC 00: " + RO);
 		jdrv.writeReg(ClockDomain.sc_domain, "02", "1234");
 		RO = jdrv.readReg(ClockDomain.sc_domain, "02");
 		System.out.println("Read from JTAG SC 02: " + RO);
 		jdrv.writeReg(ClockDomain.sc_domain, "02", "1234");
+		RO = jdrv.readReg(ClockDomain.sc_domain, "02");
+		System.out.println("Read from JTAG SC 02: " + RO);
+		jdrv.writeReg(ClockDomain.sc_domain, "04", "1234");
 		RO = jdrv.readReg(ClockDomain.sc_domain, "04");
-		System.out.println("Read from JTAG SC 04: " + RO);
+		System.out.println("Read from JTAG SC 04: " + RO); 
 		imager.SetSmpPeriod(tsmp);
 		
 	}

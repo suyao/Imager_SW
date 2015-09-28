@@ -145,6 +145,7 @@ public class DACCntr
 			}
 			bw.write("q");
 			bw.close();
+			fw.close();
 			System.out.println("Finish writing DAC registers.");
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -200,6 +201,7 @@ public class DACCntr
 			}
 			bw.write("q");
 			bw.close();
+			fw.close();
 			
 		} catch (IOException e) {
 			e.printStackTrace();
