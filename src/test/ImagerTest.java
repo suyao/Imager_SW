@@ -123,7 +123,7 @@ public class ImagerTest {
 		
 		
 		//ADC calibration
-		CalibrateDummyADC(1, yvonne, imager); //repeat every analog value for 100 conversions
+		//CalibrateDummyADC(1, yvonne, imager); //repeat every analog value for 100 conversions
 		
 		//Pixel Readout
 		//ImagerDebugModeTest(imager);
