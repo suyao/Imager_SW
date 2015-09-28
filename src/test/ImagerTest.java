@@ -62,7 +62,7 @@ public class ImagerTest {
 		// Initialize jtag
 		MacraigorJtagio jtag = new MacraigorJtagio();
 		jdrv.InitializeController("USB", "USB0", 1);
-		flashLed(jtag, 3, 500);
+		//flashLed(jtag, 3, 500);
 		// Reset JTAG
 		jdrv.reset();
 		// Read IDCODE
@@ -71,7 +71,7 @@ public class ImagerTest {
 		// System reset
 		jdrv.writeReg(ClockDomain.tc_domain, "0000", "00000001"); // eight hex digits b/c_data_width=32
 		jdrv.writeReg(ClockDomain.tc_domain, "0000", "00000000");
-		
+
 		
 		//Set DAC Values
 		DACCntr yvonne = InitDAC();
@@ -117,12 +117,13 @@ public class ImagerTest {
   		   2: sampler 0 at signal mode, sampler 1 at calibration mode
 		   3: both samplers at calibration mode
 		 */
-		//imager.SetSamplerMode(3);
-		//AnalogSampler(0,1,imager);
+		imager.SetSamplerMode(0);
+		AnalogSampler(21,22,imager);
+		System.out.println("Read from JTAG TC 004c: "+ jdrv.readReg(ClockDomain.tc_domain, "004c"));
 		
 		
 		//ADC calibration
-		//CalibrateDummyADC(1, yvonne, imager); //repeat every analog value for 100 conversions
+		CalibrateDummyADC(1, yvonne, imager); //repeat every analog value for 100 conversions
 		
 		//Pixel Readout
 		//ImagerDebugModeTest(imager);
@@ -132,33 +133,42 @@ public class ImagerTest {
 	
 	static void InitJTAG(JtagDriver jdrv){
 		ImagerCntr imager = new ImagerCntr(jdrv);
+		jdrv.SetSpeed(8);
+		int a =jdrv.GetSpeed();
+		System.out.println("TCK speed: " + a);
+		
 		String RO = jdrv.readReg(ClockDomain.tc_domain, "0004");
 		System.out.println("Read from JTAG TC 004: " + RO);
 		//jdrv.reset();
-		double tsmp = 96*Math.pow(10, -9); //96ns
+		double tsmp = 96*Math.pow(1, -9); //96ns
+		imager.SetSmpPeriod(tsmp);
+		RO = jdrv.readReg(ClockDomain.tc_domain, "0008");
+		System.out.println("Read from JTAG TC 008: " + RO);
 		imager.ScanMode(false);
-		imager.IsDigClk(true);
+		imager.IsDigClk(false);
 		imager.EnableDout(false);
-		imager.EnableClkGate(false);
+		imager.EnableClkGate(false); //false is to let the clock gate pass
 		RO = jdrv.readReg(ClockDomain.tc_domain, "0064");
 		System.out.println("Read from JTAG TC 064: " + RO);
 		
+		jdrv.writeReg(ClockDomain.sc_domain, "00", "1234");
+		for (int i= 0 ; i<=1; i++){
+		RO = jdrv.readReg(ClockDomain.sc_domain, "00");
+		System.out.println("Read from JTAG SC 00: " + RO);
+		}
+		
 		jdrv.writeReg(ClockDomain.sc_domain, "02", "1234");
+		for (int i = 0; i<=1 ;i++){
 		RO = jdrv.readReg(ClockDomain.sc_domain, "02");
-		System.out.println("Read from JTAG SC 02: " + RO);
-		jdrv.writeReg(ClockDomain.sc_domain, "02", "1234");
-		RO = jdrv.readReg(ClockDomain.sc_domain, "02");
-		System.out.println("Read from JTAG SC 02: " + RO);
-		jdrv.writeReg(ClockDomain.sc_domain, "04", "1234");
-		RO = jdrv.readReg(ClockDomain.sc_domain, "04");
-		System.out.println("Read from JTAG SC 04: " + RO); 
-		imager.SetSmpPeriod(tsmp);
+		System.out.println("Read from JTAG SC 02: " + RO); 
+		}
+
 		
 	}
 	static DACCntr InitDAC() {
 		//Set DAC Values
 		double pvdd = 3.3;
-		double ana33 = 3.3;
+		double ana33 = 1.75;
 		double v0 = 1;
 		double ana18 = 1.5004;
 		double vrefp = 1.4;
@@ -184,7 +194,8 @@ public class ImagerTest {
 			imager.EnableADC(false); // disable adc
 			imager.EnableDummyADC(true); // enable dummy adc
 			int idx = yvonne.FindIdxofName("ana18");
-			for (int reg_int = 0; reg_int < DACCntr.levels; reg_int ++){
+			
+			for (int reg_int = 0; reg_int < DACCntr.levels; reg_int= reg_int + 32){
 				String reg_str = Integer.toHexString(reg_int);
 				reg_str = "0000".substring(reg_str.length()) + reg_str; 
 				yvonne.WriteDACReg(idx, reg_str); //Write to Yvonne
@@ -196,7 +207,9 @@ public class ImagerTest {
 				System.out.println("Input: " + reg_str + ", Output: " + ADC_out_str);
 			}
 			bw.close();
-			
+			//String ADC_out_str = "";
+			//ADC_out_str = imager.ReadDummyADC();
+			//System.out.println("Output: " + ADC_out_str);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}		

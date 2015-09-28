@@ -225,8 +225,9 @@ public class ImagerCntr extends MacraigorJtagio {
 			System.out.println("ERROR: Sampler enable register is wrong! ");
 			return;
 		}	
-		int p = 1 << a + 1 << b;	
-		jdrv.writeReg(ClockDomain.tc_domain, "004c", Binary2HexStr(p));
+		int p = (1 << a) +(1<<b) ;
+		jdrv.writeReg(ClockDomain.tc_domain, "004c", Int2HexStr(p));
+		System.out.println("write to 004c: "+ Int2HexStr(p));
 	}
 	
 	public void EnableSingleSampler (int a){	
@@ -237,7 +238,8 @@ public class ImagerCntr extends MacraigorJtagio {
 			return;
 		}	
 		int p = 1 << a ;	
-		jdrv.writeReg(ClockDomain.tc_domain, "004c", Binary2HexStr(p));
+		jdrv.writeReg(ClockDomain.tc_domain, "004c", Int2HexStr(p));
+
 	}
 	
 	public void SetSamplerMode (int p){		
@@ -395,8 +397,8 @@ public class ImagerCntr extends MacraigorJtagio {
 	public void SetSelfBias (int adc, int dummy_adc, int sf){
 		if (adc > 1 || dummy_adc > 1 || sf >1)
 			System.out.println("ERROR: Set self bias incorrectly!");
-		int p = adc + dummy_adc << 1 + sf <<2;
-		jdrv.writeReg(ClockDomain.tc_domain, "0410", Binary2HexStr(p));
+		int p = adc + (dummy_adc << 1) + (sf <<2);
+		jdrv.writeReg(ClockDomain.tc_domain, "0410", Int2HexStr(p));
 	}
 	
 	public void EnableDummyADCRst (boolean p){
