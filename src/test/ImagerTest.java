@@ -228,7 +228,7 @@ public class ImagerTest {
 			}
 			FileWriter fw = new FileWriter(file.getAbsoluteFile());
 			BufferedWriter bw = new BufferedWriter(fw);
-			imager.SetColCounter(133);
+			imager.SetColCounter(133); // if col<120, output left adc, otherwise, right adc
 			imager.EnableDummyADC(false); // disable dummy adc
 			imager.EnableADCCali(true);
 			imager.EnableADC(true); // enable adc
