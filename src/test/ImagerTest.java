@@ -28,7 +28,11 @@ public class ImagerTest {
 	static int tc_addr_width = 12;
 	static int sc_data_width = 16;
 	static int sc_addr_width = 8;
-
+	private static double v0 = 1;
+	private static double vrefp = 1.25;
+	private static double vrefn = 0.75;	
+	private static double vcm = 1;
+	private static double vrst = 0.6; 
 	
 	static void flashLed(MacraigorJtagio jtag, int times, int interval) {
 		assert (jtag.Initialized());
@@ -70,9 +74,6 @@ public class ImagerTest {
 
 		// System reset
 		imager.JtagReset();
-		//jdrv.writeReg(ClockDomain.tc_domain, "0000", "00000001"); // eight hex digits b/c_data_width=32
-		//jdrv.writeReg(ClockDomain.tc_domain, "0000", "00000000");
-
 		
 		//Set DAC Values
 		DACCntr yvonne = InitDAC();
@@ -123,8 +124,23 @@ public class ImagerTest {
 		AnalogSampler(5,6,imager);
 				
 		//ADC calibration
-		CalibrateDummyADC(1, yvonne, imager); //repeat every analog value for 100 conversions
-		CalibrateADC(1, yvonne, imager);
+		/*  -1 don't measure current
+		 *  0 ADC amp1_n 
+		 *  1 ADC amp1_p
+		 *  2 ADC_amp2_n
+		 *  3 ADC_amp2_p
+		 *  4 DUMMY_amp1_n
+		 *  5 DUMMY_amp1_p
+		 *  6 DUMMY_amp2_n
+		 *  7 DUMMY_amp2_p
+		 *  8 Isf
+		 */
+		imager.SetADCTiming(1,1,1);
+		imager.SetADCcurrent(0,13,4,7);
+		imager.CurrentTestPt(2);
+		CalibrateDummyADC(10, yvonne, imager); //repeat every analog value for 100 conversions
+		CalibrateADC(10, yvonne, imager);
+		System.out.println("Current Control: "+jdrv.readReg(ClockDomain.tc_domain,  "0400"));
 		//Pixel Readout
 		//ImagerDebugModeTest(imager);
 		
@@ -169,15 +185,16 @@ public class ImagerTest {
 		//Set DAC Values
 		double pvdd = 3.3;
 		double ana33 = 1.75;
-		double v0 = 1;
-		double ana18 = 1.2;
-		double vrefp = 1.25;
-		double vrefn = 0.75;
+		v0 = 1;
+		double ana18 = 0.7005;
+		vrefp = 1.25;
+		vrefn = 0.75;
 		double Iin = 1;
-		double vcm = 1;
-		double vrst = 0.6; 
+		vcm = 1;
+		vrst = 0.6; 
 		double dac_values[] = {pvdd,ana33,v0, ana18, vrefp, vrefn, Iin, vcm, vrst};
 		DACCntr yvonne = new DACCntr(dac_values);
+		try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
 		return yvonne;
 	}
 	
@@ -191,30 +208,34 @@ public class ImagerTest {
 			FileWriter fw = new FileWriter(file.getAbsoluteFile());
 			BufferedWriter bw = new BufferedWriter(fw);		
 			imager.EnableADC(false); // disable adc
-			imager.EnableDummyADC(true); // enable dummy adc
-			imager.SetADCTiming(1,1,1);
-			imager.SetADCcurrent(1,1,1,1);
+			imager.EnableDummyADC(true); // enable dummy adc		
 			imager.JtagReset();
 			int idx = yvonne.FindIdxofName("ana18");
-			/*
-			for (int reg_int = 0; reg_int < DACCntr.levels; reg_int= reg_int + 32){
+			double rsl_ana18 = (1.527-0.50782)/DACCntr.levels*2;
+			int reg_min = (int) Math.round((v0-(vrefp-vrefn)-0.50782)/rsl_ana18) + DACCntr.levels/4;
+			int reg_max = (int) Math.round((v0+(vrefp-vrefn)-0.50782)/rsl_ana18) + DACCntr.levels/4;
+			for (int reg_int = reg_min; reg_int < reg_max; reg_int= reg_int + 32){
+				try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
 				String reg_str = Integer.toHexString(reg_int);
 				reg_str = "0000".substring(reg_str.length()) + reg_str; 
 				yvonne.WriteDACReg(idx, reg_str); //Write to Yvonne
 				String ADC_out_str = "";
+				System.out.println("Input: " + reg_str);
 				for (int itr = 0 ; itr < itr_times; itr++){ //average readings to eliminate noise
 				    ADC_out_str = imager.ReadDummyADC(); //JTAG readout
 					bw.write(Integer.toString(reg_int) + " " + ADC_out_str +"\n");
-				}
-				System.out.println("Input: " + reg_str + ", Output: " + ADC_out_str);
-			}*/
+					System.out.println("               Output: " + ADC_out_str);
+				}			
+			}
 			bw.close();
-			//try {Thread.sleep(4000);} catch (InterruptedException e) {e.printStackTrace();}
+			/*
 			String ADC_out_str = "";
-			for (int i = 0; i<3; i ++){
+			for (int i = 0; i<10; i ++){
+				try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
 				ADC_out_str = imager.ReadDummyADC();
 				System.out.println("Dummy ADC Output: " + ADC_out_str);
 			}
+			*/
 		} catch (IOException e) {
 			e.printStackTrace();
 		}		
@@ -228,28 +249,35 @@ public class ImagerTest {
 			}
 			FileWriter fw = new FileWriter(file.getAbsoluteFile());
 			BufferedWriter bw = new BufferedWriter(fw);
-			imager.SetColCounter(133); // if col<120, output left adc, otherwise, right adc
+			imager.SetColCounter(1); // if col<120, output left adc, otherwise, right adc
 			imager.EnableDummyADC(false); // disable dummy adc
 			imager.EnableADCCali(true);
 			imager.EnableADC(true); // enable adc
 			int idx = yvonne.FindIdxofName("ana18");
-			/*for (int reg_int = 0; reg_int < DACCntr.levels; reg_int ++){
+			double rsl_ana18 = (1.527-0.50782)/DACCntr.levels*2;
+			int reg_min = (int) Math.round((v0-(vrefp-vrefn)-0.50782)/rsl_ana18) + DACCntr.levels/4;
+			int reg_max = (int) Math.round((v0+(vrefp-vrefn)-0.50782)/rsl_ana18) + DACCntr.levels/4;
+			for (int reg_int = reg_min; reg_int < reg_max; reg_int= reg_int + 32){
+				
 				String reg_str = Integer.toHexString(reg_int);
 				reg_str = "0000".substring(reg_str.length()) + reg_str; 
 				yvonne.WriteDACReg(idx, reg_str); //Write to Yvonne
 				String ADC_out_str = "";
+				System.out.println("Input: "+ reg_str);
+				try {Thread.sleep(300);} catch (InterruptedException e) {e.printStackTrace();}
 				for (int itr = 0 ; itr < itr_times; itr++){ //average readings to eliminate noise
-				    ADC_out_str = imager.ReadADCatRST(); //JTAG readout
+					ADC_out_str = imager.ReadADCatRST(); //JTAG readout
 					bw.write(Integer.toString(reg_int) + " " + ADC_out_str +"\n");
+					System.out.println("               Output: " + ADC_out_str);
 				}
-				System.out.println("Input: " + reg_str + ", Output: " + ADC_out_str);
-			}*/
+				
+			}
 			bw.close();
-			String ADC_out_str = "";
-			for (int i = 0; i<3; i ++){
+			/*String ADC_out_str = "";
+			for (int i = 0; i<10; i ++){
 				ADC_out_str = imager.ReadADCatRST();
 				System.out.println("ADC Output: " + ADC_out_str);
-			}
+			} */
 		} catch (IOException e) {
 			e.printStackTrace();
 		}		

@@ -364,15 +364,13 @@ public class ImagerCntr extends MacraigorJtagio {
 			jdrv.writeReg(ClockDomain.tc_domain, "0084", Int2HexStr(0));
 	}
 	
-	public void SetADCcurrent (double n1, double p1, double n2, double p2){
-		int width = 4;
-		int max = (int) Math.pow(2, width);
-		int p = max - (int) Math.round((n1-minADCCurrent)/ADCcurrentRsl);
-		p = p + ( (max - (int) Math.round((p1-minADCCurrent)/ADCcurrentRsl)) << 4 );
-		p = p + ( (max - (int) Math.round((n2-minADCCurrent)/ADCcurrentRsl)) << 8 );
-		p = p + ( (max - (int) Math.round((p2-minADCCurrent)/ADCcurrentRsl)) << 12 );
-		//jdrv.writeReg(ClockDomain.tc_domain, "0400", Int2HexStr(p));
-		jdrv.writeReg(ClockDomain.tc_domain, "0400", "00007777");
+	public void SetADCcurrent (int n1, int p1, int n2, int p2){
+		if ( n1 > 15 || p1 >15 || n2 >15 || p2>15) {
+			System.out.println("Current Control: cannot exceed 15!");
+		} else{
+		int p = n1 + (p1<<4) +(n2<<8)+(p2<<12);
+		jdrv.writeReg(ClockDomain.tc_domain, "0400", Int2HexStr(p));
+		}
 	}
 	
 	public void EnableADCCali (boolean p){
@@ -383,11 +381,15 @@ public class ImagerCntr extends MacraigorJtagio {
 	}
 	
 	public void CurrentTestPt (int p){
-		int width = 9;
-		if (p >= width)
-			System.out.println("ERROR: Current Test Point setting could only be 0~8!");
-		p = 1 << p;
-		jdrv.writeReg(ClockDomain.tc_domain, "0408", Int2HexStr(p));
+		if (p==-1)
+			jdrv.writeReg(ClockDomain.tc_domain, "0408", Int2HexStr(0));
+		else {
+			int width = 9;
+			if (p >= width)
+				System.out.println("ERROR: Current Test Point setting could only be 0~8!");
+			p = 1 << p;
+			jdrv.writeReg(ClockDomain.tc_domain, "0408", Int2HexStr(p));
+		}
 	}
 	
 	public void SetADCTiming (int ovlp_amp_lch, int cmp_lch_pw, int sar_dly){
