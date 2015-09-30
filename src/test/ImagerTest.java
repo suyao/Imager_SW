@@ -124,7 +124,7 @@ public class ImagerTest {
 				
 		//ADC calibration
 		CalibrateDummyADC(1, yvonne, imager); //repeat every analog value for 100 conversions
-		
+		CalibrateADC(1, yvonne, imager);
 		//Pixel Readout
 		//ImagerDebugModeTest(imager);
 		
@@ -228,24 +228,28 @@ public class ImagerTest {
 			}
 			FileWriter fw = new FileWriter(file.getAbsoluteFile());
 			BufferedWriter bw = new BufferedWriter(fw);
-			
+			imager.SetColCounter(133);
 			imager.EnableDummyADC(false); // disable dummy adc
 			imager.EnableADCCali(true);
 			imager.EnableADC(true); // enable adc
 			int idx = yvonne.FindIdxofName("ana18");
-			for (int reg_int = 0; reg_int < DACCntr.levels; reg_int ++){
+			/*for (int reg_int = 0; reg_int < DACCntr.levels; reg_int ++){
 				String reg_str = Integer.toHexString(reg_int);
 				reg_str = "0000".substring(reg_str.length()) + reg_str; 
 				yvonne.WriteDACReg(idx, reg_str); //Write to Yvonne
 				String ADC_out_str = "";
 				for (int itr = 0 ; itr < itr_times; itr++){ //average readings to eliminate noise
-				    ADC_out_str = imager.ReadDummyADC(); //JTAG readout
+				    ADC_out_str = imager.ReadADCatRST(); //JTAG readout
 					bw.write(Integer.toString(reg_int) + " " + ADC_out_str +"\n");
 				}
 				System.out.println("Input: " + reg_str + ", Output: " + ADC_out_str);
-			}
+			}*/
 			bw.close();
-			
+			String ADC_out_str = "";
+			for (int i = 0; i<3; i ++){
+				ADC_out_str = imager.ReadADCatRST();
+				System.out.println("ADC Output: " + ADC_out_str);
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}		
