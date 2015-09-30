@@ -38,7 +38,10 @@ public class ImagerCntr extends MacraigorJtagio {
 		super();	
 		this.jdrv = jdrv;
 	}
-	
+	public void JtagReset(){
+		jdrv.writeReg(ClockDomain.tc_domain, "0000", "00000001");
+		jdrv.writeReg(ClockDomain.tc_domain, "0000", "00000000");
+	}
 	public void ScanMode (boolean scan){
 		if (scan ==true){
 			jdrv.writeReg(ClockDomain.tc_domain, "0004", "00000001");
@@ -227,7 +230,7 @@ public class ImagerCntr extends MacraigorJtagio {
 		}	
 		int p = (1 << a) +(1<<b) ;
 		jdrv.writeReg(ClockDomain.tc_domain, "004c", Int2HexStr(p));
-		System.out.println("write to 004c: "+ Int2HexStr(p));
+		//System.out.println("write to 004c: "+ Int2HexStr(p));
 	}
 	
 	public void EnableSingleSampler (int a){	
@@ -365,10 +368,11 @@ public class ImagerCntr extends MacraigorJtagio {
 		int width = 4;
 		int max = (int) Math.pow(2, width);
 		int p = max - (int) Math.round((n1-minADCCurrent)/ADCcurrentRsl);
-		p = p + (max - (int) Math.round((p1-minADCCurrent)/ADCcurrentRsl)) << 4;
-		p = p + (max - (int) Math.round((n2-minADCCurrent)/ADCcurrentRsl)) << 8;
-		p = p + (max - (int) Math.round((p2-minADCCurrent)/ADCcurrentRsl)) << 12;
-		jdrv.writeReg(ClockDomain.tc_domain, "0400", Int2HexStr(p));
+		p = p + ( (max - (int) Math.round((p1-minADCCurrent)/ADCcurrentRsl)) << 4 );
+		p = p + ( (max - (int) Math.round((n2-minADCCurrent)/ADCcurrentRsl)) << 8 );
+		p = p + ( (max - (int) Math.round((p2-minADCCurrent)/ADCcurrentRsl)) << 12 );
+		//jdrv.writeReg(ClockDomain.tc_domain, "0400", Int2HexStr(p));
+		jdrv.writeReg(ClockDomain.tc_domain, "0400", "00007777");
 	}
 	
 	public void EnableADCCali (boolean p){
@@ -435,14 +439,7 @@ public class ImagerCntr extends MacraigorJtagio {
 		s = "00000000".substring(s.length()) + s;	
 		return s;
 	}
-	
-	public String Binary2HexStr (int i){
-		String s = Integer.toString(i);
-		int decimal = Integer.parseInt(s,2);
-		String h = Integer.toHexString(decimal);
-		s = "00000000".substring(h.length()) + h;	
-		return s;
-	}
+
 
 	public String ReadDummyADC(){
 		return jdrv.readReg(ClockDomain.sc_domain, "04");

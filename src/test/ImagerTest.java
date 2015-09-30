@@ -69,8 +69,9 @@ public class ImagerTest {
 		System.out.println("IDCODE: " + jdrv.readID());
 
 		// System reset
-		jdrv.writeReg(ClockDomain.tc_domain, "0000", "00000001"); // eight hex digits b/c_data_width=32
-		jdrv.writeReg(ClockDomain.tc_domain, "0000", "00000000");
+		imager.JtagReset();
+		//jdrv.writeReg(ClockDomain.tc_domain, "0000", "00000001"); // eight hex digits b/c_data_width=32
+		//jdrv.writeReg(ClockDomain.tc_domain, "0000", "00000000");
 
 		
 		//Set DAC Values
@@ -118,12 +119,11 @@ public class ImagerTest {
 		   3: both samplers at calibration mode
 		 */
 		imager.SetSamplerMode(0);
-		AnalogSampler(21,22,imager);
-		System.out.println("Read from JTAG TC 004c: "+ jdrv.readReg(ClockDomain.tc_domain, "004c"));
-		
-		
+		//imager.EnableSamplerTrig(true);
+		AnalogSampler(5,6,imager);
+				
 		//ADC calibration
-		//CalibrateDummyADC(1, yvonne, imager); //repeat every analog value for 100 conversions
+		CalibrateDummyADC(1, yvonne, imager); //repeat every analog value for 100 conversions
 		
 		//Pixel Readout
 		//ImagerDebugModeTest(imager);
@@ -140,24 +140,24 @@ public class ImagerTest {
 		String RO = jdrv.readReg(ClockDomain.tc_domain, "0004");
 		System.out.println("Read from JTAG TC 004: " + RO);
 		//jdrv.reset();
-		double tsmp = 96*Math.pow(1, -9); //96ns
+		double tsmp = 96*Math.pow(10, -9); //96ns
 		imager.SetSmpPeriod(tsmp);
 		RO = jdrv.readReg(ClockDomain.tc_domain, "0008");
 		System.out.println("Read from JTAG TC 008: " + RO);
-		imager.ScanMode(false);
+		imager.ScanMode(true);
 		imager.IsDigClk(false);
 		imager.EnableDout(false);
 		imager.EnableClkGate(false); //false is to let the clock gate pass
 		RO = jdrv.readReg(ClockDomain.tc_domain, "0064");
 		System.out.println("Read from JTAG TC 064: " + RO);
 		
-		jdrv.writeReg(ClockDomain.sc_domain, "00", "1234");
+		jdrv.writeReg(ClockDomain.sc_domain, "00", "0234");
 		for (int i= 0 ; i<=1; i++){
 		RO = jdrv.readReg(ClockDomain.sc_domain, "00");
 		System.out.println("Read from JTAG SC 00: " + RO);
 		}
 		
-		jdrv.writeReg(ClockDomain.sc_domain, "02", "1234");
+		jdrv.writeReg(ClockDomain.sc_domain, "02", "0234");
 		for (int i = 0; i<=1 ;i++){
 		RO = jdrv.readReg(ClockDomain.sc_domain, "02");
 		System.out.println("Read from JTAG SC 02: " + RO); 
@@ -170,11 +170,11 @@ public class ImagerTest {
 		double pvdd = 3.3;
 		double ana33 = 1.75;
 		double v0 = 1;
-		double ana18 = 1.5004;
-		double vrefp = 1.4;
-		double vrefn = 0.9;
-		double Iin = 1.0;
-		double vcm = 1.3;
+		double ana18 = 1.2;
+		double vrefp = 1.25;
+		double vrefn = 0.75;
+		double Iin = 1;
+		double vcm = 1;
 		double vrst = 0.6; 
 		double dac_values[] = {pvdd,ana33,v0, ana18, vrefp, vrefn, Iin, vcm, vrst};
 		DACCntr yvonne = new DACCntr(dac_values);
@@ -189,12 +189,14 @@ public class ImagerTest {
 				file.createNewFile();
 			}
 			FileWriter fw = new FileWriter(file.getAbsoluteFile());
-			BufferedWriter bw = new BufferedWriter(fw);
-			
+			BufferedWriter bw = new BufferedWriter(fw);		
 			imager.EnableADC(false); // disable adc
 			imager.EnableDummyADC(true); // enable dummy adc
+			imager.SetADCTiming(1,1,1);
+			imager.SetADCcurrent(1,1,1,1);
+			imager.JtagReset();
 			int idx = yvonne.FindIdxofName("ana18");
-			
+			/*
 			for (int reg_int = 0; reg_int < DACCntr.levels; reg_int= reg_int + 32){
 				String reg_str = Integer.toHexString(reg_int);
 				reg_str = "0000".substring(reg_str.length()) + reg_str; 
@@ -205,11 +207,14 @@ public class ImagerTest {
 					bw.write(Integer.toString(reg_int) + " " + ADC_out_str +"\n");
 				}
 				System.out.println("Input: " + reg_str + ", Output: " + ADC_out_str);
-			}
+			}*/
 			bw.close();
-			//String ADC_out_str = "";
-			//ADC_out_str = imager.ReadDummyADC();
-			//System.out.println("Output: " + ADC_out_str);
+			//try {Thread.sleep(4000);} catch (InterruptedException e) {e.printStackTrace();}
+			String ADC_out_str = "";
+			for (int i = 0; i<3; i ++){
+				ADC_out_str = imager.ReadDummyADC();
+				System.out.println("Dummy ADC Output: " + ADC_out_str);
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}		
