@@ -110,7 +110,7 @@ public class ImagerTest {
 		 * 25  ------------------
 		 * 26
 		 */
-		int sampler_idx = 0;
+		//int sampler_idx = 0;
 		//CalibrateSampler(sampler_idx, yvonne, imager);
 
 		/* Ana_sampler_cali_mode
@@ -136,13 +136,21 @@ public class ImagerTest {
 		 *  8 Isf
 		 */
 		imager.SetADCTiming(1,1,1);
-		imager.SetADCcurrent(0,13,4,7);
-		imager.CurrentTestPt(2);
-		CalibrateDummyADC(10, yvonne, imager); //repeat every analog value for 100 conversions
-		CalibrateADC(10, yvonne, imager);
-		System.out.println("Current Control: "+jdrv.readReg(ClockDomain.tc_domain,  "0400"));
+		//imager.SetADCcurrent(0,13,4,7); // board 2
+		//SetADCcurrent(n1,p1,n2,p2) the smaller the number, the larger the current
+		imager.SetADCcurrent(2,13,7,7); // board 3
+		imager.CurrentTestPt(0);
+		
+		// ADC Testing
+		//DummyADCTest(0.51, yvonne, imager);
+		ADCTest(0.80025, yvonne, imager, 1); // left ADC if 0, right ADC if 1
+		//CalibrateDummyADC(10, yvonne, imager); //repeat every analog value for 100 conversions
+		//CalibrateADC(20, yvonne, imager, 0);
+		
+		
 		//Pixel Readout
 		//ImagerDebugModeTest(imager);
+		//ImagerFrameTest(imager);
 		
 		jdrv.CloseController();
 	}
@@ -186,7 +194,7 @@ public class ImagerTest {
 		double pvdd = 3.3;
 		double ana33 = 1.75;
 		v0 = 1;
-		double ana18 = 0.7005;
+		double ana18 = 1;
 		vrefp = 1.25;
 		vrefn = 0.75;
 		double Iin = 1;
@@ -198,8 +206,42 @@ public class ImagerTest {
 		return yvonne;
 	}
 	
+	static void DummyADCTest(double value, DACCntr yvonne, ImagerCntr imager){		
+
+		imager.EnableADC(false); // disable adc
+		imager.EnableDummyADC(true); // enable dummy adc		
+		imager.JtagReset();
+		yvonne.WriteDACValue("ana18", value, yvonne.dac_reg  )	;
+		String ADC_out_str = "";
+		try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
+		for (int i = 0; i<10; i ++){
+			try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
+			ADC_out_str = imager.ReadDummyADC();
+			System.out.println("Dummy ADC Output: " + ADC_out_str);
+		}	
+	}
+	
+	static void ADCTest(double value, DACCntr yvonne, ImagerCntr imager, int adc_idx){
+		if (adc_idx == 0)
+			imager.SetColCounter(1); // if col<120, output left adc, otherwise, right adc
+		else
+			imager.SetColCounter(136);
+		imager.EnableDummyADC(false); // disable dummy adc
+		imager.EnableADCCali(true);
+		imager.EnableADC(true); // enable adc	
+		imager.JtagReset();
+		yvonne.WriteDACValue("ana18", value, yvonne.dac_reg  )	;
+		String ADC_out_str = "";
+		try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
+		for (int i = 0; i<10; i ++){
+			try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
+			ADC_out_str = imager.ReadADCatRST();
+			System.out.println("ADC Output: " + ADC_out_str);
+		}	
+	}
+	
 	static void CalibrateDummyADC(int itr_times, DACCntr yvonne, ImagerCntr imager){
-		
+		System.out.println("Dummy ADC Calibration starts...");
 		try {
 			File file = new File("./outputs/CalibrateADC/dummy_ADC_output.txt");
 			if (!file.exists()) {
@@ -212,15 +254,17 @@ public class ImagerTest {
 			imager.JtagReset();
 			int idx = yvonne.FindIdxofName("ana18");
 			double rsl_ana18 = (1.527-0.50782)/DACCntr.levels*2;
-			int reg_min = (int) Math.round((v0-(vrefp-vrefn)-0.50782)/rsl_ana18) + DACCntr.levels/4;
-			int reg_max = (int) Math.round((v0+(vrefp-vrefn)-0.50782)/rsl_ana18) + DACCntr.levels/4;
+			int reg_min = (int) Math.round((v0-(vrefp-vrefn)-0.50782)/rsl_ana18) + DACCntr.levels/4 - 32*20;
+			int reg_max = (int) Math.round((v0+(vrefp-vrefn)-0.50782)/rsl_ana18) + DACCntr.levels/4 + 32*20;
 			for (int reg_int = reg_min; reg_int < reg_max; reg_int= reg_int + 32){
-				try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
 				String reg_str = Integer.toHexString(reg_int);
 				reg_str = "0000".substring(reg_str.length()) + reg_str; 
 				yvonne.WriteDACReg(idx, reg_str); //Write to Yvonne
 				String ADC_out_str = "";
 				System.out.println("Input: " + reg_str);
+				if (reg_int == reg_min)
+					try {Thread.sleep(2000);} catch (InterruptedException e) {e.printStackTrace();}
+				try {Thread.sleep(300);} catch (InterruptedException e) {e.printStackTrace();}
 				for (int itr = 0 ; itr < itr_times; itr++){ //average readings to eliminate noise
 				    ADC_out_str = imager.ReadDummyADC(); //JTAG readout
 					bw.write(Integer.toString(reg_int) + " " + ADC_out_str +"\n");
@@ -228,20 +272,14 @@ public class ImagerTest {
 				}			
 			}
 			bw.close();
-			/*
-			String ADC_out_str = "";
-			for (int i = 0; i<10; i ++){
-				try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
-				ADC_out_str = imager.ReadDummyADC();
-				System.out.println("Dummy ADC Output: " + ADC_out_str);
-			}
-			*/
 		} catch (IOException e) {
 			e.printStackTrace();
-		}		
+		}	
+		System.out.println("Finish Calibrating Dummy ADC");
 	}
 	
-	static void CalibrateADC(int itr_times, DACCntr yvonne, ImagerCntr imager){
+	static void CalibrateADC(int itr_times, DACCntr yvonne, ImagerCntr imager, int adc_idx){
+		System.out.println("ADC Calibration Starts...");
 		try {
 			File file = new File("./outputs/CalibrateADC/ADC_output.txt");
 			if (!file.exists()) {
@@ -249,38 +287,37 @@ public class ImagerTest {
 			}
 			FileWriter fw = new FileWriter(file.getAbsoluteFile());
 			BufferedWriter bw = new BufferedWriter(fw);
-			imager.SetColCounter(1); // if col<120, output left adc, otherwise, right adc
+			if (adc_idx == 0)
+				imager.SetColCounter(1); // if col<120, output left adc, otherwise, right adc
+			else
+				imager.SetColCounter(136);
 			imager.EnableDummyADC(false); // disable dummy adc
 			imager.EnableADCCali(true);
 			imager.EnableADC(true); // enable adc
 			int idx = yvonne.FindIdxofName("ana18");
 			double rsl_ana18 = (1.527-0.50782)/DACCntr.levels*2;
-			int reg_min = (int) Math.round((v0-(vrefp-vrefn)-0.50782)/rsl_ana18) + DACCntr.levels/4;
-			int reg_max = (int) Math.round((v0+(vrefp-vrefn)-0.50782)/rsl_ana18) + DACCntr.levels/4;
+			int reg_min = (int) Math.round((v0-(vrefp-vrefn)-0.50782)/rsl_ana18) + DACCntr.levels/4 - 32*20;
+			int reg_max = (int) Math.round((v0+(vrefp-vrefn)-0.50782)/rsl_ana18) + DACCntr.levels/4 + 32*20;
 			for (int reg_int = reg_min; reg_int < reg_max; reg_int= reg_int + 32){
-				
 				String reg_str = Integer.toHexString(reg_int);
 				reg_str = "0000".substring(reg_str.length()) + reg_str; 
 				yvonne.WriteDACReg(idx, reg_str); //Write to Yvonne
 				String ADC_out_str = "";
 				System.out.println("Input: "+ reg_str);
+				if (reg_int == reg_min)
+					try {Thread.sleep(2000);} catch (InterruptedException e) {e.printStackTrace();}
 				try {Thread.sleep(300);} catch (InterruptedException e) {e.printStackTrace();}
 				for (int itr = 0 ; itr < itr_times; itr++){ //average readings to eliminate noise
 					ADC_out_str = imager.ReadADCatRST(); //JTAG readout
 					bw.write(Integer.toString(reg_int) + " " + ADC_out_str +"\n");
 					System.out.println("               Output: " + ADC_out_str);
-				}
-				
+				}				
 			}
 			bw.close();
-			/*String ADC_out_str = "";
-			for (int i = 0; i<10; i ++){
-				ADC_out_str = imager.ReadADCatRST();
-				System.out.println("ADC Output: " + ADC_out_str);
-			} */
 		} catch (IOException e) {
 			e.printStackTrace();
 		}		
+		System.out.println("Finish Calibrating ADC");
 	}
 	/*
 	 * analog test point:

@@ -18,6 +18,7 @@ public class DACCntr
 	private static int ch_length = 9;
 	private static int bits = 16;
 	public static int levels = (int) Math.pow (2.0, bits);
+	public String dac_reg[] = new String[ch_length];
 	
 	public DACCntr(double dac_values[]) { 
 		/*0  PVDD;
@@ -30,7 +31,7 @@ public class DACCntr
 		  7  vcm
 		  8  vrst */
 		System.out.println("Start writing DAC registers.");
-		String dac_reg[] = new String[ch_length];	
+		//String dac_reg[] = new String[ch_length];	
 		for (int i = 0; i < ch_length; i++) {
 			Encoder(i, dac_reg, dac_values[i]);
 		}
@@ -171,7 +172,7 @@ public class DACCntr
 		int idx = FindIdxofName(name);
 		Encoder(idx, reg, value);
 		WriteDACReg(idx, reg[idx]);
-		System.out.println("Write to " + name + "with value " + value + "(" + reg + ")");
+		System.out.println("Write to " + name + " with value " + value + "(" + reg[idx] + ")");
 	}
 	
 	/*

@@ -414,12 +414,12 @@ public class ImagerCntr extends MacraigorJtagio {
 			jdrv.writeReg(ClockDomain.tc_domain, "0414", Int2HexStr(0));
 	}
 	
-	public void SetADCcurrent (double current){
+	public void SetISFcurrent (double current){
 		int width = 3;
 		int max = (int) Math.pow(2, width);
 		int p = (int) Math.round((current-minIsfCurrent)/IsfcurrentRsl);
 		p = max - p;
-		jdrv.writeReg(ClockDomain.tc_domain, "041c", Int2HexStr(p));
+		jdrv.writeReg(ClockDomain.tc_domain, "041c", Int2HexStr(7));
 	}
 	
 	public void EnableADC (boolean p){
