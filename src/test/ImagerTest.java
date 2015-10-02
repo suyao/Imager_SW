@@ -145,7 +145,7 @@ public class ImagerTest {
 		
 		// ADC Testing
 		//DummyADCTest(0.51, yvonne, imager);
-		//ADCTest(0.49, yvonne, imager, 1); // left ADC if 0, right ADC if 1
+		ADCTest(1.27, yvonne, imager, 1); // left ADC if 0, right ADC if 1
 		//CalibrateDummyADC(10, yvonne, imager); //repeat every analog value for 100 conversions
 		//CalibrateADC(20, yvonne, imager, 0);
 		
@@ -153,7 +153,7 @@ public class ImagerTest {
 		//Pixel Readout
 		//ImagerDebugModeTest(imager);
 		//ImagerDebugModeTest(imager);
-		ImagerFrameTest(imager);
+		//ImagerFrameTest(imager);
 		if (0==1) {
 			System.out.println("Read from JTAG SC 004: " + jdrv.readReg(ClockDomain.tc_domain, "0004"));
 			System.out.println("Read from JTAG SC 020: " + jdrv.readReg(ClockDomain.tc_domain, "0020"));
@@ -426,7 +426,7 @@ public class ImagerTest {
 	}
 	
 	static void ImagerDebugModeTest(ImagerCntr imager){
-		int row = 50;
+		int row = 0;
 		int col = 50;
 		double tsmp = 96*Math.pow(10, -9); //sampling period 96ns
 		double pw_smp = 40*Math.pow(10, -9); //sampling pulse width 40ns
@@ -455,7 +455,7 @@ public class ImagerTest {
 		imager.SetIsfPW(pw_isf);
 		imager.SetIsfDelayTime(dly_isf);
 		imager.SetMuxDelayTime(dly_isf + pw_isf -tsmp);
-		imager.EnableDout(false); //disable output dout
+		imager.EnableDout(true); //disable output dout
 		imager.EnableDummyADC(false); // disable dummy adc
 		imager.EnableADCCali(false);
 		imager.EnableADC(true); // enable adc	
