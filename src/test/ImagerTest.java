@@ -32,7 +32,7 @@ public class ImagerTest {
 	private static double vrefp = 1.25;
 	private static double vrefn = 0.75;	
 	private static double vcm = 1;
-	private static double vrst = 0.6; 
+	private static double vrst = 0.4; 
 	
 	static void flashLed(MacraigorJtagio jtag, int times, int interval) {
 		assert (jtag.Initialized());
@@ -139,17 +139,38 @@ public class ImagerTest {
 		//imager.SetADCcurrent(0,13,4,7); // board 2
 		//SetADCcurrent(n1,p1,n2,p2) the smaller the number, the larger the current
 		imager.SetADCcurrent(2,13,7,7); // board 3
-		imager.CurrentTestPt(0);
+		imager.SetISFcurrent(5);
+		imager.CurrentTestPt(8);
 		
 		// ADC Testing
 		//DummyADCTest(0.51, yvonne, imager);
-		ADCTest(0.80025, yvonne, imager, 1); // left ADC if 0, right ADC if 1
+		//ADCTest(0.8, yvonne, imager, 1); // left ADC if 0, right ADC if 1
 		//CalibrateDummyADC(10, yvonne, imager); //repeat every analog value for 100 conversions
 		//CalibrateADC(20, yvonne, imager, 0);
 		
 		
 		//Pixel Readout
-		//ImagerDebugModeTest(imager);
+		ImagerDebugModeTest(imager);
+		if (0==1) {
+			System.out.println("Read from JTAG SC 004: " + jdrv.readReg(ClockDomain.tc_domain, "0004"));
+			System.out.println("Read from JTAG SC 020: " + jdrv.readReg(ClockDomain.tc_domain, "0020"));
+			System.out.println("Read from JTAG SC 028: " + jdrv.readReg(ClockDomain.tc_domain, "0028"));
+			System.out.println("Read from JTAG SC 02C: " + jdrv.readReg(ClockDomain.tc_domain, "002C"));
+			System.out.println("Read from JTAG SC 008: " + jdrv.readReg(ClockDomain.tc_domain, "0008"));
+			System.out.println("Read from JTAG SC 00C: " + jdrv.readReg(ClockDomain.tc_domain, "000C"));
+			System.out.println("Read from JTAG SC 010: " + jdrv.readReg(ClockDomain.tc_domain, "0010"));
+			System.out.println("Read from JTAG SC 030: " + jdrv.readReg(ClockDomain.tc_domain, "0030"));
+			System.out.println("Read from JTAG SC 034: " + jdrv.readReg(ClockDomain.tc_domain, "0034"));
+			System.out.println("Read from JTAG SC 038: " + jdrv.readReg(ClockDomain.tc_domain, "0038"));
+			System.out.println("Read from JTAG SC 03C: " + jdrv.readReg(ClockDomain.tc_domain, "003C"));
+			System.out.println("Read from JTAG SC 040: " + jdrv.readReg(ClockDomain.tc_domain, "0040"));
+			System.out.println("Read from JTAG SC 044: " + jdrv.readReg(ClockDomain.tc_domain, "0044"));
+			System.out.println("Read from JTAG SC 048: " + jdrv.readReg(ClockDomain.tc_domain, "0048"));
+			System.out.println("Read from JTAG SC 078: " + jdrv.readReg(ClockDomain.tc_domain, "0078"));
+			System.out.println("Read from JTAG SC 07c: " + jdrv.readReg(ClockDomain.tc_domain, "007c"));
+			System.out.println("Read from JTAG SC 014: " + jdrv.readReg(ClockDomain.tc_domain, "0014"));
+
+		}
 		//ImagerFrameTest(imager);
 		
 		jdrv.CloseController();
@@ -170,7 +191,7 @@ public class ImagerTest {
 		System.out.println("Read from JTAG TC 008: " + RO);
 		imager.ScanMode(true);
 		imager.IsDigClk(false);
-		imager.EnableDout(false);
+		imager.EnableDout(true);
 		imager.EnableClkGate(false); //false is to let the clock gate pass
 		RO = jdrv.readReg(ClockDomain.tc_domain, "0064");
 		System.out.println("Read from JTAG TC 064: " + RO);
@@ -191,15 +212,15 @@ public class ImagerTest {
 	}
 	static DACCntr InitDAC() {
 		//Set DAC Values
-		double pvdd = 3.3;
-		double ana33 = 1.75;
+		double pvdd = 2.8;
+		double ana33 = 1.5;
 		v0 = 1;
 		double ana18 = 1;
 		vrefp = 1.25;
 		vrefn = 0.75;
 		double Iin = 1;
 		vcm = 1;
-		vrst = 0.6; 
+		vrst = 0.4; 
 		double dac_values[] = {pvdd,ana33,v0, ana18, vrefp, vrefn, Iin, vcm, vrst};
 		DACCntr yvonne = new DACCntr(dac_values);
 		try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
@@ -382,18 +403,19 @@ public class ImagerTest {
 	}
 	
 	static void ImagerDebugModeTest(ImagerCntr imager){
-		int row = 0;
-		int col = 1;
+		int row = 50;
+		int col = 50;
 		double tsmp = 96*Math.pow(10, -9); //sampling period 96ns
 		double pw_smp = 40*Math.pow(10, -9); //sampling pulse width 40ns
 		double trow = 50 * tsmp ; //row time ~5us
 		double pw_rst = 4 * tsmp;
-		double dly_rst = 20 * tsmp ;
-		double pw_tx = 6 * tsmp;
+		double dly_rst = 10 * tsmp ;
+		double pw_tx = 10 * tsmp;
 		double dly_rst2tx = 20 * tsmp;
 		double dly_tx = dly_rst + dly_rst2tx;
 		double pw_isf = 17 * tsmp;
-		double dly_isf = 19 * tsmp;
+		double dly_isf = dly_rst - tsmp;
+		double integ_time = 150*trow;
 		
 		System.out.println("Test Single Pixel at Row = " + row + ", Col = " + col);
 		imager.ScanMode(false);
@@ -411,6 +433,13 @@ public class ImagerTest {
 		imager.SetIsfDelayTime(dly_isf);
 		imager.SetMuxDelayTime(dly_isf + pw_isf -tsmp);
 		imager.EnableDout(false); //disable output dout
+		imager.EnableDummyADC(false); // disable dummy adc
+		imager.EnableADCCali(false);
+		imager.EnableADC(true); // enable adc	
+		imager.DACRstCntr(1);
+		imager.SetBitlineLoad(0,2);
+		imager.SetPxIntegrationTime(integ_time);
+		imager.JtagReset();
 		
 		try {
 			File file = new File("./outputs/SinglePixel/row0col1.txt");
@@ -420,10 +449,12 @@ public class ImagerTest {
 			FileWriter fw = new FileWriter(file.getAbsoluteFile());
 			BufferedWriter bw = new BufferedWriter(fw);
 			String out;
-			for (int i =1; i<100; i++){
+			for (int i =1; i<10; i++){
 				out = imager.ReadADCatRST();
+				System.out.println("RST Read out : " + out);
 				bw.write(out);
 				out = imager.ReadADCatTX();
+				System.out.println("TX Read out: " + out);
 				bw.write(out);
 			}
 			bw.close();
