@@ -23,8 +23,8 @@ public class ImagerCntr extends MacraigorJtagio {
 	public JtagDriver jdrv;
 	private static double fclk_fast = 250 * Math.pow (10, 6); //250Mhz
 	private static double Tclk_fast = 1 / fclk_fast;
-	private static int rowNum = 320;
-	private static int colNum = 240;
+	public static int rowNum = 320;
+	public static int colNum = 240;
 	private double tsmp = 24 * Tclk_fast; //default smp period 96ns
 	private double trow = tsmp * 296; //default row period
 	private double minADCCurrent = 15 * Math.pow(10,-6);
@@ -96,7 +96,7 @@ public class ImagerCntr extends MacraigorJtagio {
 	}
 	
 	public void SetInitShiftClk (String phase){
-		int width = 4;
+		int width = 8;
 		if (phase.length()>width)
 			System.out.println("ERROR: ShiftClk Init Value EXCEEDS max width! ");
 		jdrv.writeReg(ClockDomain.tc_domain, "0018", phase);
@@ -332,9 +332,13 @@ public class ImagerCntr extends MacraigorJtagio {
 		}	
 		jdrv.writeReg(ClockDomain.tc_domain, "0074", Int2HexStr(p));
 	}
-	
+	/*
+	 *  0: disable dac rst
+	 *  1: enable dac rst
+	 *  2: dynamic dac rst (rst before TX readout, not rst before RST readout)
+	 */
 	public void DACRstCntr (int p){
-		int max = 2;
+		int max = 3;
 		if (p >= max ) {		
 			System.out.println("ERROR: Output Sel must be 0 or 1! ");
 		}	
@@ -414,14 +418,19 @@ public class ImagerCntr extends MacraigorJtagio {
 			jdrv.writeReg(ClockDomain.tc_domain, "0414", Int2HexStr(0));
 	}
 	
-	public void SetADCcurrent (double current){
+	public void SetISFcurrent (int p){
 		int width = 3;
-		int max = (int) Math.pow(2, width);
-		int p = (int) Math.round((current-minIsfCurrent)/IsfcurrentRsl);
-		p = max - p;
-		jdrv.writeReg(ClockDomain.tc_domain, "041c", Int2HexStr(p));
+		jdrv.writeReg(ClockDomain.tc_domain, "0418", Int2HexStr(p));
 	}
 	
+	public void SetDummyADCcurrent (int n1, int p1, int n2, int p2){
+		if ( n1 > 15 || p1 >15 || n2 >15 || p2>15) {
+			System.out.println("Current Control: cannot exceed 15!");
+		} else{
+		int p = n1 + (p1<<4) +(n2<<8)+(p2<<12);
+		jdrv.writeReg(ClockDomain.tc_domain, "041c", Int2HexStr(p));
+		}
+	}
 	public void EnableADC (boolean p){
 		if (p == true ) {		
 			jdrv.writeReg(ClockDomain.tc_domain, "0420", Int2HexStr(1));
