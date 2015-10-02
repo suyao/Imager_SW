@@ -119,7 +119,7 @@ public class ImagerTest {
   		   2: sampler 0 at signal mode, sampler 1 at calibration mode
 		   3: both samplers at calibration mode
 		 */
-		imager.SetSamplerMode(0);
+		imager.SetSamplerMode(3);
 		//imager.EnableSamplerTrig(true);
 		AnalogSampler(5,6,imager);
 				
@@ -136,11 +136,13 @@ public class ImagerTest {
 		 *  8 Isf
 		 */
 		imager.SetADCTiming(1,1,1);
-		imager.SetADCcurrent(0,13,4,7);
+		// SetADCcurrent( n1, p1, n2, p2) , the larger number, the smaller the current
+		//imager.SetADCcurrent(0,13,4,7);  // chip s3 on board 2
+		imager.SetADCcurrent(2,13,7,7); // chip s2 on board 3
 		imager.CurrentTestPt(2);
-		CalibrateDummyADC(10, yvonne, imager); //repeat every analog value for 100 conversions
-		CalibrateADC(10, yvonne, imager);
-		System.out.println("Current Control: "+jdrv.readReg(ClockDomain.tc_domain,  "0400"));
+		//CalibrateDummyADC(10, yvonne, imager); //repeat every analog value for 100 conversions
+		//CalibrateADC(10, yvonne, imager);
+	
 		//Pixel Readout
 		//ImagerDebugModeTest(imager);
 		
@@ -184,9 +186,9 @@ public class ImagerTest {
 	static DACCntr InitDAC() {
 		//Set DAC Values
 		double pvdd = 3.3;
-		double ana33 = 1.75;
+		double ana33 = 0.05;
 		v0 = 1;
-		double ana18 = 0.7005;
+		double ana18 = 1;
 		vrefp = 1.25;
 		vrefn = 0.75;
 		double Iin = 1;
