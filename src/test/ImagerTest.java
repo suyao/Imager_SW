@@ -139,19 +139,22 @@ public class ImagerTest {
 		// SetADCcurrent( n1, p1, n2, p2) , the larger number, the smaller the current
 		//imager.SetADCcurrent(0,13,4,7);  // chip s3 on board 2
 		imager.SetADCcurrent(2,13,7,7); // chip s2 on board 3
-		imager.SetISFcurrent(5);
+		imager.SetISFcurrent(5); //board 3
+		//imager.SetISFcurrent(5); //board 4
 		imager.CurrentTestPt(8);
 		
 		// ADC Testing
 		//DummyADCTest(0.51, yvonne, imager);
-		//ADCTest(0.8, yvonne, imager, 1); // left ADC if 0, right ADC if 1
+		//ADCTest(0.49, yvonne, imager, 1); // left ADC if 0, right ADC if 1
 		//CalibrateDummyADC(10, yvonne, imager); //repeat every analog value for 100 conversions
 		//CalibrateADC(20, yvonne, imager, 0);
 		
 		
 		//Pixel Readout
-		ImagerDebugModeTest(imager);
-		if (1==1) {
+		//ImagerDebugModeTest(imager);
+		//ImagerDebugModeTest(imager);
+		ImagerFrameTest(imager);
+		if (0==1) {
 			System.out.println("Read from JTAG SC 004: " + jdrv.readReg(ClockDomain.tc_domain, "0004"));
 			System.out.println("Read from JTAG SC 020: " + jdrv.readReg(ClockDomain.tc_domain, "0020"));
 			System.out.println("Read from JTAG SC 028: " + jdrv.readReg(ClockDomain.tc_domain, "0028"));
@@ -170,8 +173,8 @@ public class ImagerTest {
 			System.out.println("Read from JTAG SC 07c: " + jdrv.readReg(ClockDomain.tc_domain, "007c"));
 			System.out.println("Read from JTAG SC 014: " + jdrv.readReg(ClockDomain.tc_domain, "0014"));
 		}
-		ImagerFrameTest(imager);
-		if (1==1) {
+		
+		if (0==1) {
 			System.out.println("Read from JTAG SC 004: " + jdrv.readReg(ClockDomain.tc_domain, "0004"));
 			System.out.println("Read from JTAG SC 020: " + jdrv.readReg(ClockDomain.tc_domain, "0020"));
 			System.out.println("Read from JTAG SC 028: " + jdrv.readReg(ClockDomain.tc_domain, "0028"));
@@ -196,7 +199,7 @@ public class ImagerTest {
 	
 	static void InitJTAG(JtagDriver jdrv){
 		ImagerCntr imager = new ImagerCntr(jdrv);
-		jdrv.SetSpeed(8);
+		jdrv.SetSpeed(4);
 		int a =jdrv.GetSpeed();
 		System.out.println("TCK speed: " + a);
 		
@@ -204,7 +207,9 @@ public class ImagerTest {
 		System.out.println("Read from JTAG TC 004: " + RO);
 		//jdrv.reset();
 		double tsmp = 96*Math.pow(10, -9); //96ns
+		double pw_smp = 40*Math.pow(10, -9); //sampling pulse width 40ns
 		imager.SetSmpPeriod(tsmp);
+		imager.SetSmpPW(pw_smp);
 		RO = jdrv.readReg(ClockDomain.tc_domain, "0008");
 		System.out.println("Read from JTAG TC 008: " + RO);
 		imager.ScanMode(true);
@@ -433,7 +438,7 @@ public class ImagerTest {
 		double dly_tx = dly_rst + dly_rst2tx;
 		double pw_isf = 17 * tsmp;
 		double dly_isf = dly_rst - tsmp;
-		double integ_time = 150*trow;
+		double integ_time = 10*trow;
 		
 		System.out.println("Test Single Pixel at Row = " + row + ", Col = " + col);
 		imager.ScanMode(false);
@@ -454,7 +459,7 @@ public class ImagerTest {
 		imager.EnableDummyADC(false); // disable dummy adc
 		imager.EnableADCCali(false);
 		imager.EnableADC(true); // enable adc	
-		imager.DACRstCntr(1);
+		imager.DACRstCntr(1); //dac rst mode
 		imager.SetBitlineLoad(0,2);
 		imager.SetPxIntegrationTime(integ_time);
 		imager.JtagReset();
@@ -479,8 +484,7 @@ public class ImagerTest {
 			System.out.println("Test Single Pixel Finishes");
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
- 
+		} 
 	}
 	
 	static void ImagerFrameTest(ImagerCntr imager){
@@ -500,6 +504,7 @@ public class ImagerTest {
 		int left = 0;
 		int right = 1;
 		System.out.println("Full Frame Test Starts:");
+		imager.VideoRecord(true);
 		imager.ScanMode(true);
 		imager.RowCounterForce(false);
 		imager.SetSmpPeriod(tsmp);
@@ -521,8 +526,10 @@ public class ImagerTest {
 		imager.DACRstCntr(1);
 		imager.SetBitlineLoad(0,2);
 		imager.SetPxIntegrationTime(integ_time);
-		imager.JtagReset();
 		
+		//imager.JtagReset();
+		//imager.JtagReset();
+		/*
 		try {
 			File file = new File("./outputs/FullFrame/test.txt");
 			if (!file.exists()) {
@@ -540,7 +547,7 @@ public class ImagerTest {
 			System.out.println("Test Full Frame Finishes");
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
+		}*/
 		
 	}
 }

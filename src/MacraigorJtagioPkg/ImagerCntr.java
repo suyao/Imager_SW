@@ -92,7 +92,7 @@ public class ImagerCntr extends MacraigorJtagio {
 			p = max - 1;
 			System.out.println("ERROR: Pixel Integration Time EXCEEDS max range! ");
 		}	
-		jdrv.writeReg(ClockDomain.tc_domain, "0014", Int2HexStr(p));
+		jdrv.writeReg(ClockDomain.tc_domain, "0014", Int2HexStr(2));
 	}
 	
 	public void SetInitShiftClk (String phase){
