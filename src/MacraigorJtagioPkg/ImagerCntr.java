@@ -23,8 +23,8 @@ public class ImagerCntr extends MacraigorJtagio {
 	public JtagDriver jdrv;
 	private static double fclk_fast = 250 * Math.pow (10, 6); //250Mhz
 	private static double Tclk_fast = 1 / fclk_fast;
-	private static int rowNum = 320;
-	private static int colNum = 240;
+	public static int rowNum = 320;
+	public static int colNum = 240;
 	private double tsmp = 24 * Tclk_fast; //default smp period 96ns
 	private double trow = tsmp * 296; //default row period
 	private double minADCCurrent = 15 * Math.pow(10,-6);
@@ -96,7 +96,7 @@ public class ImagerCntr extends MacraigorJtagio {
 	}
 	
 	public void SetInitShiftClk (String phase){
-		int width = 4;
+		int width = 8;
 		if (phase.length()>width)
 			System.out.println("ERROR: ShiftClk Init Value EXCEEDS max width! ");
 		jdrv.writeReg(ClockDomain.tc_domain, "0018", phase);

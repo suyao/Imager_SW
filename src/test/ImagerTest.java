@@ -151,7 +151,7 @@ public class ImagerTest {
 		
 		//Pixel Readout
 		ImagerDebugModeTest(imager);
-		if (0==1) {
+		if (1==1) {
 			System.out.println("Read from JTAG SC 004: " + jdrv.readReg(ClockDomain.tc_domain, "0004"));
 			System.out.println("Read from JTAG SC 020: " + jdrv.readReg(ClockDomain.tc_domain, "0020"));
 			System.out.println("Read from JTAG SC 028: " + jdrv.readReg(ClockDomain.tc_domain, "0028"));
@@ -169,9 +169,27 @@ public class ImagerTest {
 			System.out.println("Read from JTAG SC 078: " + jdrv.readReg(ClockDomain.tc_domain, "0078"));
 			System.out.println("Read from JTAG SC 07c: " + jdrv.readReg(ClockDomain.tc_domain, "007c"));
 			System.out.println("Read from JTAG SC 014: " + jdrv.readReg(ClockDomain.tc_domain, "0014"));
-
 		}
-		//ImagerFrameTest(imager);
+		ImagerFrameTest(imager);
+		if (1==1) {
+			System.out.println("Read from JTAG SC 004: " + jdrv.readReg(ClockDomain.tc_domain, "0004"));
+			System.out.println("Read from JTAG SC 020: " + jdrv.readReg(ClockDomain.tc_domain, "0020"));
+			System.out.println("Read from JTAG SC 028: " + jdrv.readReg(ClockDomain.tc_domain, "0028"));
+			System.out.println("Read from JTAG SC 02C: " + jdrv.readReg(ClockDomain.tc_domain, "002C"));
+			System.out.println("Read from JTAG SC 008: " + jdrv.readReg(ClockDomain.tc_domain, "0008"));
+			System.out.println("Read from JTAG SC 00C: " + jdrv.readReg(ClockDomain.tc_domain, "000C"));
+			System.out.println("Read from JTAG SC 010: " + jdrv.readReg(ClockDomain.tc_domain, "0010"));
+			System.out.println("Read from JTAG SC 030: " + jdrv.readReg(ClockDomain.tc_domain, "0030"));
+			System.out.println("Read from JTAG SC 034: " + jdrv.readReg(ClockDomain.tc_domain, "0034"));
+			System.out.println("Read from JTAG SC 038: " + jdrv.readReg(ClockDomain.tc_domain, "0038"));
+			System.out.println("Read from JTAG SC 03C: " + jdrv.readReg(ClockDomain.tc_domain, "003C"));
+			System.out.println("Read from JTAG SC 040: " + jdrv.readReg(ClockDomain.tc_domain, "0040"));
+			System.out.println("Read from JTAG SC 044: " + jdrv.readReg(ClockDomain.tc_domain, "0044"));
+			System.out.println("Read from JTAG SC 048: " + jdrv.readReg(ClockDomain.tc_domain, "0048"));
+			System.out.println("Read from JTAG SC 078: " + jdrv.readReg(ClockDomain.tc_domain, "0078"));
+			System.out.println("Read from JTAG SC 07c: " + jdrv.readReg(ClockDomain.tc_domain, "007c"));
+			System.out.println("Read from JTAG SC 014: " + jdrv.readReg(ClockDomain.tc_domain, "0014"));
+		}
 		
 		jdrv.CloseController();
 	}
@@ -470,14 +488,14 @@ public class ImagerTest {
 		int col_num = 240;
 		double tsmp = 96*Math.pow(10, -9); //sampling period 96ns
 		double pw_smp = 40*Math.pow(10, -9); //sampling pulse width 40ns
-		double pw_isf = 9 * tsmp;
-		double dly_isf = 19 * tsmp;
-		double trow = (col_num+pw_isf*2+6+16*2) * tsmp ; //row time ~28us
-		double pw_rst = 4 * tsmp;
-		double dly_rst = 20 * tsmp ;
-		double pw_tx = 6 * tsmp;
-		double dly_rst2tx = 20 * tsmp;
-		double dly_tx = dly_rst + dly_rst2tx;
+		double pw_isf = 10 * tsmp;
+		double dly_isf = 16 * tsmp; // this value has to be larger than dly_rst + pw_rst
+		double trow = (col_num+6+16*2) * tsmp +pw_isf*2 ; //row time ~28us
+		double pw_rst = 10 * tsmp;
+		double dly_rst = 3 * tsmp ;
+		double pw_tx = 10 * tsmp;
+		double dly_tx = dly_rst + pw_isf + (col_num / 2 + 16) *tsmp;
+		double integ_time = 150*trow;
 
 		int left = 0;
 		int right = 1;
@@ -496,6 +514,14 @@ public class ImagerTest {
 		imager.SetMuxDelayTime(dly_isf + pw_isf -tsmp);
 		imager.EnableDout(true);
 		imager.OutputSel(left);
+		imager.SetInitShiftClk("00001100");
+		imager.EnableDummyADC(false); // disable dummy adc
+		imager.EnableADCCali(false);
+		imager.EnableADC(true); // enable adc	
+		imager.DACRstCntr(1);
+		imager.SetBitlineLoad(0,2);
+		imager.SetPxIntegrationTime(integ_time);
+		imager.JtagReset();
 		
 		try {
 			File file = new File("./outputs/FullFrame/test.txt");
