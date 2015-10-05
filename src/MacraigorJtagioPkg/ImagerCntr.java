@@ -88,7 +88,7 @@ public class ImagerCntr extends MacraigorJtagio {
 		}
 		trow = p * tsmp;
 		jdrv.writeReg(ClockDomain.tc_domain, "0010", Int2HexStr(p));
-		System.out.println("Row time is " + p + "s");
+		System.out.println("Row time is " + period + "s");
 	}
 	
 	public void SetPxIntegrationTime (double time){
@@ -100,7 +100,7 @@ public class ImagerCntr extends MacraigorJtagio {
 			System.out.println("ERROR: Pixel Integration Time EXCEEDS max range! ");
 		}	
 		jdrv.writeReg(ClockDomain.tc_domain, "0014", Int2HexStr(p));
-		System.out.println("Light integration time is " + p + "s");
+		System.out.println("Light integration time is " + time + "s");
 	}
 	
 	public void SetInitShiftClk (String phase){

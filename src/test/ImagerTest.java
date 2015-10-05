@@ -144,7 +144,7 @@ public class ImagerTest {
 		
 		// ADC Testing
 		//DummyADCTest(0.51, yvonne, imager);
-		ADCTest(1.27, yvonne, imager, 1); // left ADC if 0, right ADC if 1
+		//ADCTest(0.8, yvonne, imager, 1); // left ADC if 0, right ADC if 1
 		//CalibrateDummyADC(10, yvonne, imager); //repeat every analog value for 100 conversions
 		//CalibrateADC(20, yvonne, imager, 0);
 		
@@ -152,7 +152,7 @@ public class ImagerTest {
 		//Pixel Readout
 		//ImagerDebugModeTest(imager);
 		//ImagerDebugModeTest(imager);
-		//ImagerFrameTest(imager);
+		ImagerFrameTest(imager);
 		if (0==1) {
 			System.out.println("Read from JTAG SC 004: " + jdrv.readReg(ClockDomain.tc_domain, "0004"));
 			System.out.println("Read from JTAG SC 020: " + jdrv.readReg(ClockDomain.tc_domain, "0020"));
