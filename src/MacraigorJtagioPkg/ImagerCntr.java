@@ -44,9 +44,9 @@ public class ImagerCntr extends MacraigorJtagio {
 	}
 	public void JtagReset(){
 		jdrv.writeReg(ClockDomain.tc_domain, "0000", "00000001");
-		try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
+		//try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
 		jdrv.writeReg(ClockDomain.tc_domain, "0000", "00000000");
-		try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
+		//try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
 	}
 	public void ScanMode (boolean scan){
 		if (scan ==true){
@@ -103,11 +103,9 @@ public class ImagerCntr extends MacraigorJtagio {
 		System.out.println("Light integration time is " + time + "s");
 	}
 	
-	public void SetInitShiftClk (String phase){
+	public void SetInitShiftClk (int p){
 		int width = 8;
-		if (phase.length()>width)
-			System.out.println("ERROR: ShiftClk Init Value EXCEEDS max width! ");
-		jdrv.writeReg(ClockDomain.tc_domain, "0018", phase);
+		jdrv.writeReg(ClockDomain.tc_domain, "0018", Int2HexStr(p));
 	}
 	
 	public void VideoRecord (boolean video){

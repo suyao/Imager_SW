@@ -59,7 +59,7 @@ public class ImagerTest {
 		vrefn = 0.75;
 		double Iin = 1;
 		vcm = 1;
-		vrst = 0.4; 
+		vrst = 0.6; 
 		double dac_values[] = {pvdd,ana33,v0, ana18, vrefp, vrefn, Iin, vcm, vrst};
 		DACCntr yvonne = new DACCntr(dac_values);
 		try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
@@ -136,11 +136,9 @@ public class ImagerTest {
 		 */
 		imager.SetADCTiming(1,1,1);
 		// SetADCcurrent( n1, p1, n2, p2) , the larger number, the smaller the current
-		//imager.SetADCcurrent(0,13,4,7);  // chip s3 on board 2
-		imager.SetADCcurrent(2,13,7,7); // chip s2 on board 3
-		imager.SetISFcurrent(5); //board 3
-		//imager.SetISFcurrent(5); //board 4
-		imager.CurrentTestPt(8);
+		//imager.SetADCcurrent(0,13,4,7); imager.SetISFcurrent(4); // chip s3 on board 2
+		imager.SetADCcurrent(2,13,7,7); imager.SetISFcurrent(5);// chip s2 on board 3
+		imager.CurrentTestPt(2);
 		
 		// ADC Testing
 		//DummyADCTest(0.51, yvonne, imager);
@@ -151,30 +149,20 @@ public class ImagerTest {
 		
 		//Pixel Readout
 		//ImagerDebugModeTest(imager);
-		//ImagerDebugModeTest(imager);
+		
 		ImagerFrameTest(imager);
-		if (0==1) {
-			System.out.println("Read from JTAG SC 004: " + jdrv.readReg(ClockDomain.tc_domain, "0004"));
-			System.out.println("Read from JTAG SC 020: " + jdrv.readReg(ClockDomain.tc_domain, "0020"));
-			System.out.println("Read from JTAG SC 028: " + jdrv.readReg(ClockDomain.tc_domain, "0028"));
-			System.out.println("Read from JTAG SC 02C: " + jdrv.readReg(ClockDomain.tc_domain, "002C"));
-			System.out.println("Read from JTAG SC 008: " + jdrv.readReg(ClockDomain.tc_domain, "0008"));
-			System.out.println("Read from JTAG SC 00C: " + jdrv.readReg(ClockDomain.tc_domain, "000C"));
-			System.out.println("Read from JTAG SC 010: " + jdrv.readReg(ClockDomain.tc_domain, "0010"));
-			System.out.println("Read from JTAG SC 030: " + jdrv.readReg(ClockDomain.tc_domain, "0030"));
-			System.out.println("Read from JTAG SC 034: " + jdrv.readReg(ClockDomain.tc_domain, "0034"));
-			System.out.println("Read from JTAG SC 038: " + jdrv.readReg(ClockDomain.tc_domain, "0038"));
-			System.out.println("Read from JTAG SC 03C: " + jdrv.readReg(ClockDomain.tc_domain, "003C"));
-			System.out.println("Read from JTAG SC 040: " + jdrv.readReg(ClockDomain.tc_domain, "0040"));
-			System.out.println("Read from JTAG SC 044: " + jdrv.readReg(ClockDomain.tc_domain, "0044"));
-			System.out.println("Read from JTAG SC 048: " + jdrv.readReg(ClockDomain.tc_domain, "0048"));
-			System.out.println("Read from JTAG SC 078: " + jdrv.readReg(ClockDomain.tc_domain, "0078"));
-			System.out.println("Read from JTAG SC 07c: " + jdrv.readReg(ClockDomain.tc_domain, "007c"));
-			System.out.println("Read from JTAG SC 014: " + jdrv.readReg(ClockDomain.tc_domain, "0014"));
+		System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
+		for (int i = 0; i< 1000000; i++){
+			try {Thread.sleep(4);} catch (InterruptedException e) {e.printStackTrace();}
+			imager.JtagReset();
+			System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
 		}
 		
 		if (0==1) {
+			System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
 			System.out.println("Read from JTAG SC 004: " + jdrv.readReg(ClockDomain.tc_domain, "0004"));
+			System.out.println("Read from JTAG SC 018: " + jdrv.readReg(ClockDomain.tc_domain, "0018"));
+			
 			System.out.println("Read from JTAG SC 020: " + jdrv.readReg(ClockDomain.tc_domain, "0020"));
 			System.out.println("Read from JTAG SC 028: " + jdrv.readReg(ClockDomain.tc_domain, "0028"));
 			System.out.println("Read from JTAG SC 02C: " + jdrv.readReg(ClockDomain.tc_domain, "002C"));
@@ -373,18 +361,23 @@ public class ImagerTest {
 	}
 	
 	static void ImagerDebugModeTest(ImagerCntr imager){
-		int row = 0;
-		int col = 50;
+		int row = 1;
+		int col = 119;
+		int col_num = 240;
 		double tsmp = 96*Math.pow(10, -9); //sampling period 96ns
 		double pw_smp = 40*Math.pow(10, -9); //sampling pulse width 40ns
-		double trow = 50 * tsmp ; //row time ~5us
-		double pw_rst = 4 * tsmp;
-		double dly_rst = 10 * tsmp ;
+		double pw_isf = 9 * tsmp;
+		//double trow = 50 * tsmp ; //row time ~5us
+		double dly_isf = 16 * tsmp; // this value has to be larger than dly_rst + pw_rst
+		double trow = (col_num+6+16*2 ) * tsmp +pw_isf*2 ; //row time ~28us
+		double pw_rst = 10 * tsmp;
+		double dly_rst = 3 * tsmp ;
 		double pw_tx = 10 * tsmp;
 		double dly_rst2tx = 20 * tsmp;
-		double dly_tx = dly_rst + dly_rst2tx;
-		double pw_isf = 17 * tsmp;
-		double dly_isf = dly_rst - tsmp;
+		double dly_tx = dly_rst + pw_isf + (col_num / 2 + 16) *tsmp;
+		//double dly_tx = dly_rst + dly_rst2tx;
+		
+		//double dly_isf = dly_rst - tsmp;
 		double integ_time = 10*trow;
 		
 		System.out.println("Test Single Pixel at Row = " + row + ", Col = " + col);
@@ -409,6 +402,7 @@ public class ImagerTest {
 		imager.DACRstCntr(1); //dac rst mode
 		imager.SetBitlineLoad(0,2);
 		imager.SetPxIntegrationTime(integ_time);
+		imager.OutputSel(0);
 		imager.JtagReset();
 		
 		try {
@@ -435,24 +429,26 @@ public class ImagerTest {
 	}
 	
 	static void ImagerFrameTest(ImagerCntr imager){
+		
 		int row_num = 320;
 		int col_num = 240;
 		double tsmp = 96*Math.pow(10, -9); //sampling period 96ns
 		double pw_smp = 40*Math.pow(10, -9); //sampling pulse width 40ns
-		double pw_isf = 10 * tsmp;
+		double pw_isf = 9* tsmp;
 		double dly_isf = 16 * tsmp; // this value has to be larger than dly_rst + pw_rst
-		double trow = (col_num+6+16*2) * tsmp +pw_isf*2 ; //row time ~28us
+		double trow = (col_num+6+16*2 ) * tsmp +pw_isf*2 ; //row time ~28us
 		double pw_rst = 10 * tsmp;
 		double dly_rst = 3 * tsmp ;
 		double pw_tx = 10 * tsmp;
 		double dly_tx = dly_rst + pw_isf + (col_num / 2 + 16) *tsmp;
-		double integ_time = 150*trow;
+		double integ_time = 10*trow;
 
 		int left = 0;
 		int right = 1;
 		System.out.println("Full Frame Test Starts:");
-		imager.VideoRecord(true);
+		//imager.VideoRecord(true);
 		imager.ScanMode(true);
+
 		imager.RowCounterForce(false);
 		imager.SetSmpPeriod(tsmp);
 		imager.SetSmpPW(pw_smp);
@@ -466,35 +462,16 @@ public class ImagerTest {
 		imager.SetMuxDelayTime(dly_isf + pw_isf -tsmp);
 		imager.EnableDout(true);
 		imager.OutputSel(left);
-		imager.SetInitShiftClk("00001100");
+		imager.SetInitShiftClk(9);
 		imager.EnableDummyADC(false); // disable dummy adc
 		imager.EnableADCCali(false);
 		imager.EnableADC(true); // enable adc	
 		imager.DACRstCntr(1);
 		imager.SetBitlineLoad(0,2);
 		imager.SetPxIntegrationTime(integ_time);
-		
+
 		imager.JtagReset();
-		//imager.JtagReset();
-		/*
-		try {
-			File file = new File("./outputs/FullFrame/test.txt");
-			if (!file.exists()) {
-				file.createNewFile();
-			}
-			FileWriter fw = new FileWriter(file.getAbsoluteFile());
-			BufferedWriter bw = new BufferedWriter(fw);
-			for (int i = 0; i<row_num; i++){
-				int time = (int) (trow * Math.pow(10, 6));
-				try {Thread.sleep(time);} catch (InterruptedException e) {e.printStackTrace();}
-				if ( i%10 == 0 )
-					System.out.println("Scanning Row : " + i);
-			}
-			bw.close();
-			System.out.println("Test Full Frame Finishes");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}*/
 		
+			
 	}
 }
