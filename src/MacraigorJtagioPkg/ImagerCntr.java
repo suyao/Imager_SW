@@ -27,10 +27,7 @@ public class ImagerCntr extends MacraigorJtagio {
 	public static int colNum = 240;
 	private double tsmp = 24 * Tclk_fast; //default smp period 96ns
 	private double trow = tsmp * 296; //default row period
-	private double minADCCurrent = 15 * Math.pow(10,-6);
-	private double ADCcurrentRsl = 3 * Math.pow(10,-6);
-	private double minIsfCurrent = 1 * Math.pow(10,-6);
-	private double IsfcurrentRsl = 1 * Math.pow(10,-6);
+
 	/**
 	 * Default constructor
 	 */
@@ -38,9 +35,18 @@ public class ImagerCntr extends MacraigorJtagio {
 		super();	
 		this.jdrv = jdrv;
 	}
+	
+	public void setFCLK(int freq) {
+		fclk_fast = freq ;
+		System.out.println("Input clk frequency is " + freq / 1000000 + "MHz.");
+		Tclk_fast = 1 / fclk_fast;
+		
+	}
 	public void JtagReset(){
 		jdrv.writeReg(ClockDomain.tc_domain, "0000", "00000001");
+		try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
 		jdrv.writeReg(ClockDomain.tc_domain, "0000", "00000000");
+		try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
 	}
 	public void ScanMode (boolean scan){
 		if (scan ==true){
@@ -82,6 +88,7 @@ public class ImagerCntr extends MacraigorJtagio {
 		}
 		trow = p * tsmp;
 		jdrv.writeReg(ClockDomain.tc_domain, "0010", Int2HexStr(p));
+		System.out.println("Row time is " + p + "s");
 	}
 	
 	public void SetPxIntegrationTime (double time){
@@ -92,7 +99,8 @@ public class ImagerCntr extends MacraigorJtagio {
 			p = max - 1;
 			System.out.println("ERROR: Pixel Integration Time EXCEEDS max range! ");
 		}	
-		jdrv.writeReg(ClockDomain.tc_domain, "0014", Int2HexStr(2));
+		jdrv.writeReg(ClockDomain.tc_domain, "0014", Int2HexStr(p));
+		System.out.println("Light integration time is " + p + "s");
 	}
 	
 	public void SetInitShiftClk (String phase){

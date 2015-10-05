@@ -49,34 +49,33 @@ public class ImagerTest {
 	}
 
 	
-	/**
-	 * This task writes a random SENSOR_SEL value into each pixel in the array,
-	 * and then checks the array consistency by reading out all the regs inside
-	 * the array.
-	 * 
-	 * @param jdrv
-	 *            JTAG driver
-
-	/**
-	 * @param args
-	 */
+	static DACCntr InitDAC() {
+		//Set DAC Values
+		double pvdd = 2.8;
+		double ana33 = 1.5;
+		v0 = 1;
+		double ana18 = 1;
+		vrefp = 1.25;
+		vrefn = 0.75;
+		double Iin = 1;
+		vcm = 1;
+		vrst = 0.4; 
+		double dac_values[] = {pvdd,ana33,v0, ana18, vrefp, vrefn, Iin, vcm, vrst};
+		DACCntr yvonne = new DACCntr(dac_values);
+		try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
+		return yvonne;
+	}
+	
 	public static void main(String[] args) {
 		JtagDriver jdrv = new JtagDriver(16, 8, 32, 12);
 		ImagerCntr imager = new ImagerCntr(jdrv);
-		// Initialize jtag
+		// Initialize jtag, Reset JTAG, Read IDCODE
 		MacraigorJtagio jtag = new MacraigorJtagio();
 		jdrv.InitializeController("USB", "USB0", 1);
-		//flashLed(jtag, 3, 500);
-		// Reset JTAG
 		jdrv.reset();
-		// Read IDCODE
 		System.out.println("IDCODE: " + jdrv.readID());
-
-		// System reset
-		imager.JtagReset();
-		
-		//Set DAC Values
-		DACCntr yvonne = InitDAC();
+		imager.JtagReset();	// System reset
+		DACCntr yvonne = InitDAC(); //Set DAC Values
 		InitJTAG(jdrv);
 		
 		// Analog Sampler Test
@@ -202,22 +201,16 @@ public class ImagerTest {
 		jdrv.SetSpeed(4);
 		int a =jdrv.GetSpeed();
 		System.out.println("TCK speed: " + a);
-		
-		String RO = jdrv.readReg(ClockDomain.tc_domain, "0004");
-		System.out.println("Read from JTAG TC 004: " + RO);
+		String RO;
 		//jdrv.reset();
 		double tsmp = 96*Math.pow(10, -9); //96ns
 		double pw_smp = 40*Math.pow(10, -9); //sampling pulse width 40ns
 		imager.SetSmpPeriod(tsmp);
 		imager.SetSmpPW(pw_smp);
-		RO = jdrv.readReg(ClockDomain.tc_domain, "0008");
-		System.out.println("Read from JTAG TC 008: " + RO);
 		imager.ScanMode(true);
 		imager.IsDigClk(false);
 		imager.EnableDout(true);
 		imager.EnableClkGate(false); //false is to let the clock gate pass
-		RO = jdrv.readReg(ClockDomain.tc_domain, "0064");
-		System.out.println("Read from JTAG TC 064: " + RO);
 		
 		jdrv.writeReg(ClockDomain.sc_domain, "00", "0234");
 		for (int i= 0 ; i<=1; i++){
@@ -229,26 +222,9 @@ public class ImagerTest {
 		for (int i = 0; i<=1 ;i++){
 		RO = jdrv.readReg(ClockDomain.sc_domain, "02");
 		System.out.println("Read from JTAG SC 02: " + RO); 
-		}
-
-		
+		}		
 	}
-	static DACCntr InitDAC() {
-		//Set DAC Values
-		double pvdd = 2.8;
-		double ana33 = 1.5;
-		v0 = 1;
-		double ana18 = 1;
-		vrefp = 1.25;
-		vrefn = 0.75;
-		double Iin = 1;
-		vcm = 1;
-		vrst = 0.4; 
-		double dac_values[] = {pvdd,ana33,v0, ana18, vrefp, vrefn, Iin, vcm, vrst};
-		DACCntr yvonne = new DACCntr(dac_values);
-		try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
-		return yvonne;
-	}
+	
 	
 	static void DummyADCTest(double value, DACCntr yvonne, ImagerCntr imager){		
 
@@ -363,36 +339,7 @@ public class ImagerTest {
 		}		
 		System.out.println("Finish Calibrating ADC");
 	}
-	/*
-	 * analog test point:
-	 * 0	cmp_b  ------------
-	 * 1	clk_sar
-	 * 2	clk_smp_sync
-	 * 3	conv_per_b --------------
-	 * 4	dac_rst
-	 * 5	clk_pre_amp
-	 * 6	clk_latch       ---------------------
-	 * 7	pre_amp1_outp ---------------------------------
-	 * 8	pre_amp1_outn
-	 * 9	pre_amp2_outp -------------------------------
-	 * 10	pre_amp2_outn
-	 * 11	mux[239] ----------------------------
-	 * 12	bl_rst
-	 * 13	bitline[0]
-	 * 14	bl_to_adc[0] ----------------------------------
-	 * 15	bl_to_adc[1] --------------------------------
-	 * 16    ana_sampler_trig_sig-----------
-	 * 17    ana_sampler_trig_sig
-	 * 18   dout_trigger_tp -------------
-	 * 19  AVDD18 ------------------
-	 * 20  AVDD18 ------------------
-	 * 21  VDD -------------------
-	 * 22  AVSS
-	 * 23  AVSS
-	 * 24  VSS
-	 * 25  --------------------------
-	 * 26
-	 */
+
 
 	static void AnalogSampler(int idx1, int idx2,  ImagerCntr imager){	
 		System.out.println("Start Analog Sampler Test on " + idx1 + " and " + idx2);
@@ -527,7 +474,7 @@ public class ImagerTest {
 		imager.SetBitlineLoad(0,2);
 		imager.SetPxIntegrationTime(integ_time);
 		
-		//imager.JtagReset();
+		imager.JtagReset();
 		//imager.JtagReset();
 		/*
 		try {
