@@ -52,7 +52,7 @@ public class ImagerTest {
 	static DACCntr InitDAC() {
 		//Set DAC Values
 		double pvdd = 2.8;
-		double ana33 = 1.5;
+		double ana33 = 1.4;
 		v0 = 1;
 		double ana18 = 1;
 		vrefp = 1.25;
@@ -144,21 +144,34 @@ public class ImagerTest {
 		//DummyADCTest(0.51, yvonne, imager);
 		//ADCTest(0.8, yvonne, imager, 1); // left ADC if 0, right ADC if 1
 		//CalibrateDummyADC(10, yvonne, imager); //repeat every analog value for 100 conversions
-		CalibrateADC(20, yvonne, imager, 0);
+		//CalibrateADC(20, yvonne, imager, 0);
 		
 		
 		//Pixel Readout
-		//ImagerDebugModeTest(imager);
-		/*
+		ImagerDebugModeTest(imager);
+		
 		ImagerFrameTest(imager);
 		System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
 		for (int i = 0; i< 1000000; i++){
 			try {Thread.sleep(4);} catch (InterruptedException e) {e.printStackTrace();}
 			imager.JtagReset();
-			System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
+			jdrv.readReg(ClockDomain.tc_domain, "0000");
 		}
 		
-		*/
+		int row = 2;
+		int col = 9;
+		
+		imager.ScanMode(false);
+		imager.RowCounterForce(true);
+		imager.SetRowCounter(row);
+		imager.SetColCounter(col);
+		imager.JtagReset();
+		String out = imager.ReadADCatRST();
+		System.out.println("RST Read out : " + out);
+		out = imager.ReadADCatTX();
+		System.out.println("TX Read out: " + out);
+
+		
 		if (0==1) {
 			System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
 			System.out.println("Read from JTAG SC 004: " + jdrv.readReg(ClockDomain.tc_domain, "0004"));
@@ -360,22 +373,18 @@ public class ImagerTest {
 	
 	static void ImagerDebugModeTest(ImagerCntr imager){
 		int row = 1;
-		int col = 119;
+		int col = 70;
 		int col_num = 240;
 		double tsmp = 96*Math.pow(10, -9); //sampling period 96ns
 		double pw_smp = 40*Math.pow(10, -9); //sampling pulse width 40ns
 		double pw_isf = 9 * tsmp;
-		//double trow = 50 * tsmp ; //row time ~5us
 		double dly_isf = 16 * tsmp; // this value has to be larger than dly_rst + pw_rst
-		double trow = (col_num+6+16*2 ) * tsmp +pw_isf*2 ; //row time ~28us
+		// in debug mode light integration time is single row time
+		double trow =(col_num+6+16 ) * tsmp +pw_isf*2 ; //row time ~28us
 		double pw_rst = 10 * tsmp;
 		double dly_rst = 3 * tsmp ;
 		double pw_tx = 10 * tsmp;
-		double dly_rst2tx = 20 * tsmp;
 		double dly_tx = dly_rst + pw_isf + (col_num / 2 + 16) *tsmp;
-		//double dly_tx = dly_rst + dly_rst2tx;
-		
-		//double dly_isf = dly_rst - tsmp;
 		double integ_time = 10*trow;
 		
 		System.out.println("Test Single Pixel at Row = " + row + ", Col = " + col);
@@ -385,7 +394,7 @@ public class ImagerTest {
 		imager.SetColCounter(col);
 		imager.SetSmpPeriod(tsmp);
 		imager.SetSmpPW(pw_smp);
-		imager.SetRowPeriod(trow);
+		imager.SetRowPeriod(integ_time);
 		imager.SetRstPW(pw_rst);
 		imager.SetRstDelayTime(dly_rst);
 		imager.SetTxPW(pw_tx);
@@ -399,7 +408,7 @@ public class ImagerTest {
 		imager.EnableADC(true); // enable adc	
 		imager.DACRstCntr(1); //dac rst mode
 		imager.SetBitlineLoad(0,2);
-		imager.SetPxIntegrationTime(integ_time);
+		//imager.SetPxIntegrationTime(integ_time);
 		imager.OutputSel(0);
 		imager.JtagReset();
 		
@@ -439,7 +448,7 @@ public class ImagerTest {
 		double dly_rst = 3 * tsmp ;
 		double pw_tx = 10 * tsmp;
 		double dly_tx = dly_rst + pw_isf + (col_num / 2 + 16) *tsmp;
-		double integ_time = 10*trow;
+		double integ_time = 2*trow;
 
 		int left = 0;
 		int right = 1;
@@ -448,6 +457,7 @@ public class ImagerTest {
 		imager.ScanMode(true);
 
 		imager.RowCounterForce(false);
+		imager.SetRowCounter(2);
 		imager.SetSmpPeriod(tsmp);
 		imager.SetSmpPW(pw_smp);
 		imager.SetRowPeriod(trow);
@@ -466,7 +476,7 @@ public class ImagerTest {
 		imager.EnableADC(true); // enable adc	
 		imager.DACRstCntr(1);
 		imager.SetBitlineLoad(0,2);
-		imager.SetPxIntegrationTime(integ_time);
+		imager.SetPxIntegrationTime(320*trow- integ_time);
 
 		imager.JtagReset();
 		

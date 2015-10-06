@@ -100,7 +100,7 @@ public class ImagerCntr extends MacraigorJtagio {
 			System.out.println("ERROR: Pixel Integration Time EXCEEDS max range! ");
 		}	
 		jdrv.writeReg(ClockDomain.tc_domain, "0014", Int2HexStr(p));
-		System.out.println("Light integration time is " + time + "s");
+		System.out.println("Light integration time is " + time + "s, p = " + p);
 	}
 	
 	public void SetInitShiftClk (int p){
