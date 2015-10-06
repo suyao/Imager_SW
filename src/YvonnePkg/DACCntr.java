@@ -111,8 +111,6 @@ public class DACCntr
         }
 		double rsl = (max-min)/levels*2;	
 		double value1 = value;
-		//if (value1 >=max) value1 = max-rsl;
-		//if (value1 <=min) value1 = min;
 		int reg_int = (int) Math.round((value1-min)/rsl) + levels/4;
 		reg[idx] = Integer.toHexString(reg_int);
 		reg[idx] = "0000".substring(reg[idx].length()) + reg[idx];	
@@ -182,7 +180,7 @@ public class DACCntr
 	 */
 	public void WriteDACReg(int idx, String reg){
 		try {
-			File file = new File("./src/YvonneCmds/DAC_single_reg.txt");
+			File file = new File("src/YvonneCmds/DAC_single_reg.txt");
 			if (!file.exists()) {
 				file.createNewFile();
 			}

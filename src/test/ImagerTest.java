@@ -118,9 +118,9 @@ public class ImagerTest {
   		   2: sampler 0 at signal mode, sampler 1 at calibration mode
 		   3: both samplers at calibration mode
 		 */
-		imager.SetSamplerMode(3);
+		imager.SetSamplerMode(-1);
 		//imager.EnableSamplerTrig(true);
-		AnalogSampler(5,6,imager);
+		//AnalogSampler(5,6,imager);
 				
 		//ADC calibration
 		/*  -1 don't measure current
@@ -144,12 +144,12 @@ public class ImagerTest {
 		//DummyADCTest(0.51, yvonne, imager);
 		//ADCTest(0.8, yvonne, imager, 1); // left ADC if 0, right ADC if 1
 		//CalibrateDummyADC(10, yvonne, imager); //repeat every analog value for 100 conversions
-		//CalibrateADC(20, yvonne, imager, 0);
+		CalibrateADC(20, yvonne, imager, 0);
 		
 		
 		//Pixel Readout
 		//ImagerDebugModeTest(imager);
-		
+		/*
 		ImagerFrameTest(imager);
 		System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
 		for (int i = 0; i< 1000000; i++){
@@ -158,6 +158,7 @@ public class ImagerTest {
 			System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
 		}
 		
+		*/
 		if (0==1) {
 			System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
 			System.out.println("Read from JTAG SC 004: " + jdrv.readReg(ClockDomain.tc_domain, "0004"));
@@ -190,14 +191,9 @@ public class ImagerTest {
 		int a =jdrv.GetSpeed();
 		System.out.println("TCK speed: " + a);
 		String RO;
-		//jdrv.reset();
-		double tsmp = 96*Math.pow(10, -9); //96ns
-		double pw_smp = 40*Math.pow(10, -9); //sampling pulse width 40ns
-		imager.SetSmpPeriod(tsmp);
-		imager.SetSmpPW(pw_smp);
-		imager.ScanMode(true);
+		//imager.ScanMode(true);
 		imager.IsDigClk(false);
-		imager.EnableDout(true);
+		imager.EnableDout(false);
 		imager.EnableClkGate(false); //false is to let the clock gate pass
 		
 		jdrv.writeReg(ClockDomain.sc_domain, "00", "0234");
@@ -234,6 +230,7 @@ public class ImagerTest {
 			imager.SetColCounter(1); // if col<120, output left adc, otherwise, right adc
 		else
 			imager.SetColCounter(136);
+		imager.ScanMode(true);
 		imager.EnableDummyADC(false); // disable dummy adc
 		imager.EnableADCCali(true);
 		imager.EnableADC(true); // enable adc	
@@ -299,6 +296,7 @@ public class ImagerTest {
 				imager.SetColCounter(1); // if col<120, output left adc, otherwise, right adc
 			else
 				imager.SetColCounter(136);
+			imager.ScanMode(true);
 			imager.EnableDummyADC(false); // disable dummy adc
 			imager.EnableADCCali(true);
 			imager.EnableADC(true); // enable adc
@@ -306,7 +304,7 @@ public class ImagerTest {
 			double rsl_ana18 = (1.527-0.50782)/DACCntr.levels*2;
 			int reg_min = (int) Math.round((v0-(vrefp-vrefn)-0.50782)/rsl_ana18) + DACCntr.levels/4 - 32*20;
 			int reg_max = (int) Math.round((v0+(vrefp-vrefn)-0.50782)/rsl_ana18) + DACCntr.levels/4 + 32*20;
-			for (int reg_int = reg_min; reg_int < reg_max; reg_int= reg_int + 32){
+			for (int reg_int = reg_min; reg_int < reg_max; reg_int= reg_int + 32/4){
 				String reg_str = Integer.toHexString(reg_int);
 				reg_str = "0000".substring(reg_str.length()) + reg_str; 
 				yvonne.WriteDACReg(idx, reg_str); //Write to Yvonne
