@@ -377,14 +377,14 @@ public class ImagerTest {
 		int col_num = 240;
 		double tsmp = 96*Math.pow(10, -9); //sampling period 96ns
 		double pw_smp = 40*Math.pow(10, -9); //sampling pulse width 40ns
+		double pw_tx = (10+0) * tsmp;
 		double pw_isf = 9 * tsmp;
-		double dly_isf = 16 * tsmp; // this value has to be larger than dly_rst + pw_rst
+		double dly_isf = 16 * tsmp + pw_tx -10*tsmp; // this value has to be larger than dly_rst + pw_rst
 		// in debug mode light integration time is single row time
-		double trow =(col_num+6+16 ) * tsmp +pw_isf*2 ; //row time ~28us
+		double trow =(col_num+6+16*2) * tsmp +pw_isf*2 + pw_tx - 10*tsmp ; //row time ~28us
 		double pw_rst = 10 * tsmp;
-		double dly_rst = 3 * tsmp ;
-		double pw_tx = 10 * tsmp;
-		double dly_tx = dly_rst + pw_isf + (col_num / 2 + 16) *tsmp;
+		double dly_rst = 3 * tsmp ;	
+		double dly_tx = dly_rst + pw_isf + (col_num / 2 + 16 + 20) *tsmp + pw_tx - 10*tsmp;
 		double integ_time = 10*trow;
 		
 		System.out.println("Test Single Pixel at Row = " + row + ", Col = " + col);
@@ -441,13 +441,14 @@ public class ImagerTest {
 		int col_num = 240;
 		double tsmp = 96*Math.pow(10, -9); //sampling period 96ns
 		double pw_smp = 40*Math.pow(10, -9); //sampling pulse width 40ns
+		double pw_tx = (10 + 0) * tsmp;
 		double pw_isf = 9* tsmp;
-		double dly_isf = 16 * tsmp; // this value has to be larger than dly_rst + pw_rst
-		double trow = (col_num+6+16*2 ) * tsmp +pw_isf*2 ; //row time ~28us
+		double dly_isf = 16 * tsmp + pw_tx - 10*tsmp; // this value has to be larger than dly_rst + pw_rst
+		double trow = (col_num+6+16*2 ) * tsmp +pw_isf*2 + pw_tx - 10*tsmp ; //row time ~28us
 		double pw_rst = 10 * tsmp;
 		double dly_rst = 3 * tsmp ;
-		double pw_tx = 10 * tsmp;
-		double dly_tx = dly_rst + pw_isf + (col_num / 2 + 16) *tsmp;
+		
+		double dly_tx = dly_rst + pw_isf + (col_num / 2 + 16) *tsmp + pw_tx - 10*tsmp;
 		double integ_time = 2*trow;
 
 		int left = 0;
