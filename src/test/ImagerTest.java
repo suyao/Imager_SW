@@ -384,7 +384,7 @@ public class ImagerTest {
 		double trow =(col_num+6+16*2) * tsmp +pw_isf*2 + pw_tx - 10*tsmp ; //row time ~28us
 		double pw_rst = 10 * tsmp;
 		double dly_rst = 3 * tsmp ;	
-		double dly_tx = dly_rst + pw_isf + (col_num / 2 + 16 + 20) *tsmp + pw_tx - 10*tsmp;
+		double dly_tx = dly_rst + pw_isf + (col_num / 2 + 16) *tsmp + pw_tx - 10*tsmp;
 		double integ_time = 10*trow;
 		
 		System.out.println("Test Single Pixel at Row = " + row + ", Col = " + col);
