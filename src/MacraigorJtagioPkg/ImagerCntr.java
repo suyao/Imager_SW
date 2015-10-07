@@ -128,7 +128,7 @@ public class ImagerCntr extends MacraigorJtagio {
 			p = max - 1;
 			System.out.println("ERROR: Max Row Counter EXCEEDS max range! ");
 		}	
-		jdrv.writeReg(ClockDomain.tc_domain, "024", Int2HexStr(p));
+		jdrv.writeReg(ClockDomain.tc_domain, "0024", Int2HexStr(p));
 	}
 	
 	public void SetRowCounter (int p){

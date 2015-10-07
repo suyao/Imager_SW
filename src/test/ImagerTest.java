@@ -151,7 +151,9 @@ public class ImagerTest {
 		ImagerDebugModeTest(imager);
 		
 		ImagerFrameTest(imager);
+		
 		System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
+		/*
 		for (int i = 0; i< 1000000; i++){
 			try {Thread.sleep(4);} catch (InterruptedException e) {e.printStackTrace();}
 			imager.JtagReset();
@@ -170,7 +172,7 @@ public class ImagerTest {
 		System.out.println("RST Read out : " + out);
 		out = imager.ReadADCatTX();
 		System.out.println("TX Read out: " + out);
-
+	*/
 		
 		if (0==1) {
 			System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
@@ -373,19 +375,21 @@ public class ImagerTest {
 	
 	static void ImagerDebugModeTest(ImagerCntr imager){
 		int row = 1;
-		int col = 70;
+		int col = 4;
 		int col_num = 240;
 		double tsmp = 96*Math.pow(10, -9); //sampling period 96ns
 		double pw_smp = 40*Math.pow(10, -9); //sampling pulse width 40ns
-		double pw_tx = (10+0) * tsmp;
+		double pw_tx = (10*4) * tsmp;
 		double pw_isf = 9 * tsmp;
 		double dly_isf = 16 * tsmp + pw_tx -10*tsmp; // this value has to be larger than dly_rst + pw_rst
 		// in debug mode light integration time is single row time
-		double trow =(col_num+6+16*2) * tsmp +pw_isf*2 + pw_tx - 10*tsmp ; //row time ~28us
-		double pw_rst = 10 * tsmp;
+		//double trow =(col_num+6+16*2) * tsmp +pw_isf*2 + pw_tx - 10*tsmp ; //row time ~28us
+		double trow =(col_num+6+16*2) * tsmp +pw_isf*2 +50 * tsmp;
+		double pw_rst = (10) * tsmp;
 		double dly_rst = 3 * tsmp ;	
 		double dly_tx = dly_rst + pw_isf + (col_num / 2 + 16) *tsmp + pw_tx - 10*tsmp;
-		double integ_time = 10*trow;
+		double integ_time = 160*trow;
+		//pw_tx = 10*tsmp;
 		
 		System.out.println("Test Single Pixel at Row = " + row + ", Col = " + col);
 		imager.ScanMode(false);
@@ -441,23 +445,26 @@ public class ImagerTest {
 		int col_num = 240;
 		double tsmp = 96*Math.pow(10, -9); //sampling period 96ns
 		double pw_smp = 40*Math.pow(10, -9); //sampling pulse width 40ns
-		double pw_tx = (10 + 0) * tsmp;
+		double pw_tx = (10   ) * tsmp;
 		double pw_isf = 9* tsmp;
 		double dly_isf = 16 * tsmp + pw_tx - 10*tsmp; // this value has to be larger than dly_rst + pw_rst
 		double trow = (col_num+6+16*2 ) * tsmp +pw_isf*2 + pw_tx - 10*tsmp ; //row time ~28us
-		double pw_rst = 10 * tsmp;
+		//double trow = (col_num+6+16*2 ) * tsmp +pw_isf*2 +50*tsmp ; //row time ~28us
+		double pw_rst = (10  ) * tsmp;
 		double dly_rst = 3 * tsmp ;
 		
 		double dly_tx = dly_rst + pw_isf + (col_num / 2 + 16) *tsmp + pw_tx - 10*tsmp;
-		double integ_time = 2*trow;
+		double integ_time = 160*trow;
+		//pw_tx = (10 ) * tsmp;
 
 		int left = 0;
 		int right = 1;
 		System.out.println("Full Frame Test Starts:");
-		//imager.VideoRecord(true);
+		imager.VideoRecord(true);
 		imager.ScanMode(true);
 
 		imager.RowCounterForce(false);
+		//imager.SetMaxRowCounter(320);
 		imager.SetRowCounter(2);
 		imager.SetSmpPeriod(tsmp);
 		imager.SetSmpPW(pw_smp);
