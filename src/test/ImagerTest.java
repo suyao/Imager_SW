@@ -145,35 +145,14 @@ public class ImagerTest {
 		//ADCTest(0.8, yvonne, imager, 1); // left ADC if 0, right ADC if 1
 		//CalibrateDummyADC(10, yvonne, imager); //repeat every analog value for 100 conversions
 		//CalibrateADC(20, yvonne, imager, 0);
-		
+		SNR_ADC(20, yvonne, imager, 0);
 		
 		//Pixel Readout
 		ImagerDebugModeTest(imager);
 		
 		ImagerFrameTest(imager);
-		
 		System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
-		/*
-		for (int i = 0; i< 1000000; i++){
-			try {Thread.sleep(4);} catch (InterruptedException e) {e.printStackTrace();}
-			imager.JtagReset();
-			jdrv.readReg(ClockDomain.tc_domain, "0000");
-		}
-		
-		int row = 2;
-		int col = 9;
-		
-		imager.ScanMode(false);
-		imager.RowCounterForce(true);
-		imager.SetRowCounter(row);
-		imager.SetColCounter(col);
-		imager.JtagReset();
-		String out = imager.ReadADCatRST();
-		System.out.println("RST Read out : " + out);
-		out = imager.ReadADCatTX();
-		System.out.println("TX Read out: " + out);
-	*/
-		
+			
 		if (0==1) {
 			System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
 			System.out.println("Read from JTAG SC 004: " + jdrv.readReg(ClockDomain.tc_domain, "0004"));
@@ -341,6 +320,42 @@ public class ImagerTest {
 		System.out.println("Finish Calibrating ADC");
 	}
 
+	static void SNR_ADC(int itr_times, DACCntr yvonne, ImagerCntr imager, int adc_idx){
+		System.out.println("ADC SNR Measurement Starts...");
+		try {
+			File file = new File("./outputs/CalibrateADC/ADC_SNR_output.txt");
+			if (!file.exists()) {
+				file.createNewFile();
+			}
+			FileWriter fw = new FileWriter(file.getAbsoluteFile());
+			BufferedWriter bw = new BufferedWriter(fw);
+			if (adc_idx == 0)
+				imager.SetColCounter(1); // if col<120, output left adc, otherwise, right adc
+			else
+				imager.SetColCounter(136);
+			imager.ScanMode(true);
+			imager.EnableDummyADC(false); // disable dummy adc
+			imager.EnableADCCali(true);
+			imager.EnableADC(true); // enable adc
+			double value;
+			for (int i = 1; i <= 128; i ++){
+				value = 0.48 * Math.sin(2* Math.PI *i/128.0) + v0;
+				yvonne.WriteDACValue("ana18", value, yvonne.dac_reg  )	;
+				String ADC_out_str = "";
+				System.out.println("Input: "+ value);
+				try {Thread.sleep(800);} catch (InterruptedException e) {e.printStackTrace();}
+				for (int itr = 0 ; itr < itr_times; itr++){ //average readings to eliminate noise
+					ADC_out_str = imager.ReadADCatRST(); //JTAG readout
+					bw.write(value + " " + ADC_out_str +"\n");
+					System.out.println("               Output: " + ADC_out_str);
+				}
+			}
+			bw.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}		
+		System.out.println("Finish ADC SNR Measurement");
+	}
 
 	static void AnalogSampler(int idx1, int idx2,  ImagerCntr imager){	
 		System.out.println("Start Analog Sampler Test on " + idx1 + " and " + idx2);
