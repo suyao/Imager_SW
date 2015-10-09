@@ -138,20 +138,20 @@ public class ImagerTest {
 		// SetADCcurrent( n1, p1, n2, p2) , the larger number, the smaller the current
 		//imager.SetADCcurrent(0,13,4,7); imager.SetISFcurrent(4); // chip s3 on board 2
 		imager.SetADCcurrent(2,13,7,7); imager.SetISFcurrent(5);// chip s2 on board 3
-		imager.CurrentTestPt(2);
+		imager.CurrentTestPt(8);
 		
 		// ADC Testing
 		//DummyADCTest(0.51, yvonne, imager);
-		//ADCTest(0.8, yvonne, imager, 1); // left ADC if 0, right ADC if 1
+		//ADCTest(1, yvonne, imager, 1); // left ADC if 0, right ADC if 1
 		//CalibrateDummyADC(10, yvonne, imager); //repeat every analog value for 100 conversions
 		//CalibrateADC(20, yvonne, imager, 0);
-		SNR_ADC(20, yvonne, imager, 0);
+		//SNR_ADC(20, yvonne, imager, 0);
 		
 		//Pixel Readout
-		ImagerDebugModeTest(imager);
+		//ImagerDebugModeTest(imager);
 		
-		ImagerFrameTest(imager);
-		System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
+		//ImagerFrameTest(imager);
+		//System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
 			
 		if (0==1) {
 			System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
@@ -280,7 +280,7 @@ public class ImagerTest {
 	static void CalibrateADC(int itr_times, DACCntr yvonne, ImagerCntr imager, int adc_idx){
 		System.out.println("ADC Calibration Starts...");
 		try {
-			File file = new File("./outputs/CalibrateADC/ADC_output.txt");
+			File file = new File("./outputs/CalibrateADC/ADC_output_cali0_3b.txt");
 			if (!file.exists()) {
 				file.createNewFile();
 			}
@@ -298,7 +298,7 @@ public class ImagerTest {
 			double rsl_ana18 = (1.527-0.50782)/DACCntr.levels*2;
 			int reg_min = (int) Math.round((v0-(vrefp-vrefn)-0.50782)/rsl_ana18) + DACCntr.levels/4 - 32*20;
 			int reg_max = (int) Math.round((v0+(vrefp-vrefn)-0.50782)/rsl_ana18) + DACCntr.levels/4 + 32*20;
-			for (int reg_int = reg_min; reg_int < reg_max; reg_int= reg_int + 32/4){
+			for (int reg_int = reg_min; reg_int < reg_max; reg_int= reg_int + 32/8){
 				String reg_str = Integer.toHexString(reg_int);
 				reg_str = "0000".substring(reg_str.length()) + reg_str; 
 				yvonne.WriteDACReg(idx, reg_str); //Write to Yvonne
@@ -338,12 +338,14 @@ public class ImagerTest {
 			imager.EnableADCCali(true);
 			imager.EnableADC(true); // enable adc
 			double value;
-			for (int i = 1; i <= 128; i ++){
-				value = 0.48 * Math.sin(2* Math.PI *i/128.0) + v0;
+			for (int i = 1; i <= 256; i ++){	
+				value = 0.49 * Math.sin(2* Math.PI *i/128.0) + v0;
 				yvonne.WriteDACValue("ana18", value, yvonne.dac_reg  )	;
+				if (i == 1)
+					try {Thread.sleep(5000);} catch (InterruptedException e) {e.printStackTrace();}
 				String ADC_out_str = "";
 				System.out.println("Input: "+ value);
-				try {Thread.sleep(800);} catch (InterruptedException e) {e.printStackTrace();}
+				try {Thread.sleep(700);} catch (InterruptedException e) {e.printStackTrace();}
 				for (int itr = 0 ; itr < itr_times; itr++){ //average readings to eliminate noise
 					ADC_out_str = imager.ReadADCatRST(); //JTAG readout
 					bw.write(value + " " + ADC_out_str +"\n");

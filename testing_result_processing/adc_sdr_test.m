@@ -1,0 +1,48 @@
+clear all;
+close all;
+fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_output.txt','r');
+f = fscanf(fin, '%f %x' ,[2 inf]);
+vin = f(1,:);
+dout = f(2,:);
+figure;
+plot(vin);
+figure;
+plot(dout);
+
+% combine same input
+v0 = vin(1);
+r = 1; c =1;
+data(1,1) = vin(1);
+for i = 1: length(vin)
+    if vin(i) == v0
+        c = c + 1;
+    else
+        r = r + 1;
+        data(r ,1) = vin(i); 
+        v0 = vin(i);
+        c = 2;
+    end
+    data(r,c) = dout (i);   
+end
+
+[N, itr] = size(data);
+weights = adc_calibration();
+%weights = [509.3693  272.4805  136.4577   68.4769   34.2635   17.2742 15.5958    7.9048    3.9518    1.9835    1.0000];
+%weights = fliplr(weights);
+dout_bin_mean = zeros(N,11);
+
+for i = 1:N
+    dout_mean(i) = mode(data(i,2:end));
+    dout_bin_mean (i,:) = dec2bin(dout_mean(i),11);
+    dout_mean_rec(i) = floor(dout_bin_mean(i,:) * (fliplr(weights))')/2^9;
+    
+    dout_single(i) = data(i,end);
+    dout_bin_single(i,:) = dec2bin(dout_single(i),11);
+    dout_single_rec(i) = floor(dout_bin_single(i,:) * (fliplr(weights))')/2^9;
+end
+
+snr=SNR(dout_single(129:end)/2^9)
+snr_rec_no=SNR(dout_mean_rec(129:end))
+snr_rec = SNR(dout_single_rec(129:end))
+
+%floor(dout_mean*(fliplr(c))')/2^bit;
