@@ -17,10 +17,13 @@ public class DACCntr
 {
 	private static int ch_length = 9;
 	private static int bits = 16;
+	private static int idx_board;
+	public static double ana18_min;
+	public static double ana18_max;
 	public static int levels = (int) Math.pow (2.0, bits);
 	public String dac_reg[] = new String[ch_length];
 	
-	public DACCntr(double dac_values[]) { 
+	public DACCntr(double dac_values[], int idx_board) { 
 		/*0  PVDD;
 		  1  ana33
 		  2  v0
@@ -30,8 +33,8 @@ public class DACCntr
 		  6  Iin
 		  7  vcm
 		  8  vrst */
+		this.idx_board = idx_board;
 		System.out.println("Start writing DAC registers.");
-		//String dac_reg[] = new String[ch_length];	
 		for (int i = 0; i < ch_length; i++) {
 			Encoder(i, dac_reg, dac_values[i]);
 		}
@@ -77,38 +80,35 @@ public class DACCntr
 	public void Encoder(int idx, String reg[], double value) {
 		double min;
 		double max; 
-        switch (idx) { // board #3
-        	case 0:  max = 2.8050;	//PVDD
-        			 min = 0.93424;
-        			 break;
-            case 1:  max = 2.8118;	//ana33
-            		 min = 0.93903;
-                     break;
-            case 2:  max = 1.5234;  //v0
-   		 			 min = 0.50556; 
-   		 			 break;  
-            case 3:  max = 1.527;   //ana18
-   		 			 min = 0.50782;
-   		 			 break;
-            case 4:  max = 1.5290;  //vrefp
-   		 			 min = 0.5103;
-   		 			 break;		 
-            case 5:  max = 1.5285;  //vrefn
-   		 			 min = 0.50886;
-   		 			 break;	
-            case 6:  max = 1.5311;  //Iin
-   		 			 min = 0.51323;
-   		 			 break;	
-            case 7:  max = 1.02667; //vcm
-            		 min = 0.34162;
-                     break;
-            case 8:  max = 1.02633; //vrst
-            	 	 min = 0.3393;
-            		 break;
-            default: max = 1.527;
-            		 min = 0.50782;
-                     break;
-        }
+		switch (this.idx_board) {
+			case 1:
+		        switch (idx) { // board #3
+		        	case 0:  max = 2.7964; min = 0.93603; break;   //PVDD		 
+		            case 1:  max = 2.8097; min = 0.93923; break;  //ana33           
+		            case 2:  max = 1.5261; min = 0.50989; break;  //v0		 
+		            case 3:  max = 1.53015;  min = 0.511715; ana18_max = max; ana18_min = min;  break; //ana18		 
+		            case 4:  max = 1.5221; min = 0.503785;  break;  //vrefp			 
+		            case 5:  max = 1.5274; min = 0.508115;  break; //vrefn	   		 			 		
+		            case 6:  max = 1.5300;  min = 0.51029; break; //Iin				
+		            case 7:  max = 1.0295; min = 0.342625; break; //vcm
+		            case 8:  max = 1.027395;  min = 0.34183; break; //vrst   		
+		            default: max = 1.527; min = 0.50782; break;
+		        } break;
+			case 3:
+		        switch (idx) { // board #3
+		        	case 0:  max = 2.8050; min = 0.93424; break; //PVDD		 
+		            case 1:  max = 2.8118; min = 0.93903; break;	//ana33          
+		            case 2:  max = 1.5234; min = 0.50556; break;   //v0		
+		            case 3:  max = 1.527;  min = 0.50782; ana18_max = max; ana18_min = min;  break;//ana18	 
+		            case 4:  max = 1.5290; min = 0.5103;  break;	//vrefp 				 
+		            case 5:  max = 1.5285; min = 0.50886;  break;	//vrefn		
+		            case 6:  max = 1.5311;  min = 0.51323;  break;	 //Iin	
+		            case 7:  max = 1.02667; min = 0.34162;  break;//vcm       
+		            case 8:  max = 1.02633;  min = 0.3393;  break;//vrst
+		            default: max = 1.527; min = 0.50782; break;
+		        } break;
+	        default: max = 1.5; min = 0.5; break;
+		}
 		double rsl = (max-min)/levels*2;	
 		double value1 = value;
 		int reg_int = (int) Math.round((value1-min)/rsl) + levels/4;

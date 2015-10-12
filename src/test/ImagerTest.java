@@ -59,13 +59,14 @@ public class ImagerTest {
 		v0 = 1;
 		double ana18 = 1;
 		vrefp = 1.25;
-		vrefn = 0.75;
+		vrefn = 0.7501;
 		double Iin = 1;
 		vcm = 1;
 		vrst = 0.6; 
 		double dac_values[] = {pvdd,ana33,v0, ana18, vrefp, vrefn, Iin, vcm, vrst};
-		DACCntr yvonne = new DACCntr(dac_values);
+		DACCntr yvonne = new DACCntr(dac_values, 1);
 		try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
+		vrefn = 0.75;
 		return yvonne;
 	}
 	
@@ -140,8 +141,8 @@ public class ImagerTest {
 		imager.SetADCTiming(1,1,1);
 		// SetADCcurrent( n1, p1, n2, p2) , the larger number, the smaller the current
 		//imager.SetADCcurrent(0,13,4,7); imager.SetISFcurrent(4); // chip s3 on board 2
-		//imager.SetADCcurrent(2,13,7,7); imager.SetISFcurrent(5);// chip s2 on board 3
-		imager.SetADCcurrent(3,10,5,8); imager.SetISFcurrent(5);// chip c1 on board 3
+		imager.SetADCcurrent(2,13,7,7); imager.SetISFcurrent(5);// chip s2 on board 3
+		//imager.SetADCcurrent(3,10,5,8); imager.SetISFcurrent(5);// chip c1 on board 3
 		imager.CurrentTestPt(2);
 		
 
@@ -151,13 +152,13 @@ public class ImagerTest {
 		//ADCTest(1, yvonne, imager, 0); // left ADC if 0, right ADC if 1
 		//CalibrateDummyADC(10, yvonne, imager); //repeat every analog value for 100 conversions
 		//CalibrateADC(30, yvonne, imager, 1, 3); //(itr, , ,left/right, extra_bit)
-		SNR_ADC(20, yvonne, imager, 1);
+		//SNR_ADC(20, yvonne, imager, 1);
 		//ADC_ext_input(yvonne,imager,1);
 		//Pixel Readout
 		//ImagerDebugModeTest(imager);
 		
-		//ImagerFrameTest(imager);
-		//System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
+		ImagerFrameTest(imager);
+		System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
 			
 		jdrv.CloseController();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd, HH:mm");
@@ -240,9 +241,9 @@ public class ImagerTest {
 			imager.EnableDummyADC(true); // enable dummy adc		
 			imager.JtagReset();
 			int idx = yvonne.FindIdxofName("ana18");
-			double rsl_ana18 = (1.527-0.50782)/DACCntr.levels*2;
-			int reg_min = (int) Math.round((v0-(vrefp-vrefn)-0.50782)/rsl_ana18) + DACCntr.levels/4 - 32*20;
-			int reg_max = (int) Math.round((v0+(vrefp-vrefn)-0.50782)/rsl_ana18) + DACCntr.levels/4 + 32*20;
+			double rsl_ana18 = (DACCntr.ana18_max-DACCntr.ana18_min)/DACCntr.levels*2;
+			int reg_min = (int) Math.round((v0-(vrefp-vrefn)-DACCntr.ana18_min)/rsl_ana18) + DACCntr.levels/4 - 32*20;
+			int reg_max = (int) Math.round((v0+(vrefp-vrefn)-DACCntr.ana18_min)/rsl_ana18) + DACCntr.levels/4 + 32*20;
 			for (int reg_int = reg_min; reg_int < reg_max; reg_int= reg_int + 32){
 				String reg_str = Integer.toHexString(reg_int);
 				reg_str = "0000".substring(reg_str.length()) + reg_str; 
@@ -293,9 +294,9 @@ public class ImagerTest {
 			imager.EnableADC(true); // enable adc
 			imager.DACRstCntr(0); //don't reset dac
 			int idx = yvonne.FindIdxofName("ana18");
-			double rsl_ana18 = (1.527-0.50782)/DACCntr.levels*2;
-			int reg_min = (int) Math.round((v0-(vrefp-vrefn)-0.50782)/rsl_ana18) + DACCntr.levels/4 - 32*20;
-			int reg_max = (int) Math.round((v0+(vrefp-vrefn)-0.50782)/rsl_ana18) + DACCntr.levels/4 + 32*20;
+			double rsl_ana18 = (DACCntr.ana18_max-DACCntr.ana18_min)/DACCntr.levels*2;
+			int reg_min = (int) Math.round((v0-(vrefp-vrefn)-DACCntr.ana18_min)/rsl_ana18) + DACCntr.levels/4 - 32*20;
+			int reg_max = (int) Math.round((v0+(vrefp-vrefn)-DACCntr.ana18_min)/rsl_ana18) + DACCntr.levels/4 + 32*20;
 			int inc = (int) Math.round(32/Math.pow(2, extra_bit));
 			System.out.println(inc);
 			for (int reg_int = reg_min; reg_int < reg_max; reg_int= reg_int + inc){
@@ -398,8 +399,8 @@ public class ImagerTest {
 	}
 	
 	static void ImagerDebugModeTest(ImagerCntr imager){
-		int row = 1;
-		int col = 4;
+		int row = 100;
+		int col = 9;
 		int col_num = 240;
 		double tsmp = 96*Math.pow(10, -9); //sampling period 96ns
 		double pw_smp = 40*Math.pow(10, -9); //sampling pulse width 40ns

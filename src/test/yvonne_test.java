@@ -28,7 +28,7 @@ public class yvonne_test {
 		double vcm = 1;
 		double vrst = 0.6; 
 		double dac_values[] = {pvdd,ana33,v0, ana18, vrefp, vrefn, Iin, vcm, vrst};
-		DACCntr yvonne = new DACCntr(dac_values);
+		DACCntr yvonne = new DACCntr(dac_values,1);
 	/*	try {
 		  Runtime.getRuntime().exec("cmd /c yvonneutil < ./src/YvonneCmds/test_hv.txt");
 		} catch (IOException e) {
