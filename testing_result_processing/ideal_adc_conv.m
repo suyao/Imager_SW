@@ -2,7 +2,7 @@
 %close all;
 % normrnd('seed', 3)
 clear all;
-vin=0.5;
+vin=1;
 vrefp=1.25;
 vrefn=0.75;
 vcm=1;
@@ -47,8 +47,8 @@ number_c=2^msb+2^lsb;
     %vx(1)=vcm-vin+cp(bit)/ctot_p*vrefn+(ctot_p-cp(bit))/ctot_p*vrefp;
  
     %vy(1)=vcm-v0+cn(bit)/ctot_n*vrefp+(ctot_n-cn(bit))/ctot_n*vrefn;
-    vx(1)=vcm-vin+cp(bit)/ctot_p*vrefn+(ctot_p-cp(bit)-cp_lsb_gnd/clsb_p/(1/cp_bridge+1/clsb_p))/ctot_p*vrefp;
-    vy(1)=vcm-v0+cn(bit)/ctot_n*vrefp+(ctot_n-cn(bit)-cn_lsb_gnd/clsb_n/(1/cn_bridge+1/clsb_n))/ctot_n*vrefn;
+    vx(1)=vcm-vin+cp(bit)/ctot_p*vrefn+(ctot_p-cp(bit)-cp_lsb_gnd/clsb_p/(1/cp_bridge+1/clsb_p))/ctot_p*vrefp
+    vy(1)=vcm-v0+cn(bit)/ctot_n*vrefp+(ctot_n-cn(bit)-cn_lsb_gnd/clsb_n/(1/cn_bridge+1/clsb_n))/ctot_n*vrefn
 
     for i=1:bit;
         if vx(i)>=vy(i);

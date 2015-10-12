@@ -13,6 +13,9 @@ import MacraigorJtagioPkg.ImagerCntr;
 import MacraigorJtagioPkg.MacraigorJtagio;
 import MacraigorJtagioPkg.JtagDriver.ClockDomain;
 import YvonnePkg.DACCntr;
+import java.text.SimpleDateFormat;
+import java.text.DateFormat;
+import java.util.Date;
 
 import java.io.*;
 /**
@@ -137,46 +140,30 @@ public class ImagerTest {
 		imager.SetADCTiming(1,1,1);
 		// SetADCcurrent( n1, p1, n2, p2) , the larger number, the smaller the current
 		//imager.SetADCcurrent(0,13,4,7); imager.SetISFcurrent(4); // chip s3 on board 2
-		imager.SetADCcurrent(2,13,7,7); imager.SetISFcurrent(5);// chip s2 on board 3
-		imager.CurrentTestPt(8);
+		//imager.SetADCcurrent(2,13,7,7); imager.SetISFcurrent(5);// chip s2 on board 3
+		imager.SetADCcurrent(3,10,5,8); imager.SetISFcurrent(5);// chip c1 on board 3
+		imager.CurrentTestPt(2);
 		
+
+		imager.EnableDout(false);
 		// ADC Testing
 		//DummyADCTest(0.51, yvonne, imager);
-		//ADCTest(1, yvonne, imager, 1); // left ADC if 0, right ADC if 1
+		//ADCTest(1, yvonne, imager, 0); // left ADC if 0, right ADC if 1
 		//CalibrateDummyADC(10, yvonne, imager); //repeat every analog value for 100 conversions
-		//CalibrateADC(20, yvonne, imager, 0);
-		//SNR_ADC(20, yvonne, imager, 0);
-		
+		//CalibrateADC(30, yvonne, imager, 1, 3); //(itr, , ,left/right, extra_bit)
+		SNR_ADC(20, yvonne, imager, 1);
+		//ADC_ext_input(yvonne,imager,1);
 		//Pixel Readout
 		//ImagerDebugModeTest(imager);
 		
 		//ImagerFrameTest(imager);
 		//System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
 			
-		if (0==1) {
-			System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
-			System.out.println("Read from JTAG SC 004: " + jdrv.readReg(ClockDomain.tc_domain, "0004"));
-			System.out.println("Read from JTAG SC 018: " + jdrv.readReg(ClockDomain.tc_domain, "0018"));
-			
-			System.out.println("Read from JTAG SC 020: " + jdrv.readReg(ClockDomain.tc_domain, "0020"));
-			System.out.println("Read from JTAG SC 028: " + jdrv.readReg(ClockDomain.tc_domain, "0028"));
-			System.out.println("Read from JTAG SC 02C: " + jdrv.readReg(ClockDomain.tc_domain, "002C"));
-			System.out.println("Read from JTAG SC 008: " + jdrv.readReg(ClockDomain.tc_domain, "0008"));
-			System.out.println("Read from JTAG SC 00C: " + jdrv.readReg(ClockDomain.tc_domain, "000C"));
-			System.out.println("Read from JTAG SC 010: " + jdrv.readReg(ClockDomain.tc_domain, "0010"));
-			System.out.println("Read from JTAG SC 030: " + jdrv.readReg(ClockDomain.tc_domain, "0030"));
-			System.out.println("Read from JTAG SC 034: " + jdrv.readReg(ClockDomain.tc_domain, "0034"));
-			System.out.println("Read from JTAG SC 038: " + jdrv.readReg(ClockDomain.tc_domain, "0038"));
-			System.out.println("Read from JTAG SC 03C: " + jdrv.readReg(ClockDomain.tc_domain, "003C"));
-			System.out.println("Read from JTAG SC 040: " + jdrv.readReg(ClockDomain.tc_domain, "0040"));
-			System.out.println("Read from JTAG SC 044: " + jdrv.readReg(ClockDomain.tc_domain, "0044"));
-			System.out.println("Read from JTAG SC 048: " + jdrv.readReg(ClockDomain.tc_domain, "0048"));
-			System.out.println("Read from JTAG SC 078: " + jdrv.readReg(ClockDomain.tc_domain, "0078"));
-			System.out.println("Read from JTAG SC 07c: " + jdrv.readReg(ClockDomain.tc_domain, "007c"));
-			System.out.println("Read from JTAG SC 014: " + jdrv.readReg(ClockDomain.tc_domain, "0014"));
-		}
-		
 		jdrv.CloseController();
+		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd, HH:mm");
+		Date date = new Date();
+		System.out.println("Test finished at "+ dateFormat.format(date));
+		
 	}
 	
 	static void InitJTAG(JtagDriver jdrv){
@@ -228,6 +215,7 @@ public class ImagerTest {
 		imager.EnableDummyADC(false); // disable dummy adc
 		imager.EnableADCCali(true);
 		imager.EnableADC(true); // enable adc	
+		imager.DACRstCntr(0); //don't reset dac
 		imager.JtagReset();
 		yvonne.WriteDACValue("ana18", value, yvonne.dac_reg  )	;
 		String ADC_out_str = "";
@@ -242,7 +230,7 @@ public class ImagerTest {
 	static void CalibrateDummyADC(int itr_times, DACCntr yvonne, ImagerCntr imager){
 		System.out.println("Dummy ADC Calibration starts...");
 		try {
-			File file = new File("./outputs/CalibrateADC/dummy_ADC_output.txt");
+			File file = new File("outputs/CalibrateADC/dummy_ADC_output.txt");
 			if (!file.exists()) {
 				file.createNewFile();
 			}
@@ -277,10 +265,19 @@ public class ImagerTest {
 		System.out.println("Finish Calibrating Dummy ADC");
 	}
 	
-	static void CalibrateADC(int itr_times, DACCntr yvonne, ImagerCntr imager, int adc_idx){
+	static void CalibrateADC(int itr_times, DACCntr yvonne, ImagerCntr imager, int adc_idx, int extra_bit){
 		System.out.println("ADC Calibration Starts...");
+		System.out.println("ADC SNR Measurement Starts...");
+		DateFormat dateFormat = new SimpleDateFormat("_yyyyMMdd_HHmm");
+		Date date = new Date();
+		String which_adc = "left";
+		if (adc_idx == 1)
+			which_adc = "right";	
+		String bit_info = Integer.toString(extra_bit) + "b";
+		String filename = "outputs/CalibrateADC/ADC_ramp_" + which_adc + bit_info + dateFormat.format(date)+".txt";
+		
 		try {
-			File file = new File("./outputs/CalibrateADC/ADC_output_cali0_3b.txt");
+			File file = new File(filename);
 			if (!file.exists()) {
 				file.createNewFile();
 			}
@@ -294,11 +291,14 @@ public class ImagerTest {
 			imager.EnableDummyADC(false); // disable dummy adc
 			imager.EnableADCCali(true);
 			imager.EnableADC(true); // enable adc
+			imager.DACRstCntr(0); //don't reset dac
 			int idx = yvonne.FindIdxofName("ana18");
 			double rsl_ana18 = (1.527-0.50782)/DACCntr.levels*2;
 			int reg_min = (int) Math.round((v0-(vrefp-vrefn)-0.50782)/rsl_ana18) + DACCntr.levels/4 - 32*20;
 			int reg_max = (int) Math.round((v0+(vrefp-vrefn)-0.50782)/rsl_ana18) + DACCntr.levels/4 + 32*20;
-			for (int reg_int = reg_min; reg_int < reg_max; reg_int= reg_int + 32/8){
+			int inc = (int) Math.round(32/Math.pow(2, extra_bit));
+			System.out.println(inc);
+			for (int reg_int = reg_min; reg_int < reg_max; reg_int= reg_int + inc){
 				String reg_str = Integer.toHexString(reg_int);
 				reg_str = "0000".substring(reg_str.length()) + reg_str; 
 				yvonne.WriteDACReg(idx, reg_str); //Write to Yvonne
@@ -322,8 +322,14 @@ public class ImagerTest {
 
 	static void SNR_ADC(int itr_times, DACCntr yvonne, ImagerCntr imager, int adc_idx){
 		System.out.println("ADC SNR Measurement Starts...");
+		DateFormat dateFormat = new SimpleDateFormat("_yyyyMMdd_HHmm");
+		Date date = new Date();
+		String which_adc = "left";
+		if (adc_idx == 1)
+			which_adc = "right";	
+		String filename = "./outputs/CalibrateADC/ADC_SNR_" + which_adc + dateFormat.format(date)+".txt";
 		try {
-			File file = new File("./outputs/CalibrateADC/ADC_SNR_output.txt");
+			File file = new File(filename);
 			if (!file.exists()) {
 				file.createNewFile();
 			}
@@ -337,9 +343,10 @@ public class ImagerTest {
 			imager.EnableDummyADC(false); // disable dummy adc
 			imager.EnableADCCali(true);
 			imager.EnableADC(true); // enable adc
+			imager.DACRstCntr(0); //don't reset dac
 			double value;
-			for (int i = 1; i <= 256; i ++){	
-				value = 0.49 * Math.sin(2* Math.PI *i/128.0) + v0;
+			for (int i = 1; i <= 256*6; i ++){	
+				value = 0.495 * Math.sin(2* Math.PI *i/256.0) + v0;
 				yvonne.WriteDACValue("ana18", value, yvonne.dac_reg  )	;
 				if (i == 1)
 					try {Thread.sleep(5000);} catch (InterruptedException e) {e.printStackTrace();}
@@ -502,9 +509,22 @@ public class ImagerTest {
 		imager.DACRstCntr(1);
 		imager.SetBitlineLoad(0,2);
 		imager.SetPxIntegrationTime(320*trow- integ_time);
-
 		imager.JtagReset();
-		
+	}
+	
+	static void ADC_ext_input( DACCntr yvonne, ImagerCntr imager, int adc_idx){
+		System.out.println("ADC output to logic analyzer begins...");
+		if (adc_idx == 0)
+			imager.SetColCounter(1); // if col<120, output left adc, otherwise, right adc
+		else
+			imager.SetColCounter(136);
+		imager.ScanMode(false);
+		imager.EnableDummyADC(false); // disable dummy adc
+		imager.EnableADCCali(true);
+		imager.EnableADC(true); // enable adc
+		imager.DACRstCntr(0); //don't reset dac
+		imager.EnableDout(true);
 			
+		System.out.println("Finish Calibrating ADC");
 	}
 }

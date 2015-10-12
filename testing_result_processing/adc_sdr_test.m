@@ -1,13 +1,12 @@
 clear all;
 close all;
-fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_output.txt','r');
+%fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_left_20151009_1400.txt','r');
+fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_right_20151011_1920.txt','r');
+
 f = fscanf(fin, '%f %x' ,[2 inf]);
 vin = f(1,:);
 dout = f(2,:);
-figure;
-plot(vin);
-figure;
-plot(dout);
+fclose(fin);
 
 % combine same input
 v0 = vin(1);
@@ -31,6 +30,15 @@ weights = adc_calibration();
 %weights = fliplr(weights);
 dout_bin_mean = zeros(N,11);
 
+% N=256;
+% for i = 1:N
+%     for k = 2:itr
+%         a(i)= 0.5*sin(2*pi*i/128) + 0.5;
+%         data(i,k) = round(2^10*a(i)) ;
+%     end
+% end
+% figure;
+% plot(data(:,1));
 for i = 1:N
     dout_mean(i) = mode(data(i,2:end));
     dout_bin_mean (i,:) = dec2bin(dout_mean(i),11);
@@ -40,9 +48,9 @@ for i = 1:N
     dout_bin_single(i,:) = dec2bin(dout_single(i),11);
     dout_single_rec(i) = floor(dout_bin_single(i,:) * (fliplr(weights))')/2^9;
 end
-
-snr=SNR(dout_single(129:end)/2^9)
-snr_rec_no=SNR(dout_mean_rec(129:end))
-snr_rec = SNR(dout_single_rec(129:end))
-
-%floor(dout_mean*(fliplr(c))')/2^bit;
+figure;
+plot(dout_mean)
+%snr = SNR((data(:,2))')
+snr=SNR(dout_single(257:end)/2^9)
+snr_rec_no=SNR(dout_mean_rec(257:end))
+snr_rec = SNR(dout_single_rec(257:end))
