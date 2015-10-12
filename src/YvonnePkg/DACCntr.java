@@ -94,19 +94,45 @@ public class DACCntr
 		            case 8:  max = 1.027395;  min = 0.34183; break; //vrst   		
 		            default: max = 1.527; min = 0.50782; break;
 		        } break;
-			case 3:
+			case 2:
 		        switch (idx) { // board #3
-		        	case 0:  max = 2.8050; min = 0.93424; break; //PVDD		 
-		            case 1:  max = 2.8118; min = 0.93903; break;	//ana33          
-		            case 2:  max = 1.5234; min = 0.50556; break;   //v0		
-		            case 3:  max = 1.527;  min = 0.50782; ana18_max = max; ana18_min = min;  break;//ana18	 
-		            case 4:  max = 1.5290; min = 0.5103;  break;	//vrefp 				 
-		            case 5:  max = 1.5285; min = 0.50886;  break;	//vrefn		
-		            case 6:  max = 1.5311;  min = 0.51323;  break;	 //Iin	
-		            case 7:  max = 1.02667; min = 0.34162;  break;//vcm       
-		            case 8:  max = 1.02633;  min = 0.3393;  break;//vrst
+		        	case 0:  max = 2.8061; min = 0.9336; break;   //PVDD		 
+		            case 1:  max = 2.8088; min = 0.93610; break;  //ana33           
+		            case 2:  max = 1.5244; min = 0.50560; break;  //v0		 
+		            case 3:  max = 1.5233;  min = 0.504575; ana18_max = max; ana18_min = min;  break; //ana18		 
+		            case 4:  max = 1.5290; min = 0.51005;  break;  //vrefp			 
+		            case 5:  max = 1.5302; min = 0.50886;  break; //vrefn	   		 			 		
+		            case 6:  max = 1.5300;  min = 0.51029; break; //Iin				
+		            case 7:  max = 1.02520; min = 0.33894; break; //vcm
+		            case 8:  max = 1.02968;  min = 0.34331; break; //vrst   		
 		            default: max = 1.527; min = 0.50782; break;
 		        } break;
+			case 3:
+		        switch (idx) { // board #3
+		        	case 0:  max = 2.7893; min = 0.93013; break; //PVDD		 
+		            case 1:  max = 2.8118; min = 0.93892; break;	//ana33          
+		            case 2:  max = 1.5231; min = 0.50546; break;   //v0		
+		            case 3:  max = 1.5269;  min = 0.507665; ana18_max = max; ana18_min = min;  break;//ana18	 
+		            case 4:  max = 1.5290; min = 0.51023;  break;	//vrefp 				 
+		            case 5:  max = 1.5284; min = 0.50869;  break;	//vrefn		
+		            case 6:  max = 1.5311;  min = 0.51323;  break;	 //Iin	
+		            case 7:  max = 1.02660; min = 0.34154;  break;//vcm       
+		            case 8:  max = 1.02636;  min = 0.33923;  break;//vrst
+		            default: max = 1.527; min = 0.50782; break;
+		        } break;
+			case 4:
+		        switch (idx) { // board #3
+	        	case 0:  max = 2.7896; min = 0.9295; break;   //PVDD		 
+	            case 1:  max = 2.8064; min = 0.93541; break;  //ana33           
+	            case 2:  max = 1.5306; min = 0.50754; break;  //v0		 
+	            case 3:  max = 1.5325;  min = 0.51218; ana18_max = max; ana18_min = min;  break; //ana18		 
+	            case 4:  max = 1.5258; min = 0.504675;  break;  //vrefp			 
+	            case 5:  max = 1.5329; min = 0.51276;  break; //vrefn	   		 			 		
+	            case 6:  max = 1.5300;  min = 0.51029; break; //Iin				
+	            case 7:  max = 1.02968; min = 0.34323; break; //vcm
+	            case 8:  max = 1.02576;  min = 0.34006; break; //vrst   		
+	            default: max = 1.527; min = 0.50782; break;
+	        } break;
 	        default: max = 1.5; min = 0.5; break;
 		}
 		double rsl = (max-min)/levels*2;	
