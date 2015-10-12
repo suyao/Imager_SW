@@ -149,16 +149,16 @@ public class ImagerTest {
 		imager.EnableDout(false);
 		// ADC Testing
 		//DummyADCTest(0.51, yvonne, imager);
-		//ADCTest(1, yvonne, imager, 0); // left ADC if 0, right ADC if 1
+		//ADCTest(1.1, yvonne, imager, 0); // left ADC if 0, right ADC if 1
 		//CalibrateDummyADC(10, yvonne, imager); //repeat every analog value for 100 conversions
-		//CalibrateADC(30, yvonne, imager, 1, 3); //(itr, , ,left/right, extra_bit)
-		//SNR_ADC(20, yvonne, imager, 1);
+		CalibrateADC(20, yvonne, imager, 1, 3); //(itr, , ,left/right, extra_bit)
+		SNR_ADC(20, yvonne, imager, 1);
 		//ADC_ext_input(yvonne,imager,1);
 		//Pixel Readout
 		//ImagerDebugModeTest(imager);
 		
-		ImagerFrameTest(imager);
-		System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
+		//ImagerFrameTest(imager);
+		//System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
 			
 		jdrv.CloseController();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd, HH:mm");
