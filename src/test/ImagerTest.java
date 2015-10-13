@@ -36,6 +36,8 @@ public class ImagerTest {
 	private static double vrefn = 0.75;	
 	private static double vcm = 1;
 	private static double vrst = 0.4; 
+	private static String idx_bd = "b";
+	private static String idx_chip = "c";
 	
 	static void flashLed(MacraigorJtagio jtag, int times, int interval) {
 		assert (jtag.Initialized());
@@ -64,7 +66,7 @@ public class ImagerTest {
 		vcm = 1;
 		vrst = 0.6; 
 		double dac_values[] = {pvdd,ana33,v0, ana18, vrefp, vrefn, Iin, vcm, vrst};
-		DACCntr yvonne = new DACCntr(dac_values, 1);
+		DACCntr yvonne = new DACCntr(dac_values, 1); // board #
 		try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
 		vrefn = 0.75;
 		return yvonne;
@@ -145,7 +147,8 @@ public class ImagerTest {
 		//imager.SetADCcurrent(3,10,5,8); imager.SetISFcurrent(5);// chip c1 on board 3
 		imager.CurrentTestPt(2);
 		
-
+		idx_bd="b1";
+		idx_chip="s2";
 		imager.EnableDout(false);
 		// ADC Testing
 		//DummyADCTest(0.51, yvonne, imager);
@@ -275,7 +278,7 @@ public class ImagerTest {
 		if (adc_idx == 1)
 			which_adc = "right";	
 		String bit_info = Integer.toString(extra_bit) + "b";
-		String filename = "outputs/CalibrateADC/ADC_ramp_" + which_adc + bit_info + dateFormat.format(date)+".txt";
+		String filename = "outputs/CalibrateADC/ADC_ramp_"  + idx_bd + idx_chip + which_adc + bit_info + dateFormat.format(date)+".txt";
 		
 		try {
 			File file = new File(filename);
@@ -328,7 +331,7 @@ public class ImagerTest {
 		String which_adc = "left";
 		if (adc_idx == 1)
 			which_adc = "right";	
-		String filename = "./outputs/CalibrateADC/ADC_SNR_" + which_adc + dateFormat.format(date)+".txt";
+		String filename = "./outputs/CalibrateADC/ADC_SNR_"  + idx_bd + idx_chip + which_adc + dateFormat.format(date)+".txt";
 		try {
 			File file = new File(filename);
 			if (!file.exists()) {
