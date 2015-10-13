@@ -151,8 +151,8 @@ public class ImagerTest {
 		//DummyADCTest(0.51, yvonne, imager);
 		//ADCTest(1.1, yvonne, imager, 0); // left ADC if 0, right ADC if 1
 		//CalibrateDummyADC(10, yvonne, imager); //repeat every analog value for 100 conversions
-		CalibrateADC(20, yvonne, imager, 1, 3); //(itr, , ,left/right, extra_bit)
-		SNR_ADC(20, yvonne, imager, 1);
+		CalibrateADC(20, yvonne, imager, 0, 3); //(itr, , ,left/right, extra_bit)
+		SNR_ADC(20, yvonne, imager, 0);
 		//ADC_ext_input(yvonne,imager,1);
 		//Pixel Readout
 		//ImagerDebugModeTest(imager);
