@@ -1,7 +1,8 @@
 clear all;
 close all;
-%fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_left_20151009_1400.txt','r');
-fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_right_20151011_1920.txt','r');
+fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_left_20151009_1400.txt','r');
+%fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_right_20151012_1600.txt','r'); %s2 right slow clk on board 1
+%fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_left_20151013_1125.txt','r'); %s2 left slow clk on board 1
 
 f = fscanf(fin, '%f %x' ,[2 inf]);
 vin = f(1,:);
@@ -51,6 +52,6 @@ end
 figure;
 plot(dout_mean)
 %snr = SNR((data(:,2))')
-snr=SNR(dout_single(257:end)/2^9)
-snr_rec_no=SNR(dout_mean_rec(257:end))
-snr_rec = SNR(dout_single_rec(257:end))
+snr=SNR(dout_single(1:end)/2^9)
+snr_rec_no=SNR(dout_mean_rec(1:end))
+snr_rec = SNR(dout_single_rec(1:end))
