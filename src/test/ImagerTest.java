@@ -149,19 +149,21 @@ public class ImagerTest {
 		
 		idx_bd="b1";
 		idx_chip="s2";
-		imager.EnableDout(false);
+		imager.EnableDout(true);
 		// ADC Testing
 		//DummyADCTest(0.51, yvonne, imager);
 		//ADCTest(1.1, yvonne, imager, 0); // left ADC if 0, right ADC if 1
 		//CalibrateDummyADC(10, yvonne, imager); //repeat every analog value for 100 conversions
-		CalibrateADC(20, yvonne, imager, 0, 3); //(itr, , ,left/right, extra_bit)
-		SNR_ADC(20, yvonne, imager, 0);
+		//CalibrateADC(20, yvonne, imager, 0, 3); //(itr, , ,left/right, extra_bit)
+		//SNR_ADC(20, yvonne, imager, 0);
 		//ADC_ext_input(yvonne,imager,1);
 		//Pixel Readout
-		//ImagerDebugModeTest(imager);
+		ImagerDebugModeTest(imager, 0,3);
+		ImagerDebugModeTest(imager, 1,3);
+		ImagerDebugModeTest(imager, 300,3);
 		
-		//ImagerFrameTest(imager);
-		//System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
+		ImagerFrameTest(imager);
+		System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
 			
 		jdrv.CloseController();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd, HH:mm");
@@ -401,9 +403,9 @@ public class ImagerTest {
 		System.out.println("Finished Analog Sampler Test");
 	}
 	
-	static void ImagerDebugModeTest(ImagerCntr imager){
-		int row = 100;
-		int col = 9;
+	static void ImagerDebugModeTest(ImagerCntr imager, int row, int col){
+		//int row = 100;
+		//int col = 9;
 		int col_num = 240;
 		double tsmp = 96*Math.pow(10, -9); //sampling period 96ns
 		double pw_smp = 40*Math.pow(10, -9); //sampling pulse width 40ns
