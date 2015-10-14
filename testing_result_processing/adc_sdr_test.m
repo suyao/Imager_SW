@@ -1,7 +1,9 @@
 clear all;
 close all;
 %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_left_20151009_1400.txt','r');
-fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_right_20151011_1920.txt','r');
+%fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_right_20151012_1600.txt','r'); %s2 right slow clk on board 1
+fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_left_20151013_1125.txt','r'); %s2 left slow clk on board 1
+%fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_b1s2left_20151013_1323.txt','r'); %s2 left fast clk on board 1
 
 f = fscanf(fin, '%f %x' ,[2 inf]);
 vin = f(1,:);
@@ -39,18 +41,25 @@ dout_bin_mean = zeros(N,11);
 % end
 % figure;
 % plot(data(:,1));
+ana = zeros(N,itr-1);
 for i = 1:N
-    dout_mean(i) = mode(data(i,2:end));
-    dout_bin_mean (i,:) = dec2bin(dout_mean(i),11);
-    dout_mean_rec(i) = floor(dout_bin_mean(i,:) * (fliplr(weights))')/2^9;
+    for k=2:itr
+        ana(i,k-1)= dec2bin(data(i,k),11)*(fliplr(weights))';
+    end
+    dout_mean_rec(i)=mean(ana(i,:))/2^9;
+    %dout_mean(i) = mode(data(i,2:end));
+    %dout_bin_mean (i,:) = dec2bin(dout_mean(i),11);
+    %dout_mean_rec(i) = floor(dout_bin_mean(i,:) * (fliplr(weights))')/2^9;
     
     dout_single(i) = data(i,end);
     dout_bin_single(i,:) = dec2bin(dout_single(i),11);
     dout_single_rec(i) = floor(dout_bin_single(i,:) * (fliplr(weights))')/2^9;
 end
 figure;
-plot(dout_mean)
+plot(dout_mean_rec)
 %snr = SNR((data(:,2))')
 snr=SNR(dout_single(257:end)/2^9)
-snr_rec_no=SNR(dout_mean_rec(257:end))
+snr_rec_avg=SNR(dout_mean_rec(257:end))
+enob_avg = (snr_rec_avg-1.76)/6.02
 snr_rec = SNR(dout_single_rec(257:end))
+enob_avg = (snr_rec-1.76)/6.02

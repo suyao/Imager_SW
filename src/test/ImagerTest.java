@@ -3,7 +3,7 @@
  * 
  * This document is a part of SAGE_SW project.
  *
- * Copyright (c) 2015 Jing Pu
+ * Copyright (c) 2015 Suyao Ji
  *
  */
 package test;
@@ -132,7 +132,7 @@ public class ImagerTest {
 		/*  -1 don't measure current
 		 *  0 ADC amp1_n 
 		 *  1 ADC amp1_p
-		 *  2 ADC_amp2_n
+		 *  2 ADC_amp2_n 
 		 *  3 ADC_amp2_p
 		 *  4 DUMMY_amp1_n
 		 *  5 DUMMY_amp1_p
@@ -300,6 +300,7 @@ public class ImagerTest {
 			imager.DACRstCntr(0); //don't reset dac
 			int idx = yvonne.FindIdxofName("ana18");
 			double rsl_ana18 = (DACCntr.ana18_max-DACCntr.ana18_min)/DACCntr.levels*2;
+			System.out.println("ana18_max = , " + DACCntr.ana18_max);
 			int reg_min = (int) Math.round((v0-(vrefp-vrefn)-DACCntr.ana18_min)/rsl_ana18) + DACCntr.levels/4 - 32*20;
 			int reg_max = (int) Math.round((v0+(vrefp-vrefn)-DACCntr.ana18_min)/rsl_ana18) + DACCntr.levels/4 + 32*20;
 			int inc = (int) Math.round(32/Math.pow(2, extra_bit));
@@ -532,5 +533,99 @@ public class ImagerTest {
 		imager.EnableDout(true);
 			
 		System.out.println("Finish Calibrating ADC");
+	}
+	
+	static void Partial_Settling_Calibration(int itr_times, DACCntr yvonne, ImagerCntr imager, int adc_idx, int clk_freq){
+		int row = 0;
+		int col = 5;
+		double min = 0.5;
+		double max = 2.8;
+		int load_left = 0; // in fF
+		int load_right = 2;
+		int rstMode = 1;
+		double tsmp = 96*Math.pow(10, -9); //sampling period 96ns
+		double pw_smp = 40*Math.pow(10, -9); //sampling pulse width 40ns
+		double pw_tx = (10*4) * tsmp;
+		double pw_isf = 9 * tsmp;
+		double dly_isf = 16 * tsmp + pw_tx -10*tsmp; // this value has to be larger than dly_rst + pw_rst
+		// in debug mode light integration time is single row time
+		//double trow =(col_num+6+16*2) * tsmp +pw_isf*2 + pw_tx - 10*tsmp ; //row time ~28us
+		double trow =(ImagerCntr.colNum+6+16*2) * tsmp +pw_isf*2 +50 * tsmp;
+		double pw_rst = (10) * tsmp;
+		double dly_rst = 3 * tsmp ;	
+		double dly_tx = dly_rst + pw_isf + (ImagerCntr.colNum / 2 + 16) *tsmp + pw_tx - 10*tsmp;
+		double integ_time = 160*trow;
+		//pw_tx = 10*tsmp;
+		
+		System.out.println("Test Single Pixel at Row = " + row + ", Col = " + col);
+		imager.ScanMode(false);
+		imager.RowCounterForce(true);
+		imager.SetRowCounter(row);
+		imager.SetColCounter(col);
+		imager.SetSmpPeriod(tsmp);
+		imager.SetSmpPW(pw_smp);
+		imager.SetRowPeriod(integ_time);
+		imager.SetRstPW(pw_rst);
+		imager.SetRstDelayTime(dly_rst);
+		imager.SetTxPW(pw_tx);
+		imager.SetTxDelayTime(dly_tx);
+		imager.SetIsfPW(pw_isf);
+		imager.SetIsfDelayTime(dly_isf);
+		imager.SetMuxDelayTime(dly_isf + pw_isf -tsmp);
+		imager.EnableDout(true); //disable output dout
+		imager.EnableDummyADC(false); // disable dummy adc
+		imager.EnableADCCali(false);
+		imager.EnableADC(true); // enable adc	
+		imager.DACRstCntr(rstMode); //dac rst mode
+		imager.SetBitlineLoad(load_left,load_right);
+		imager.OutputSel(0);
+		imager.JtagReset();
+		
+		String load = "?fF";
+		if (col < 120) {
+			if (load_left ==0) load = "0fF";
+			else load = "1fF";
+		} else {
+			if (load_right == 2) load = "2fF";
+			else load = "4fF";
+		}
+		DateFormat dateFormat = new SimpleDateFormat("_yyyyMMdd_HHmm");
+		Date date = new Date();
+		String which_adc = "left";
+		if (adc_idx == 1)
+			which_adc = "right";	
+		String filename = "./outputs/PartialSettling/"  + idx_bd + idx_chip + which_adc + load + dateFormat.format(date)+".txt";
+
+			
+		try {
+			File file = new File(filename);
+			if (!file.exists()) {
+				file.createNewFile();
+			}
+			FileWriter fw = new FileWriter(file.getAbsoluteFile());
+			BufferedWriter bw = new BufferedWriter(fw);
+			bw.write("@isf_pulse = " + pw_isf*250e6/clk_freq*1e6 + "us, sampling pulse width = " 
+					+ pw_smp*250e6/clk_freq*1e6 + "us, input clk freq is " + clk_freq/1e6 + "MHz"
+					+ "cap load is " + load + ".\n");
+			double value;
+			for (int i = 0; i < 100; i ++){	
+				value = min + i*(max-min)/100;
+				yvonne.WriteDACValue("ana33", value, yvonne.dac_reg  )	;
+				if (i == 0)
+					try {Thread.sleep(5000);} catch (InterruptedException e) {e.printStackTrace();}
+				String ADC_out_str = "";
+				System.out.println("ANA33 Input: "+ value);
+				try {Thread.sleep(700);} catch (InterruptedException e) {e.printStackTrace();}
+				for (int itr = 0 ; itr < itr_times; itr++){ //average readings to eliminate noise
+					ADC_out_str = imager.ReadADCatRST(); //JTAG readout
+					bw.write(value + " " + ADC_out_str +"\n");
+					System.out.println("               Output: " + ADC_out_str);
+				}
+			}
+			bw.close();
+			System.out.println("Test Single Pixel Finishes");
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
 	}
 }
