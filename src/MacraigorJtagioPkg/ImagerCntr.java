@@ -329,7 +329,7 @@ public class ImagerCntr extends MacraigorJtagio {
 	}
 	
 	public void SetClkMuxDelayTime (double delay){
-		int p = (int) Math.round(delay/tsmp);
+		int p = (int) Math.round(delay/Tclk_fast);
 		int width = 5;
 		int max = (int) Math.pow(2, width);
 		if (p >= max) {

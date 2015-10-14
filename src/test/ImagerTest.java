@@ -57,14 +57,14 @@ public class ImagerTest {
 	static DACCntr InitDAC() {
 		//Set DAC Values
 		double pvdd = 2.8;
-		double ana33 = 1.4;
+		double ana33 = 2.3;
 		v0 = 1;
 		double ana18 = 1;
 		vrefp = 1.25;
 		vrefn = 0.7501;
 		double Iin = 1;
 		vcm = 1;
-		vrst = 0.6; 
+		vrst = 0.45; 
 		double dac_values[] = {pvdd,ana33,v0, ana18, vrefp, vrefn, Iin, vcm, vrst};
 		DACCntr yvonne = new DACCntr(dac_values, 1); // board #
 		try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
@@ -152,19 +152,20 @@ public class ImagerTest {
 		imager.EnableDout(false);
 		// ADC Testing
 		//DummyADCTest(0.51, yvonne, imager);
-		ADCTest(1.1, yvonne, imager, 0); // left ADC if 0, right ADC if 1
+		//ADCTest(1.1, yvonne, imager, 0); // left ADC if 0, right ADC if 1
 		//CalibrateDummyADC(10, yvonne, imager); //repeat every analog value for 100 conversions
 		//CalibrateADC(20, yvonne, imager, 0, 3); //(itr, , ,left/right, extra_bit)
 		//SNR_ADC(20, yvonne, imager, 0);
 		//ADC_ext_input(yvonne,imager,1);
 		//Pixel Readout
-		//ImagerDebugModeTest(imager, 0,3);
+		ImagerDebugModeTest(imager, 0,3);
+		System.out.println("Read from jtag x074: " + jdrv.readReg(ClockDomain.tc_domain, "0074"));
 		//ImagerDebugModeTest(imager, 1,3);
 		//ImagerDebugModeTest(imager, 300,3);
 		
 		//ImagerFrameTest(imager);
 		//System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
-			
+		Partial_Settling_Calibration(20,  yvonne, imager, 0, 120e6);	
 		jdrv.CloseController();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd, HH:mm");
 		Date date = new Date();
@@ -408,14 +409,14 @@ public class ImagerTest {
 		//int row = 100;
 		//int col = 9;
 		int col_num = 240;
-		double tsmp = 96*Math.pow(10, -9); //sampling period 96ns
-		double pw_smp = 40*Math.pow(10, -9); //sampling pulse width 40ns
-		double pw_tx = (10*4) * tsmp;
+		double tsmp = 24*4*Math.pow(10, -9); //sampling period 96ns
+		double pw_smp = 10*4*Math.pow(10, -9); //sampling pulse width 40ns
+		double pw_tx = 10 * tsmp;
 		double pw_isf = 9 * tsmp;
 		double dly_isf = 16 * tsmp + pw_tx -10*tsmp; // this value has to be larger than dly_rst + pw_rst
 		// in debug mode light integration time is single row time
-		//double trow =(col_num+6+16*2) * tsmp +pw_isf*2 + pw_tx - 10*tsmp ; //row time ~28us
-		double trow =(col_num+6+16*2) * tsmp +pw_isf*2 +50 * tsmp;
+		double trow =(col_num+6+16*1) * tsmp +pw_isf*2 + pw_tx - 10*tsmp ; //row time ~28us
+		//double trow =(col_num+6+16*2) * tsmp +pw_isf*2 +50 * tsmp;
 		double pw_rst = (10) * tsmp;
 		double dly_rst = 3 * tsmp ;	
 		double dly_tx = dly_rst + pw_isf + (col_num / 2 + 16) *tsmp + pw_tx - 10*tsmp;
@@ -437,12 +438,13 @@ public class ImagerTest {
 		imager.SetIsfPW(pw_isf);
 		imager.SetIsfDelayTime(dly_isf);
 		imager.SetMuxDelayTime(dly_isf + pw_isf -tsmp);
-		imager.EnableDout(true); //disable output dout
+		imager.SetClkMuxDelayTime(tsmp);
+		imager.EnableDout(false); //disable output dout
 		imager.EnableDummyADC(false); // disable dummy adc
 		imager.EnableADCCali(false);
 		imager.EnableADC(true); // enable adc	
 		imager.DACRstCntr(1); //dac rst mode
-		imager.SetBitlineLoad(0,2);
+		imager.SetBitlineLoad(1,2);
 		//imager.SetPxIntegrationTime(integ_time);
 		imager.OutputSel(0);
 		imager.JtagReset();
@@ -455,7 +457,7 @@ public class ImagerTest {
 			FileWriter fw = new FileWriter(file.getAbsoluteFile());
 			BufferedWriter bw = new BufferedWriter(fw);
 			String out;
-			for (int i =1; i<10; i++){
+			for (int i =1; i<5; i++){
 				out = imager.ReadADCatRST();
 				System.out.println("RST Read out : " + out);
 				bw.write(out);
@@ -516,6 +518,7 @@ public class ImagerTest {
 		imager.DACRstCntr(1);
 		imager.SetBitlineLoad(0,2);
 		imager.SetPxIntegrationTime(320*trow- integ_time);
+		imager.SetClkMuxDelayTime(tsmp);
 		imager.JtagReset();
 	}
 	
@@ -535,29 +538,29 @@ public class ImagerTest {
 		System.out.println("Finish Calibrating ADC");
 	}
 	
-	static void Partial_Settling_Calibration(int itr_times, DACCntr yvonne, ImagerCntr imager, int adc_idx, int clk_freq){
+	static void Partial_Settling_Calibration(int itr_times, DACCntr yvonne, ImagerCntr imager, int adc_idx, double clk_freq){
 		int row = 0;
-		int col = 5;
-		double min = 0.5;
-		double max = 2.8;
-		int load_left = 0; // in fF
+		int col = 3;
+		double min = 1.1;
+		double max = 2.3;
+		int load_left = 1; // in fF
 		int load_right = 2;
 		int rstMode = 1;
 		double tsmp = 96*Math.pow(10, -9); //sampling period 96ns
 		double pw_smp = 40*Math.pow(10, -9); //sampling pulse width 40ns
-		double pw_tx = (10*4) * tsmp;
+		double pw_tx = (10*1) * tsmp;
 		double pw_isf = 9 * tsmp;
 		double dly_isf = 16 * tsmp + pw_tx -10*tsmp; // this value has to be larger than dly_rst + pw_rst
 		// in debug mode light integration time is single row time
-		//double trow =(col_num+6+16*2) * tsmp +pw_isf*2 + pw_tx - 10*tsmp ; //row time ~28us
-		double trow =(ImagerCntr.colNum+6+16*2) * tsmp +pw_isf*2 +50 * tsmp;
+		double trow =(ImagerCntr.colNum+6+16*2) * tsmp +pw_isf*2 + pw_tx - 10*tsmp ; //row time ~28us
+		//double trow =(ImagerCntr.colNum+6+16*2) * tsmp +pw_isf*2 +50 * tsmp;
 		double pw_rst = (10) * tsmp;
 		double dly_rst = 3 * tsmp ;	
 		double dly_tx = dly_rst + pw_isf + (ImagerCntr.colNum / 2 + 16) *tsmp + pw_tx - 10*tsmp;
 		double integ_time = 160*trow;
 		//pw_tx = 10*tsmp;
 		
-		System.out.println("Test Single Pixel at Row = " + row + ", Col = " + col);
+		System.out.println("Test Partial Settling at Row = " + row + ", Col = " + col);
 		imager.ScanMode(false);
 		imager.RowCounterForce(true);
 		imager.SetRowCounter(row);
@@ -572,13 +575,14 @@ public class ImagerTest {
 		imager.SetIsfPW(pw_isf);
 		imager.SetIsfDelayTime(dly_isf);
 		imager.SetMuxDelayTime(dly_isf + pw_isf -tsmp);
-		imager.EnableDout(true); //disable output dout
+		imager.EnableDout(false); //disable output dout
 		imager.EnableDummyADC(false); // disable dummy adc
 		imager.EnableADCCali(false);
 		imager.EnableADC(true); // enable adc	
 		imager.DACRstCntr(rstMode); //dac rst mode
 		imager.SetBitlineLoad(load_left,load_right);
 		imager.OutputSel(0);
+		imager.SetClkMuxDelayTime(tsmp);
 		imager.JtagReset();
 		
 		String load = "?fF";
@@ -623,7 +627,7 @@ public class ImagerTest {
 				}
 			}
 			bw.close();
-			System.out.println("Test Single Pixel Finishes");
+			System.out.println("Test Partial settling Finishes");
 		} catch (IOException e) {
 			e.printStackTrace();
 		} 
