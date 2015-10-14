@@ -57,7 +57,7 @@ public class ImagerTest {
 	static DACCntr InitDAC() {
 		//Set DAC Values
 		double pvdd = 2.8;
-		double ana33 = 2.65;
+		double ana33 = 1.5;
 		v0 = 1;
 		double ana18 = 1;
 		vrefp = 1.25;
@@ -149,7 +149,7 @@ public class ImagerTest {
 		
 		idx_bd="b1";
 		idx_chip="s2";
-		imager.EnableDout(false);
+		imager.EnableDout(true);
 		// ADC Testing
 		//DummyADCTest(0.51, yvonne, imager);
 		//ADCTest(1.1, yvonne, imager, 0); // left ADC if 0, right ADC if 1
@@ -158,14 +158,14 @@ public class ImagerTest {
 		//SNR_ADC(20, yvonne, imager, 0);
 		//ADC_ext_input(yvonne,imager,1);
 		//Pixel Readout
-		//ImagerDebugModeTest(imager, 0,3);
+		ImagerDebugModeTest(imager, 0,3);
 		//System.out.println("Read from jtag x074: " + jdrv.readReg(ClockDomain.tc_domain, "0074"));
-		//ImagerDebugModeTest(imager, 1,3);
-		//ImagerDebugModeTest(imager, 300,3);
+		ImagerDebugModeTest(imager, 1,3);
+		ImagerDebugModeTest(imager, 300,3);
 		
-		//ImagerFrameTest(imager);
-		//System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
-		Partial_Settling_Calibration(20,  yvonne, imager, 0, 250e6);	
+		ImagerFrameTest(imager);
+		System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
+		//Partial_Settling_Calibration(20,  yvonne, imager, 0, 250e6);	
 		jdrv.CloseController();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd, HH:mm");
 		Date date = new Date();
