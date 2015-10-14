@@ -57,7 +57,7 @@ public class ImagerTest {
 	static DACCntr InitDAC() {
 		//Set DAC Values
 		double pvdd = 2.8;
-		double ana33 = 2.3;
+		double ana33 = 1.05;
 		v0 = 1;
 		double ana18 = 1;
 		vrefp = 1.25;
@@ -158,8 +158,8 @@ public class ImagerTest {
 		//SNR_ADC(20, yvonne, imager, 0);
 		//ADC_ext_input(yvonne,imager,1);
 		//Pixel Readout
-		ImagerDebugModeTest(imager, 0,3);
-		System.out.println("Read from jtag x074: " + jdrv.readReg(ClockDomain.tc_domain, "0074"));
+		//ImagerDebugModeTest(imager, 0,3);
+		//System.out.println("Read from jtag x074: " + jdrv.readReg(ClockDomain.tc_domain, "0074"));
 		//ImagerDebugModeTest(imager, 1,3);
 		//ImagerDebugModeTest(imager, 300,3);
 		
@@ -541,8 +541,10 @@ public class ImagerTest {
 	static void Partial_Settling_Calibration(int itr_times, DACCntr yvonne, ImagerCntr imager, int adc_idx, double clk_freq){
 		int row = 0;
 		int col = 3;
-		double min = 1.1;
+		double min = 1.1; //slow clk
 		double max = 2.3;
+		//double max = 2.8; //fast clk
+		//double min =1.1;
 		int load_left = 1; // in fF
 		int load_right = 2;
 		int rstMode = 1;
@@ -619,7 +621,7 @@ public class ImagerTest {
 					try {Thread.sleep(5000);} catch (InterruptedException e) {e.printStackTrace();}
 				String ADC_out_str = "";
 				System.out.println("ANA33 Input: "+ value);
-				try {Thread.sleep(700);} catch (InterruptedException e) {e.printStackTrace();}
+				try {Thread.sleep(2000);} catch (InterruptedException e) {e.printStackTrace();}
 				for (int itr = 0 ; itr < itr_times; itr++){ //average readings to eliminate noise
 					ADC_out_str = imager.ReadADCatRST(); //JTAG readout
 					bw.write(value + " " + ADC_out_str +"\n");
