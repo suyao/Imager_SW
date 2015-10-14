@@ -6,7 +6,7 @@ f = (fscanf(fin, '%f %x' ,[2 inf]))';
 vin_raw = f(:,1);
 dout = f(:,2);
 fclose(fin);
-fit_order = 5;
+fit_order = 3;
 lsb = 1/1024;
 % combine same input
 v0 = vin_raw(1);
@@ -33,7 +33,7 @@ dout_bin_mean = zeros(N,11);
 ana = zeros(N,itr-1);
 for i = 1:N
     for k=2:itr
-        ana(i,k-1)= double(dec2bin(data(i,k),11)-'0')*(fliplr(weights))';
+        ana(i,k-1)= dec2bin(data(i,k),11)*(fliplr(weights))';
     end
     dout_mean_rec(i)=mean(ana(i,:))/2^9;
     
@@ -42,9 +42,6 @@ for i = 1:N
     dout_single_rec(i) = floor(dout_bin_single(i,:) * (fliplr(weights))')/2^9;
 end
 
-dout_mean_rec=dout_mean_rec';
-figure;
-plot(vin,dout_mean_rec);
 
 f=figure('Name','Inf Norm Fit: vin=f(vout)');
 for i=1:1
