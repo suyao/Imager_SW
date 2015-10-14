@@ -5,7 +5,7 @@ clear all;
 close all;
 row_num = 320;
 col_num = 240/2;
-filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_white.csv';
+filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_checker_1508.csv';
 fid = fopen(filename,'r');
 f = fscanf(fid, '%f,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d, %d, %d', [15 inf] );
 new_frame = f(14,:);

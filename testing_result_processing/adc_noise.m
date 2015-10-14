@@ -1,7 +1,9 @@
 % by shorting v0 and ana18, measure the output to estimate the noise
+% Time[s], Channel 0, Channel 1, Channel 2, clk_smp
 clear all;
 close all;
-filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/noise_ana_short.csv';
+%filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/noise_ana_1009.csv';
+filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/noise_ana_1013_1446_b1s2_left_fast.csv';
 fid = fopen(filename,'r');
 f = fscanf(fid, '%f,%d,%d,%d,%d', [5 inf] );
 bits= [f(4,:);f(3,:); f(2,:)]';
@@ -23,10 +25,12 @@ per=counts/sum(counts)
 %per(5)+per(6)
 %% cdf 
 per=counts/sum(counts)
-sigma = 0.34; %short
-x0=-0.377; x1 = x0+1; 
+%sigma = 0.34; %short
+%x0=-0.377; x1 = x0+1; 
 %sigma = 0.341; %noise_ana_1009 (long)
 %x0 = -0.3575; x1 = x0 +1;
+sigma = 0.24; %noise_ana_1013_b1s2_left_fast
+x0= -0.6256; x1 = x0+1; 
 cdf0 = 1/2*(erf((x0-0.5)/sqrt(2)/sigma)-erf((x0-1.5)/sqrt(2)/sigma))
 cdf1 = 1/2*(erf((x0+0.5)/sqrt(2)/sigma)-erf((x0-0.5)/sqrt(2)/sigma))
 cdf2 = 1/2*(erf((x1+0.5)/sqrt(2)/sigma)-erf((x1-0.5)/sqrt(2)/sigma))
