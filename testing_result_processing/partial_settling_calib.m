@@ -1,12 +1,12 @@
 clear all;
 close all;
-fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s2left1fF_20151014_1210.txt'); 
+fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s2left1fF_20151014_1328.txt'); 
 c = fgetl(fin);  
 f = (fscanf(fin, '%f %x' ,[2 inf]))';
 vin_raw = f(:,1);
 dout = f(:,2);
 fclose(fin);
-fit_order = 5;
+fit_order = 4;
 lsb = 1/1024;
 % combine same input
 v0 = vin_raw(1);
