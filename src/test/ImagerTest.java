@@ -57,7 +57,7 @@ public class ImagerTest {
 	static DACCntr InitDAC() {
 		//Set DAC Values
 		double pvdd = 2.8;
-		double ana33 = 1.05;
+		double ana33 = 2.65;
 		v0 = 1;
 		double ana18 = 1;
 		vrefp = 1.25;
@@ -165,7 +165,7 @@ public class ImagerTest {
 		
 		//ImagerFrameTest(imager);
 		//System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
-		Partial_Settling_Calibration(20,  yvonne, imager, 0, 120e6);	
+		Partial_Settling_Calibration(20,  yvonne, imager, 0, 250e6);	
 		jdrv.CloseController();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd, HH:mm");
 		Date date = new Date();
@@ -541,10 +541,10 @@ public class ImagerTest {
 	static void Partial_Settling_Calibration(int itr_times, DACCntr yvonne, ImagerCntr imager, int adc_idx, double clk_freq){
 		int row = 0;
 		int col = 3;
-		double min = 1.1; //slow clk
-		double max = 2.3;
-		//double max = 2.8; //fast clk
-		//double min =1.1;
+		//double min = 1.1; //slow clk
+		//double max = 2.3;
+		double max = 2.65; //fast clk
+		double min = 1.1;
 		int load_left = 1; // in fF
 		int load_right = 2;
 		int rstMode = 1;
