@@ -63,5 +63,5 @@ end
 image_raw = (rst_raw - px_raw)/sum(weights);
 
 figure;
-imshow(flipud(image_raw));
+imshow(image_raw);
     

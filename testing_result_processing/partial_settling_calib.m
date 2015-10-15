@@ -6,7 +6,7 @@ f = (fscanf(fin, '%f %x' ,[2 inf]))';
 vin_raw = f(:,1);
 dout = f(:,2);
 fclose(fin);
-fit_order = 5;
+fit_order = 3;
 lsb = 1/1024;
 % combine same input
 v0 = vin_raw(1);

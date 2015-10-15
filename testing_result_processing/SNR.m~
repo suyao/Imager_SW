@@ -23,8 +23,8 @@ function SNR_result = SNR(data)
     SNR_result = sndrdb;
     figure;
     plot(frequency, spectrumdb, '*-', 'linewidth', 2);
-    enob = (sndrdb-1.76)/6.02;
-     string = sprintf('Fundamental=%0.3gdBV, SNDR=%0.3gdB, SFDR=%0.3gdB, ENOB=%0.2gb\n', funddb, sndrdb, sfdrdb,enob)
+    enob = (sndrdb-1.76)
+     string = sprintf('Fundamental=%0.3gdBV, SNDR=%0.3gdB, SFDR=%0.3gdB ENOB=%0.2b\n', funddb, sndrdb, sfdrdb,enob)
      title(string);
     xlabel('Frequency [f/fs]');
     ylabel('Amplitude [dBV]');

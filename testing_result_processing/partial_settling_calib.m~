@@ -1,6 +1,6 @@
 clear all;
 close all;
-fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s2left1fF_20151014_1210.txt'); 
+fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s2left1fF_20151014_1402.txt'); 
 c = fgetl(fin);  
 f = (fscanf(fin, '%f %x' ,[2 inf]))';
 vin_raw = f(:,1);
@@ -33,7 +33,7 @@ dout_bin_mean = zeros(N,11);
 ana = zeros(N,itr-1);
 for i = 1:N
     for k=2:itr
-        ana(i,k-1)= dec2bin(data(i,k),11)*(fliplr(weights))';
+        ana(i,k-1)= double(dec2bin(data(i,k),11)-'0')*(fliplr(weights))';
     end
     dout_mean_rec(i)=mean(ana(i,:))/2^9;
     
@@ -41,6 +41,12 @@ for i = 1:N
     dout_bin_single(i,:) = dec2bin(dout_single(i),11);
     dout_single_rec(i) = floor(dout_bin_single(i,:) * (fliplr(weights))')/2^9;
 end
+
+dout_mean_rec=dout_mean_rec';
+figure;
+plot(vin,dout_mean_rec);
+xlabel('vin');
+ylabel('dout mean calibrated');
 
 
 f=figure('Name','Inf Norm Fit: vin=f(vout)');
