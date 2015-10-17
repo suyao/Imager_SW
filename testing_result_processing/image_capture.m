@@ -12,9 +12,8 @@ f = fscanf(fid, '%f,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d, %d, %d', [15 inf] );
 new_frame = f(14,:);
 new_row = f(13,:);
 clk_smp = f(15,:);
-data= [f(1,:); f(2,:);f(3,:);f(4,:);f(5,:);f(6,:);f(7,:);f(8,:);f(9,:);f(10,:);f(11,:)]';
-weights = [509.3693  272.4805  136.4577   68.4769   34.2635   17.2742 15.5958    7.9048    3.9518    1.9835    1.0000];
-weights = fliplr( weights);
+data= [ f(2,:);f(3,:);f(4,:);f(5,:);f(6,:);f(7,:);f(8,:);f(9,:);f(10,:);f(11,:); f(12,:)]';
+weights = adc_calibration();
 wbi = [1 2 4 8 16 32 64 128 256 512 1024];
 idx_at_frame = 0;
 for i = 2:1:length(new_frame)
@@ -60,7 +59,17 @@ for i = idx_at_frame:length(new_frame)
         end
     end
 end
+
+%%
 image_raw = (rst_raw - px_raw)/sum(weights);
+
+% for i = 1:320;
+%     for k =1:120;
+%         if image_raw(i,k) < 0
+%             image_raw(i,k) = 0;
+%         end
+%     end
+% end
 
 figure;
 imshow(flipud(image_raw));
