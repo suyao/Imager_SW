@@ -45,6 +45,9 @@ end
 dout_mean_rec=dout_mean_rec';
 figure;
 plot(vin,dout_mean_rec);
+xlabel('vin');
+ylabel('dout mean calibrated');
+
 
 f=figure('Name','Inf Norm Fit: vin=f(vout)');
 for i=1:1

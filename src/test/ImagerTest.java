@@ -57,7 +57,7 @@ public class ImagerTest {
 	static DACCntr InitDAC() {
 		//Set DAC Values
 		double pvdd = 2.8;
-		double ana33 = 1.5;
+		double ana33 = 1.7;
 		v0 = 1;
 		double ana18 = 1;
 		vrefp = 1.25;
@@ -142,28 +142,28 @@ public class ImagerTest {
 		 */
 		imager.SetADCTiming(1,1,1);
 		// SetADCcurrent( n1, p1, n2, p2) , the larger number, the smaller the current
-		//imager.SetADCcurrent(0,13,4,7); imager.SetISFcurrent(4); // chip s3 on board 2
-		imager.SetADCcurrent(2,13,7,7); imager.SetISFcurrent(5);// chip s2 on board 3
+		imager.SetADCcurrent(0,12,4,3); imager.SetISFcurrent(4); // chip s3 on board 2
+		//imager.SetADCcurrent(2,13,7,7); imager.SetISFcurrent(5);// chip s2 on board 3
 		//imager.SetADCcurrent(3,10,5,8); imager.SetISFcurrent(5);// chip c1 on board 3
-		imager.CurrentTestPt(2);
+		imager.CurrentTestPt(1);
 		
 		idx_bd="b1";
-		idx_chip="s2";
+		idx_chip="s3";
 		imager.EnableDout(true);
 		// ADC Testing
 		//DummyADCTest(0.51, yvonne, imager);
-		//ADCTest(1.1, yvonne, imager, 0); // left ADC if 0, right ADC if 1
+		//ADCTest(1.4, yvonne, imager, 1); // left ADC if 0, right ADC if 1
 		//CalibrateDummyADC(10, yvonne, imager); //repeat every analog value for 100 conversions
-		//CalibrateADC(20, yvonne, imager, 0, 3); //(itr, , ,left/right, extra_bit)
-		//SNR_ADC(20, yvonne, imager, 0);
-		//ADC_ext_input(yvonne,imager,1);
+		//CalibrateADC(20, yvonne, imager, 1, 3, "slow"); //(itr, , ,left/right, extra_bit)
+		//SNR_ADC(20, yvonne, imager, 1, "fast");
+		ADC_ext_input(yvonne,imager,1, "slow");// adc_idx
 		//Pixel Readout
-		ImagerDebugModeTest(imager, 0,3);
+		//ImagerDebugModeTest(imager, 0,30);
 		//System.out.println("Read from jtag x074: " + jdrv.readReg(ClockDomain.tc_domain, "0074"));
-		ImagerDebugModeTest(imager, 1,3);
-		ImagerDebugModeTest(imager, 300,3);
-		
-		ImagerFrameTest(imager);
+		//ImagerDebugModeTest(imager, 1,3);
+		//ImagerDebugModeTest(imager, 300,3);
+		//ReadImagerReg(jdrv);
+		//ImagerFrameTest(imager);
 		System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
 		//Partial_Settling_Calibration(20,  yvonne, imager, 0, 250e6);	
 		jdrv.CloseController();
@@ -223,6 +223,7 @@ public class ImagerTest {
 		imager.EnableADCCali(true);
 		imager.EnableADC(true); // enable adc	
 		imager.DACRstCntr(0); //don't reset dac
+		imager.OutputSel(adc_idx);
 		imager.JtagReset();
 		yvonne.WriteDACValue("ana18", value, yvonne.dac_reg  )	;
 		String ADC_out_str = "";
@@ -272,16 +273,16 @@ public class ImagerTest {
 		System.out.println("Finish Calibrating Dummy ADC");
 	}
 	
-	static void CalibrateADC(int itr_times, DACCntr yvonne, ImagerCntr imager, int adc_idx, int extra_bit){
+	static void CalibrateADC(int itr_times, DACCntr yvonne, ImagerCntr imager, int adc_idx, int extra_bit, String speed){
 		System.out.println("ADC Calibration Starts...");
 		System.out.println("ADC SNR Measurement Starts...");
 		DateFormat dateFormat = new SimpleDateFormat("_yyyyMMdd_HHmm");
 		Date date = new Date();
-		String which_adc = "left";
+		String which_adc = "_left";
 		if (adc_idx == 1)
-			which_adc = "right";	
+			which_adc = "_right";	
 		String bit_info = Integer.toString(extra_bit) + "b";
-		String filename = "outputs/CalibrateADC/ADC_ramp_"  + idx_bd + idx_chip + which_adc + bit_info + dateFormat.format(date)+".txt";
+		String filename = "outputs/CalibrateADC/ADC_ramp_"  + idx_bd + idx_chip + speed + which_adc + bit_info + dateFormat.format(date)+".txt";
 		
 		try {
 			File file = new File(filename);
@@ -299,6 +300,7 @@ public class ImagerTest {
 			imager.EnableADCCali(true);
 			imager.EnableADC(true); // enable adc
 			imager.DACRstCntr(0); //don't reset dac
+			imager.OutputSel(adc_idx);
 			int idx = yvonne.FindIdxofName("ana18");
 			double rsl_ana18 = (DACCntr.ana18_max-DACCntr.ana18_min)/DACCntr.levels*2;
 			System.out.println("ana18_max = , " + DACCntr.ana18_max);
@@ -328,14 +330,14 @@ public class ImagerTest {
 		System.out.println("Finish Calibrating ADC");
 	}
 
-	static void SNR_ADC(int itr_times, DACCntr yvonne, ImagerCntr imager, int adc_idx){
+	static void SNR_ADC(int itr_times, DACCntr yvonne, ImagerCntr imager, int adc_idx, String speed){
 		System.out.println("ADC SNR Measurement Starts...");
 		DateFormat dateFormat = new SimpleDateFormat("_yyyyMMdd_HHmm");
 		Date date = new Date();
-		String which_adc = "left";
+		String which_adc = "_left";
 		if (adc_idx == 1)
-			which_adc = "right";	
-		String filename = "./outputs/CalibrateADC/ADC_SNR_"  + idx_bd + idx_chip + which_adc + dateFormat.format(date)+".txt";
+			which_adc = "_right";	
+		String filename = "./outputs/CalibrateADC/ADC_SNR_"  + idx_bd + idx_chip + speed + which_adc + dateFormat.format(date)+".txt";
 		try {
 			File file = new File(filename);
 			if (!file.exists()) {
@@ -352,6 +354,7 @@ public class ImagerTest {
 			imager.EnableADCCali(true);
 			imager.EnableADC(true); // enable adc
 			imager.DACRstCntr(0); //don't reset dac
+			imager.OutputSel(adc_idx);
 			double value;
 			for (int i = 1; i <= 256*6; i ++){	
 				value = 0.495 * Math.sin(2* Math.PI *i/256.0) + v0;
@@ -409,8 +412,8 @@ public class ImagerTest {
 		//int row = 100;
 		//int col = 9;
 		int col_num = 240;
-		double tsmp = 24*4*Math.pow(10, -9); //sampling period 96ns
-		double pw_smp = 10*4*Math.pow(10, -9); //sampling pulse width 40ns
+		double tsmp = 30*4*Math.pow(10, -9); //sampling period 96ns
+		double pw_smp = 15*4*Math.pow(10, -9); //sampling pulse width 40ns
 		double pw_tx = 10 * tsmp;
 		double pw_isf = 9 * tsmp;
 		double dly_isf = 16 * tsmp + pw_tx -10*tsmp; // this value has to be larger than dly_rst + pw_rst
@@ -420,7 +423,7 @@ public class ImagerTest {
 		double pw_rst = (10) * tsmp;
 		double dly_rst = 3 * tsmp ;	
 		double dly_tx = dly_rst + pw_isf + (col_num / 2 + 16) *tsmp + pw_tx - 10*tsmp;
-		double integ_time = 160*trow;
+		double integ_time = 1*trow;
 		//pw_tx = 10*tsmp;
 		
 		System.out.println("Test Single Pixel at Row = " + row + ", Col = " + col);
@@ -438,15 +441,19 @@ public class ImagerTest {
 		imager.SetIsfPW(pw_isf);
 		imager.SetIsfDelayTime(dly_isf);
 		imager.SetMuxDelayTime(dly_isf + pw_isf -tsmp);
-		imager.SetClkMuxDelayTime(tsmp);
-		imager.EnableDout(false); //disable output dout
+		imager.SetClkMuxDelayTime(0);
+		imager.EnableDout(true); //disable output dout
 		imager.EnableDummyADC(false); // disable dummy adc
 		imager.EnableADCCali(false);
 		imager.EnableADC(true); // enable adc	
 		imager.DACRstCntr(1); //dac rst mode
 		imager.SetBitlineLoad(1,2);
-		//imager.SetPxIntegrationTime(integ_time);
-		imager.OutputSel(0);
+		imager.SetBlRstDelayTime(0);
+		//imager.SetPxIntegrationTime(160*trow);
+		if (col < 120)
+			imager.OutputSel(0);
+		else
+			imager.OutputSel(1);
 		imager.JtagReset();
 		
 		try {
@@ -518,26 +525,53 @@ public class ImagerTest {
 		imager.DACRstCntr(1);
 		imager.SetBitlineLoad(0,2);
 		imager.SetPxIntegrationTime(320*trow- integ_time);
-		imager.SetClkMuxDelayTime(tsmp);
+		imager.SetClkMuxDelayTime(0);
+		imager.SetBlRstDelayTime(0);
 		imager.JtagReset();
 	}
 	
-	static void ADC_ext_input( DACCntr yvonne, ImagerCntr imager, int adc_idx){
+	static void ADC_ext_input( DACCntr yvonne, ImagerCntr imager, int adc_idx, String speed){
 		System.out.println("ADC output to logic analyzer begins...");
 		if (adc_idx == 0)
 			imager.SetColCounter(1); // if col<120, output left adc, otherwise, right adc
 		else
 			imager.SetColCounter(136);
-		imager.ScanMode(false);
+		imager.ScanMode(true);
 		imager.EnableDummyADC(false); // disable dummy adc
 		imager.EnableADCCali(true);
 		imager.EnableADC(true); // enable adc
 		imager.DACRstCntr(0); //don't reset dac
 		imager.EnableDout(true);
+		imager.OutputSel(adc_idx);
+		imager.JtagReset();
 			
 		System.out.println("Finish Calibrating ADC");
 	}
 	
+	static void ReadImagerReg(JtagDriver jdrv){
+		
+ 			System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
+ 			System.out.println("Read from JTAG SC 004: " + jdrv.readReg(ClockDomain.tc_domain, "0004"));
+ 			System.out.println("Read from JTAG SC 018: " + jdrv.readReg(ClockDomain.tc_domain, "0018"));
+ 			System.out.println("Read from JTAG SC 020: " + jdrv.readReg(ClockDomain.tc_domain, "0020"));
+ 			System.out.println("Read from JTAG SC 028: " + jdrv.readReg(ClockDomain.tc_domain, "0028"));
+ 			System.out.println("Read from JTAG SC 02C: " + jdrv.readReg(ClockDomain.tc_domain, "002C"));
+ 			System.out.println("Read from JTAG SC 008: " + jdrv.readReg(ClockDomain.tc_domain, "0008"));
+ 			System.out.println("Read from JTAG SC 00C: " + jdrv.readReg(ClockDomain.tc_domain, "000C"));
+ 			System.out.println("Read from JTAG SC 010: " + jdrv.readReg(ClockDomain.tc_domain, "0010"));
+ 			System.out.println("Read from JTAG SC 030: " + jdrv.readReg(ClockDomain.tc_domain, "0030"));
+ 			System.out.println("Read from JTAG SC 034: " + jdrv.readReg(ClockDomain.tc_domain, "0034"));
+ 			System.out.println("Read from JTAG SC 038: " + jdrv.readReg(ClockDomain.tc_domain, "0038"));
+ 			System.out.println("Read from JTAG SC 03C: " + jdrv.readReg(ClockDomain.tc_domain, "003C"));
+ 			System.out.println("Read from JTAG SC 040: " + jdrv.readReg(ClockDomain.tc_domain, "0040"));
+ 			System.out.println("Read from JTAG SC 044: " + jdrv.readReg(ClockDomain.tc_domain, "0044"));
+ 			System.out.println("Read from JTAG SC 048: " + jdrv.readReg(ClockDomain.tc_domain, "0048"));
+ 			System.out.println("Read from JTAG SC 074: " + jdrv.readReg(ClockDomain.tc_domain, "0074"));
+ 			System.out.println("Read from JTAG SC 078: " + jdrv.readReg(ClockDomain.tc_domain, "0078"));
+ 			System.out.println("Read from JTAG SC 07c: " + jdrv.readReg(ClockDomain.tc_domain, "007c"));
+ 			System.out.println("Read from JTAG SC 014: " + jdrv.readReg(ClockDomain.tc_domain, "0014"));
+ 		
+	}
 	static void Partial_Settling_Calibration(int itr_times, DACCntr yvonne, ImagerCntr imager, int adc_idx, double clk_freq){
 		int row = 0;
 		int col = 3;
@@ -583,8 +617,9 @@ public class ImagerTest {
 		imager.EnableADC(true); // enable adc	
 		imager.DACRstCntr(rstMode); //dac rst mode
 		imager.SetBitlineLoad(load_left,load_right);
-		imager.OutputSel(0);
-		imager.SetClkMuxDelayTime(tsmp);
+		imager.OutputSel(adc_idx);
+		imager.SetClkMuxDelayTime(0);
+		imager.SetBlRstDelayTime(0);
 		imager.JtagReset();
 		
 		String load = "?fF";

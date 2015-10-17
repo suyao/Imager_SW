@@ -3,8 +3,12 @@
 clear all;
 close all;
 %filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/noise_ana_1009.csv';
-filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/noise_ana_1013_b1s2_left_fast.csv';
+%filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/noise_ana_1013_b1s2_left_fast.csv'; %input shorted
+%filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/noise_ana_1015_1711_b1s2_left_fast.csv'; %1V
+%filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/noise_ana_1015_1656_b1s2_left_inputshorted_fast.csv'; %input shorted
+filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/noise_ana_1015_1716_lowV_b1s2_left_fast.csv'; %1.1V
 fid = fopen(filename,'r');
+c = fgetl(fid); 
 f = fscanf(fid, '%f,%d,%d,%d,%d', [5 inf] );
 bits= [f(4,:);f(3,:); f(2,:)]';
 clk_smp = f(5,:);

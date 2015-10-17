@@ -8,8 +8,10 @@ function weight= adc_calibration()
     %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_output_b3.txt','r');
     %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_left2b_20151009_1309.txt','r'); 
     %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_right3b_20151012_1512.txt','r'); %s2 right slow clk on board 1
-    fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_left3b_20151013_1036.txt','r'); %s2 left slow clk on board 1
+    %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_left3b_20151013_1036.txt','r'); %s2 left slow clk on board 1
     %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_b1s2left3b_20151013_1235.txt','r'); %s2 left fast clk on board 1
+    %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_b1s3left3b_20151016_1400.txt','r'); %s3 left fast clk on board 1
+    fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_b1s3slowright3b_20151016_1519.txt','r'); %s3 left slow clk on board 1
 
     f = fscanf(fin, '%i %x' ,[2 inf]);
     din = f(1,:);
