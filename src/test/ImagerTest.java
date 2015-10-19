@@ -163,7 +163,7 @@ public class ImagerTest {
 		//ImagerDebugModeTest(imager, 1,3);
 		//ImagerDebugModeTest(imager, 300,3);
 		//ReadImagerReg(jdrv);
-		//ImagerFrameTest(imager);
+		//ImagerFrameTest(imager, jdrv);
 		System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
 		//Partial_Settling_Calibration(20,  yvonne, imager, 0, 250e6);	
 		jdrv.CloseController();
@@ -479,7 +479,7 @@ public class ImagerTest {
 		} 
 	}
 	
-	static void ImagerFrameTest(ImagerCntr imager){
+	static void ImagerFrameTest(ImagerCntr imager, JtagDriver jdrv){
 		
 		int row_num = 320;
 		int col_num = 240;
@@ -528,6 +528,13 @@ public class ImagerTest {
 		imager.SetClkMuxDelayTime(0);
 		imager.SetBlRstDelayTime(0);
 		imager.JtagReset();
+		jdrv.readReg(ClockDomain.tc_domain, "0000");
+		System.out.println("Left half Frame Test Starts:");
+		try {Thread.sleep(200);} catch (InterruptedException e) {e.printStackTrace();}
+		imager.OutputSel(right);	
+		System.out.println("Right half Frame Test Starts:");
+		imager.JtagReset();
+		jdrv.readReg(ClockDomain.tc_domain, "0000");
 	}
 	
 	static void ADC_ext_input( DACCntr yvonne, ImagerCntr imager, int adc_idx, String speed){
