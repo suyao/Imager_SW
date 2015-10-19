@@ -149,14 +149,14 @@ public class ImagerTest {
 		
 		idx_bd="b1";
 		idx_chip="s3";
-		imager.EnableDout(true);
+		imager.EnableDout(false);
 		// ADC Testing
 		//DummyADCTest(0.51, yvonne, imager);
-		//ADCTest(1.4, yvonne, imager, 1); // left ADC if 0, right ADC if 1
+		//ADCTest(1.0, yvonne, imager, 0); // left ADC if 0, right ADC if 1
 		//CalibrateDummyADC(10, yvonne, imager); //repeat every analog value for 100 conversions
-		//CalibrateADC(20, yvonne, imager, 1, 3, "slow"); //(itr, , ,left/right, extra_bit)
-		//SNR_ADC(20, yvonne, imager, 1, "fast");
-		ADC_ext_input(yvonne,imager,1, "slow");// adc_idx
+		//CalibrateADC(20, yvonne, imager, 0, 3, "slow"); //(itr, , ,left/right, extra_bit)
+		SNR_ADC(20, yvonne, imager, 0, "slow");
+		//ADC_ext_input(yvonne,imager,1, "slow");// adc_idx
 		//Pixel Readout
 		//ImagerDebugModeTest(imager, 0,30);
 		//System.out.println("Read from jtag x074: " + jdrv.readReg(ClockDomain.tc_domain, "0074"));
@@ -275,7 +275,6 @@ public class ImagerTest {
 	
 	static void CalibrateADC(int itr_times, DACCntr yvonne, ImagerCntr imager, int adc_idx, int extra_bit, String speed){
 		System.out.println("ADC Calibration Starts...");
-		System.out.println("ADC SNR Measurement Starts...");
 		DateFormat dateFormat = new SimpleDateFormat("_yyyyMMdd_HHmm");
 		Date date = new Date();
 		String which_adc = "_left";
