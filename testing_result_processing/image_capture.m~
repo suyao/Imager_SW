@@ -52,12 +52,12 @@ for lr = 1:2
 
                 if (idx_col <=col_num && idx_col >0)
                     rst_hex(idx_row,idx_col) = (data(i,:)*wbi');
-                    rst_raw(idx_row,idx_col) = data(i,:)*weights{lr}';      
+                    rst_raw(idx_row,idx_col) = data(i,:)*weights{l';      
                 end
 
                 if (idx_col > col_num + wait_col && idx_col <=col_num*2+wait_col)
                     px_hex(idx_row,idx_col-col_num - wait_col) = (data(i,:)*wbi');
-                    px_raw(idx_row,idx_col-col_num - wait_col) = data(i,:)*weights{lr}';
+                    px_raw(idx_row,idx_col-col_num - wait_col) = data(i,:)*weights';
 
                 end 
                 idx_col = idx_col + 1;
@@ -65,7 +65,7 @@ for lr = 1:2
         end
     end
 
-    image_half{lr} = (rst_raw - px_raw)/sum(weights{lr});
+    image_half{lr} = (rst_raw - px_raw)/sum(weights);
 end
 
 image_raw = [image_half{1};image_half{2}];

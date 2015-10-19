@@ -13,6 +13,7 @@ weights = adc_calibration();
 %%
 close all;
 N = 28087;
+%N = 140435;
 idx = 1;
 data=zeros(1,N);
 for i = 2:r
@@ -28,5 +29,15 @@ end
 fs = 71.2077e3;
 figure;
 plot(data);
-snr=SNR2(data,fs)
+snr=SNR(data,fs)
 enob = (snr-1.76)/6.02
+%%
+% clear all;
+% close all;
+% f=1e6;
+% fs= 1/96e-9;
+% for i = 1:1000
+%     t = i/fs;
+%     S(i) = sin(2*pi*f*t)+normrnd(0,0.3e-3);
+% end
+% snr = SNR(S,fs);

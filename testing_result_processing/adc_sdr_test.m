@@ -3,11 +3,11 @@ close all;
 %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_left_20151009_1400.txt','r');
 %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_right_20151012_1600.txt','r'); %s2 right slow clk on board 1
 %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_left_20151013_1125.txt','r'); %s2 left slow clk on board 1
-fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_b1s2left_20151013_1323.txt','r'); %s2 left fast clk on board 1
-%fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_b1s3slow_right_20151016_1609.txt','r');
+%fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_b1s2left_20151013_1323.txt','r'); %s2 left fast clk on board 1
+fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_b1s3slow_right_20151016_1609.txt','r');
 %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_b1s3fastright_20151016_1633.txt','r');
 
-
+weights = adc_calibration(1);
 f = fscanf(fin, '%f %x' ,[2 inf]);
 vin = f(1,:);
 dout = f(2,:);
@@ -30,7 +30,7 @@ for i = 1: length(vin)
 end
 
 [N, itr] = size(data);
-weights = adc_calibration();
+
 dout_bin_mean = zeros(N,11);
 
 

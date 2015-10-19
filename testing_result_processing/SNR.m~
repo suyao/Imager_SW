@@ -29,7 +29,6 @@ function SNR_result = SNR(data,fs)
      title(string);
     xlabel('Frequency [f/fs]');
     ylabel('Amplitude [dBV]');
-    ylim([-120 0]);
    % axis([0 0.5 -120 0]);
     grid;
 end
