@@ -28,5 +28,13 @@ end
 fs = 71.2077e3;
 figure;
 plot(data);
-snr=SNR2(data,fs)
+snr=SNR(data,fs)
 enob = (snr-1.76)/6.02
+%%
+clear all;
+close all;
+f=1e6;
+fs= 1/96e-9;
+t=(1:1024)/fs;
+S = 0.7*sin(2*pi*f*t);
+snr = SNR(S,fs);

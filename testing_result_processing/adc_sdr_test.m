@@ -47,8 +47,8 @@ for i = 1:N
 end
 figure;
 plot(dout_mean_rec)
-snr=SNR(dout_single(257:end)/2^9)
-snr_rec_avg=SNR(dout_mean_rec(257:end))
+snr=SNR(dout_single(257:end)/2^9,1)
+snr_rec_avg=SNR(dout_mean_rec(257:end),1)
 enob_avg = (snr_rec_avg-1.76)/6.02
-snr_rec = SNR(dout_single_rec(257:end))
+snr_rec = SNR(dout_single_rec(257:end),1)
 enob_avg = (snr_rec-1.76)/6.02

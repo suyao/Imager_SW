@@ -1,10 +1,11 @@
-function S=SNR2(data);
+function S=SNR2(data,Fs);
     N=length(data);
     spectrum = fft(data);
     P2= abs(spectrum/N);
     P1=P2(1:N/2 + 1);
     P1(2:end-1) = 2*P1(2:end-1);
+    f = Fs*(0:N/2)/N;
     figure;
-    plot(P1);
+    plot(f,P1);
     [fund, fundidx] = max(P1);
     S=fund;
