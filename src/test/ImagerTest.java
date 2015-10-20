@@ -57,7 +57,7 @@ public class ImagerTest {
 	static DACCntr InitDAC() {
 		//Set DAC Values
 		double pvdd = 2.8;
-		double ana33 = 1.7;
+		double ana33 = 2.4;
 		v0 = 1;
 		double ana18 = 1;
 		vrefp = 1.25;
@@ -149,7 +149,7 @@ public class ImagerTest {
 		
 		idx_bd="b1";
 		idx_chip="s3";
-		imager.EnableDout(true);
+		imager.EnableDout(false);
 		// ADC Testing
 		//DummyADCTest(0.51, yvonne, imager);
 		//ADCTest(1.0, yvonne, imager, 0); // left ADC if 0, right ADC if 1
@@ -158,14 +158,15 @@ public class ImagerTest {
 		//SNR_ADC(20, yvonne, imager, 0, "slow");
 		//ADC_ext_input(yvonne,imager,0, "slow");// adc_idx
 		//Pixel Readout
-		//ImagerDebugModeTest(imager, 0,30);
+		//ImagerDebugModeTest(imager, 0,32);
 		//System.out.println("Read from jtag x074: " + jdrv.readReg(ClockDomain.tc_domain, "0074"));
-		ImagerDebugModeTest(imager, 1,3);
+		//ImagerDebugModeTest(imager, 1,3);
 		//ImagerDebugModeTest(imager, 300,3);
 		//ReadImagerReg(jdrv);
-		ImagerFrameTest(imager, jdrv);
-		System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
-		//Partial_Settling_Calibration(20,  yvonne, imager, 1, 120e6);	
+		//ImagerFrameTest(imager, jdrv);
+		//System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
+		Partial_Settling_Calibration(20,  yvonne, imager, 0, 250e6);	
+		Partial_Settling_Calibration(20,  yvonne, imager, 1, 250e6);	
 		jdrv.CloseController();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd, HH:mm");
 		Date date = new Date();
@@ -444,7 +445,7 @@ public class ImagerTest {
 		imager.EnableADCCali(false);
 		imager.EnableADC(true); // enable adc	
 		imager.DACRstCntr(1); //dac rst mode
-		imager.SetBitlineLoad(1,2);
+		imager.SetBitlineLoad(1,4);
 		imager.SetBlRstDelayTime(0);
 		//imager.SetPxIntegrationTime(160*trow);
 		if (col < 120)
@@ -518,7 +519,7 @@ public class ImagerTest {
 		imager.JtagReset();
 		jdrv.readReg(ClockDomain.tc_domain, "0000");
 		System.out.println("Left half Frame Test Starts:");
-		try {Thread.sleep(40);} catch (InterruptedException e) {e.printStackTrace();}
+		try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
 		imager.OutputSel(right);	
 		System.out.println("Right half Frame Test Starts:");
 		imager.JtagReset();
@@ -574,11 +575,11 @@ public class ImagerTest {
 				col = 123;
 	
 		double min = 0.95; //slow clk
-		double max = 2.15;
-		//double max = 2.65; //fast clk
-		//double min = 1.1;
-		int load_left = 0; // in fF
-		int load_right = 2;
+		//double max = 2.18;
+		double max = 2.4; //fast clk
+
+		int load_left = 1; // in fF
+		int load_right = 4;
 		int rstMode = 1;
 		double tsmp = 96*Math.pow(10, -9); //sampling period 96ns
 		double pw_smp = 40*Math.pow(10, -9); //sampling pulse width 40ns
