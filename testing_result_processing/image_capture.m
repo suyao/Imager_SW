@@ -21,6 +21,8 @@ new_row = f(13,:);
 clk_smp = f(15,:);
 data= [ f(2,:);f(3,:);f(4,:);f(5,:);f(6,:);f(7,:);f(8,:);f(9,:);f(10,:);f(11,:); f(12,:)]';
 %%
+fit_order = 3;
+vmin = 0.5;
 weights{1} = adc_calibration(0);
 weights{2} = adc_calibration(1);
 wbi = [1 2 4 8 16 32 64 128 256 512 1024];
@@ -29,11 +31,14 @@ rst_raw = zeros(row_num,col_num);
 px_raw = zeros(row_num,col_num);
 rst_hex = zeros(row_num,col_num);
 px_hex = zeros(row_num,col_num);
+rst_calib = zeros(row_num,col_num);
+px_calib = zeros(row_num,col_num);
 idx_row = 0;
 wait_col = 28;
 idx_start = 2;
 
 for lr = 1:2
+    fit_coeff{lr} = partial_settling_fitting(fit_order,lr);
     frame_time = 0;
     for i = idx_start:length(new_frame)
         if ((new_frame(i-1) == 1) && (new_frame(i) == 0))
@@ -45,7 +50,7 @@ for lr = 1:2
 
     flag = 0;
     for i = idx_at_frame:length(new_frame)
-        if frame_time > 2
+        if frame_time > 3
             idx_start = i;
             break;
         end
@@ -55,7 +60,7 @@ for lr = 1:2
             if (idx_row == row_num +1)
                 flag = 1;
                 frame_time = frame_time +1;
-                p11 = i
+                %p11 = i;
                 idx_row =1;
             end
         end
@@ -65,12 +70,14 @@ for lr = 1:2
                 if (idx_col <=col_num && idx_col >0)
                     
                     rst_hex(idx_row,idx_col) = (data(i,:)*wbi');
-                    rst_raw(idx_row,idx_col) = data(i,:)*weights{lr}';      
+                    rst_raw(idx_row,idx_col) = data(i,:)*weights{lr}'/sum(weights{lr})+vmin; 
+                    rst_calib(idx_row,idx_col) = partial_settling_calib(data(i,:)*weights{lr}',fit_coeff{lr}); 
                 end
 
                 if (idx_col > col_num + wait_col && idx_col <=col_num*2+wait_col)
                     px_hex(idx_row,idx_col-col_num - wait_col) = (data(i,:)*wbi');
-                    px_raw(idx_row,idx_col-col_num - wait_col) = data(i,:)*weights{lr}';
+                    px_raw(idx_row,idx_col-col_num - wait_col) = data(i,:)*weights{lr}'/sum(weights{lr})+vmin;
+                    px_calib(idx_row,idx_col-col_num - wait_col) = partial_settling_calib(data(i,:)*weights{lr}',fit_coeff{lr});
 
                 end 
                 idx_col = idx_col + 1;
@@ -80,10 +87,14 @@ for lr = 1:2
     end
 
     image_half{lr} = (rst_raw - px_raw)/sum(weights{lr});
+    image_half_calib{lr} = (rst_calib - px_calib);
 end
 
 image_raw = [image_half{1} image_half{2}];
+image_calib = [image_half_calib{1} image_half_calib{2}];
 %image_raw = image_half{1};
 figure;
 imshow(flipud(image_raw));
+figure;
+imshow(flipud(image_calib));
 end   

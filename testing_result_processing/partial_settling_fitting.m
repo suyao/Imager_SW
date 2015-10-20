@@ -1,4 +1,4 @@
-function result = partial_settling_calib(fit_order,lr);
+function coeff = partial_settling_fitting(fit_order,lr);
 if lr == 0
     fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3left0fF_20151019_1539.txt');
 else
@@ -114,10 +114,7 @@ for i=1:1
     %ylim([min(vin(1:end,i)-vin_lin_fit(1:end,i)) max(vin(1:end,i)-vin_lin_fit(1:end,i))]);
 end
 coeff =  p_fit(:,1);
-result = 0;
-for i = 1:fit_order+1
-    result = coeff(i)*(value_raw.^(i-1)) + result;
-end
+
 %figure;
 %plot(vin , vin - result);
 
