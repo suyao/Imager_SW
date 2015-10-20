@@ -3,15 +3,22 @@
 %New Row, New Frame, clk_smp
 clear all;
 close all;
-%c = partial_settling_calib(3,0,0);
+%c = partial_settling_fitting(3,1);
+%c = partial_settling_fitting(3,2);
 %%
 if (1 ==1)
 row_num = 320;
 col_num = 240/2;
-%filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1019_1554_vert.csv';
-%filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1014_1437_vert.csv';
-%filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1019_1629_vert.csv';
-filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1019_1711_vert.csv';
+%filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1019_1711_vert.csv';
+%filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1020_1115_1f4fslow_vert.csv'; % tightly screwed upside
+%filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1020_1145_1f4fslow_vert.csv'; % loosely screwed downside
+%filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1020_1149_1f4fslow_vert.csv'; % 2 turn screwed upside
+filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1020_1155_1f4fslow_vert.csv'; % 1 turn screwed upside
+%filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1020_1155_1f4fslow_vert.csv'; % 2/3 turn screwed upside
+%filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1020_1211_1f4fslow_vert.csv'; % 5/6 turn screwed upside
+%filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1020_1218_1f4fslow_vert.csv'; % 1/2 turn screwed upside
+%filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1020_1227_1f4fslow_vert.csv'; % 1 turn screwed upside
+
 fid = fopen(filename,'r');
 c = fgetl(fid); 
 f = fscanf(fid, '%f,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d, %d, %d', [15 inf] );
@@ -21,6 +28,7 @@ new_row = f(13,:);
 clk_smp = f(15,:);
 data= [ f(2,:);f(3,:);f(4,:);f(5,:);f(6,:);f(7,:);f(8,:);f(9,:);f(10,:);f(11,:); f(12,:)]';
 %%
+close all;
 fit_order = 3;
 vmin = 0.5;
 weights{1} = adc_calibration(0);
@@ -71,13 +79,13 @@ for lr = 1:2
                     
                     rst_hex(idx_row,idx_col) = (data(i,:)*wbi');
                     rst_raw(idx_row,idx_col) = data(i,:)*weights{lr}'/sum(weights{lr})+vmin; 
-                    rst_calib(idx_row,idx_col) = partial_settling_calib(data(i,:)*weights{lr}',fit_coeff{lr}); 
+                    rst_calib(idx_row,idx_col) = partial_settling_calib(rst_raw(idx_row,idx_col),fit_coeff{lr}); 
                 end
 
                 if (idx_col > col_num + wait_col && idx_col <=col_num*2+wait_col)
                     px_hex(idx_row,idx_col-col_num - wait_col) = (data(i,:)*wbi');
                     px_raw(idx_row,idx_col-col_num - wait_col) = data(i,:)*weights{lr}'/sum(weights{lr})+vmin;
-                    px_calib(idx_row,idx_col-col_num - wait_col) = partial_settling_calib(data(i,:)*weights{lr}',fit_coeff{lr});
+                    px_calib(idx_row,idx_col-col_num - wait_col) = partial_settling_calib(px_raw(idx_row,idx_col-col_num - wait_col),fit_coeff{lr});
 
                 end 
                 idx_col = idx_col + 1;
@@ -86,7 +94,7 @@ for lr = 1:2
          
     end
 
-    image_half{lr} = (rst_raw - px_raw)/sum(weights{lr});
+    image_half{lr} = (rst_raw - px_raw);
     image_half_calib{lr} = (rst_calib - px_calib);
 end
 

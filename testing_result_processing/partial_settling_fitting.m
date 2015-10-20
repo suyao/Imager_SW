@@ -1,10 +1,11 @@
 function coeff = partial_settling_fitting(fit_order,lr);
-if lr == 0
-    fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3left0fF_20151019_1539.txt');
-else
-    fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3right2fF_20151019_1547.txt');
+if lr == 1
+    fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3left1fF_20151020_1049.txt');
+    %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3left0fF_20151019_1539.txt');
+elseif lr == 2
+    fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3right4fF_20151020_1053.txt');
+    %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3right2fF_20151019_1547.txt');
 end
-    %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s2left1fF_20151014_1402.txt'); 
 c = fgetl(fin);  
 f = (fscanf(fin, '%f %x' ,[2 inf]))';
 vin_raw = f(:,1);
@@ -39,11 +40,11 @@ for i = 1:N
     for k=2:itr
         ana(i,k-1)= double(dec2bin(data(i,k),11)-'0')*(fliplr(weights))';
     end
-    dout_mean_rec(i)=mean(ana(i,:))/2^9;
+    dout_mean_rec(i)=mean(ana(i,:))/(sum(weights)+1);
     
     dout_single(i) = data(i,end);
     dout_bin_single(i,:) = dec2bin(dout_single(i),11);
-    dout_single_rec(i) = floor(dout_bin_single(i,:) * (fliplr(weights))')/2^9;
+    dout_single_rec(i) = floor(dout_bin_single(i,:) * (fliplr(weights))')/(sum(weights)+1);
 end
 
 dout_mean_rec=dout_mean_rec';
@@ -51,7 +52,7 @@ figure;
 plot(vin,dout_mean_rec);
 xlabel('vin');
 ylabel('dout mean calibrated');
-%value_raw =dout_mean_rec;
+value_raw =dout_mean_rec;
 
 f=figure('Name','Inf Norm Fit: vin=f(vout)');
 p_fit = zeros(fit_order+1, 1);
@@ -114,7 +115,10 @@ for i=1:1
     %ylim([min(vin(1:end,i)-vin_lin_fit(1:end,i)) max(vin(1:end,i)-vin_lin_fit(1:end,i))]);
 end
 coeff =  p_fit(:,1);
-
-%figure;
-%plot(vin , vin - result);
+% result = 0;
+% for i = 1:fit_order+1
+%     result = coeff(i)*(value_raw.^(i-1)) + result;
+% end
+% figure;
+% plot(vin , vin - result);
 
