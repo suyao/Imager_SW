@@ -10,7 +10,9 @@ function SNR_result = SNR(data,fs)
     funddb=20*log10(fund);
     spec_nodc_nofund = [spectrum(2:fundidx-1), spectrum(fundidx+1:end)];
     [spur, spuridx] = max (spec_nodc_nofund);
-    
+    fundidx
+    spuridx
+    spur
     sfdrdb = funddb-20*log10(spur);
     sndr = norm(fund)/norm(spec_nodc_nofund);
     sndrdb=20*log10(sndr);

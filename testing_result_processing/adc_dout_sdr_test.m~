@@ -1,6 +1,7 @@
 clear all;
 close all;
-fid = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ext_sine_slow_p14d043_b1s3_1016_1734.csv','r');
+%fid = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ext_sine_slow_p5u_b1s3_1019_1138.csv','r');
+fid = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ext_sine_fast_p5u_b1s3_1019_1158.csv','r');
 c = fgetl(fid); 
 f = fscanf(fid, '%f,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d, %d', [13 inf] );
 t = f(1,:)';
@@ -9,16 +10,17 @@ clk_smp = [f(13,:)]';
 [r,nbits] = size(dout);
 fclose(fid);
 
-weights = adc_calibration();
+weights = adc_calibration(0);
 %%
 close all;
 N = 28087;
-%N = 140435;
+N = 5000*12 ;
+fs = 96e3;
 idx = 1;
 data=zeros(1,N);
 for i = 2:r
     if (clk_smp(i-1) == 1 && clk_smp(i)==0)
-        data(idx)=dout(i,:)*weights'/2^(nbits-1);  
+        data(idx)=dout(i,:)*weights'/2^(nbits-2);  
         idx= idx +1;
     end
     if idx > N
@@ -26,7 +28,7 @@ for i = 2:r
     end
 end
 
-fs = 71.2077e3;
+
 figure;
 plot(data);
 snr=SNR(data,fs)

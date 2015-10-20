@@ -3,18 +3,26 @@
 %New Row, New Frame, clk_smp
 clear all;
 close all;
+%c = partial_settling_calib(3,0,0);
+%%
+if (1 ==1)
 row_num = 320;
 col_num = 240/2;
-filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1014_1437_vert.csv';
+%filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1019_1554_vert.csv';
+%filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1014_1437_vert.csv';
+%filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1019_1629_vert.csv';
+filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1019_1711_vert.csv';
 fid = fopen(filename,'r');
 c = fgetl(fid); 
 f = fscanf(fid, '%f,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d, %d, %d', [15 inf] );
+time = f(1,:);
 new_frame = f(14,:);
 new_row = f(13,:);
 clk_smp = f(15,:);
 data= [ f(2,:);f(3,:);f(4,:);f(5,:);f(6,:);f(7,:);f(8,:);f(9,:);f(10,:);f(11,:); f(12,:)]';
-weights{0} = adc_calibration('left');
-weights{1} = adc_calibration('right');
+%%
+weights{1} = adc_calibration(0);
+weights{2} = adc_calibration(1);
 wbi = [1 2 4 8 16 32 64 128 256 512 1024];
 idx_at_frame = 0;
 rst_raw = zeros(row_num,col_num);
@@ -26,16 +34,18 @@ wait_col = 28;
 idx_start = 2;
 
 for lr = 1:2
+    frame_time = 0;
     for i = idx_start:length(new_frame)
         if ((new_frame(i-1) == 1) && (new_frame(i) == 0))
             idx_at_frame = i;
+            idx_row = 1;
             break;
         end   
     end
 
     flag = 0;
     for i = idx_at_frame:length(new_frame)
-        if idx_row > 2*row_num 
+        if frame_time > 2
             idx_start = i;
             break;
         end
@@ -44,13 +54,16 @@ for lr = 1:2
             idx_col = 0;
             if (idx_row == row_num +1)
                 flag = 1;
+                frame_time = frame_time +1;
+                p11 = i
                 idx_row =1;
             end
         end
         if (flag ==1)
             if (clk_smp(i-1) == 1 && clk_smp(i) == 0)
-
+                
                 if (idx_col <=col_num && idx_col >0)
+                    
                     rst_hex(idx_row,idx_col) = (data(i,:)*wbi');
                     rst_raw(idx_row,idx_col) = data(i,:)*weights{lr}';      
                 end
@@ -63,12 +76,14 @@ for lr = 1:2
                 idx_col = idx_col + 1;
             end
         end
+         
     end
 
     image_half{lr} = (rst_raw - px_raw)/sum(weights{lr});
 end
 
-image_raw = [image_half{1};image_half{2}];
+image_raw = [image_half{1} image_half{2}];
+%image_raw = image_half{1};
 figure;
 imshow(flipud(image_raw));
-    
+end   
