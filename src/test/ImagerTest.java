@@ -145,27 +145,27 @@ public class ImagerTest {
 		imager.SetADCcurrent(0,12,4,3); imager.SetISFcurrent(4); // chip s3 on board 2
 		//imager.SetADCcurrent(2,13,7,7); imager.SetISFcurrent(5);// chip s2 on board 3
 		//imager.SetADCcurrent(3,10,5,8); imager.SetISFcurrent(5);// chip c1 on board 3
-		imager.CurrentTestPt(1);
+		imager.CurrentTestPt(8);
 		
 		idx_bd="b1";
 		idx_chip="s3";
-		imager.EnableDout(false);
+		imager.EnableDout(true);
 		// ADC Testing
 		//DummyADCTest(0.51, yvonne, imager);
 		//ADCTest(1.0, yvonne, imager, 0); // left ADC if 0, right ADC if 1
 		//CalibrateDummyADC(10, yvonne, imager); //repeat every analog value for 100 conversions
 		//CalibrateADC(20, yvonne, imager, 0, 3, "slow"); //(itr, , ,left/right, extra_bit)
-		SNR_ADC(20, yvonne, imager, 0, "slow");
-		//ADC_ext_input(yvonne,imager,1, "slow");// adc_idx
+		//SNR_ADC(20, yvonne, imager, 0, "slow");
+		//ADC_ext_input(yvonne,imager,0, "slow");// adc_idx
 		//Pixel Readout
 		//ImagerDebugModeTest(imager, 0,30);
 		//System.out.println("Read from jtag x074: " + jdrv.readReg(ClockDomain.tc_domain, "0074"));
-		//ImagerDebugModeTest(imager, 1,3);
+		ImagerDebugModeTest(imager, 1,3);
 		//ImagerDebugModeTest(imager, 300,3);
 		//ReadImagerReg(jdrv);
-		//ImagerFrameTest(imager, jdrv);
+		ImagerFrameTest(imager, jdrv);
 		System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
-		//Partial_Settling_Calibration(20,  yvonne, imager, 0, 250e6);	
+		//Partial_Settling_Calibration(20,  yvonne, imager, 1, 120e6);	
 		jdrv.CloseController();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd, HH:mm");
 		Date date = new Date();
@@ -175,7 +175,7 @@ public class ImagerTest {
 	
 	static void InitJTAG(JtagDriver jdrv){
 		ImagerCntr imager = new ImagerCntr(jdrv);
-		jdrv.SetSpeed(4);
+		jdrv.SetSpeed(6);
 		int a =jdrv.GetSpeed();
 		System.out.println("TCK speed: " + a);
 		String RO;
@@ -408,10 +408,8 @@ public class ImagerTest {
 	}
 	
 	static void ImagerDebugModeTest(ImagerCntr imager, int row, int col){
-		//int row = 100;
-		//int col = 9;
 		int col_num = 240;
-		double tsmp = 30*4*Math.pow(10, -9); //sampling period 96ns
+		double tsmp = 29*4*Math.pow(10, -9); //sampling period 96ns
 		double pw_smp = 15*4*Math.pow(10, -9); //sampling pulse width 40ns
 		double pw_tx = 10 * tsmp;
 		double pw_isf = 9 * tsmp;
@@ -455,27 +453,18 @@ public class ImagerTest {
 			imager.OutputSel(1);
 		imager.JtagReset();
 		
-		try {
-			File file = new File("./outputs/SinglePixel/row0col1.txt");
-			if (!file.exists()) {
-				file.createNewFile();
-			}
-			FileWriter fw = new FileWriter(file.getAbsoluteFile());
-			BufferedWriter bw = new BufferedWriter(fw);
-			String out;
-			for (int i =1; i<5; i++){
-				out = imager.ReadADCatRST();
-				System.out.println("RST Read out : " + out);
-				bw.write(out);
-				out = imager.ReadADCatTX();
-				System.out.println("TX Read out: " + out);
-				bw.write(out);
-			}
-			bw.close();
-			System.out.println("Test Single Pixel Finishes");
-		} catch (IOException e) {
-			e.printStackTrace();
-		} 
+		String out;
+		for (int i =0; i<10; i++){
+			out = imager.ReadADCatRST();
+			System.out.println("RST Read out : " + out);
+			
+			out = imager.ReadADCatTX();
+			System.out.println("TX Read out: " + out);
+	
+		}
+
+		System.out.println("Test Single Pixel Finishes");
+ 
 	}
 	
 	static void ImagerFrameTest(ImagerCntr imager, JtagDriver jdrv){
@@ -529,7 +518,7 @@ public class ImagerTest {
 		imager.JtagReset();
 		jdrv.readReg(ClockDomain.tc_domain, "0000");
 		System.out.println("Left half Frame Test Starts:");
-		try {Thread.sleep(200);} catch (InterruptedException e) {e.printStackTrace();}
+		try {Thread.sleep(40);} catch (InterruptedException e) {e.printStackTrace();}
 		imager.OutputSel(right);	
 		System.out.println("Right half Frame Test Starts:");
 		imager.JtagReset();
@@ -581,11 +570,14 @@ public class ImagerTest {
 	static void Partial_Settling_Calibration(int itr_times, DACCntr yvonne, ImagerCntr imager, int adc_idx, double clk_freq){
 		int row = 0;
 		int col = 3;
-		//double min = 1.1; //slow clk
-		//double max = 2.3;
-		double max = 2.65; //fast clk
-		double min = 1.1;
-		int load_left = 1; // in fF
+		if (adc_idx == 1)
+				col = 123;
+	
+		double min = 0.95; //slow clk
+		double max = 2.15;
+		//double max = 2.65; //fast clk
+		//double min = 1.1;
+		int load_left = 0; // in fF
 		int load_right = 2;
 		int rstMode = 1;
 		double tsmp = 96*Math.pow(10, -9); //sampling period 96ns
