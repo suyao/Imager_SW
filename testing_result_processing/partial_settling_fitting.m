@@ -2,9 +2,11 @@ function coeff = partial_settling_fitting(fit_order,lr);
 if lr == 1
     fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3left1fF_20151020_1049.txt');
     %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3left0fF_20151019_1539.txt');
+    %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3left1fF_20151020_1238.txt');
 elseif lr == 2
     fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3right4fF_20151020_1053.txt');
     %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3right2fF_20151019_1547.txt');
+    %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3right4fF_20151020_1242.txt');
 end
 c = fgetl(fin);  
 f = (fscanf(fin, '%f %x' ,[2 inf]))';
@@ -115,10 +117,10 @@ for i=1:1
     %ylim([min(vin(1:end,i)-vin_lin_fit(1:end,i)) max(vin(1:end,i)-vin_lin_fit(1:end,i))]);
 end
 coeff =  p_fit(:,1);
-% result = 0;
-% for i = 1:fit_order+1
-%     result = coeff(i)*(value_raw.^(i-1)) + result;
-% end
-% figure;
-% plot(vin , vin - result);
+result = 0;
+for i = 1:fit_order+1
+    result = coeff(i)*(value_raw.^(i-1)) + result;
+end
+figure;
+plot(vin , vin - result);
 

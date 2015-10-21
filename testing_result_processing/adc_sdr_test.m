@@ -41,11 +41,11 @@ for i = 1:N
     for k=2:itr
         ana(i,k-1)= dec2bin(data(i,k),11)*(fliplr(weights))';
     end
-    dout_mean_rec(i)=mean(ana(i,:))/2^9;
+    dout_mean_rec(i)=mean(ana(i,:))/(sum(weights)+1);
     
     dout_single(i) = data(i,end);
     dout_bin_single(i,:) = dec2bin(dout_single(i),11);
-    dout_single_rec(i) = floor(dout_bin_single(i,:) * (fliplr(weights))')/2^9;
+    dout_single_rec(i) = floor(dout_bin_single(i,:) * (fliplr(weights))')/(sum(weights)+1);
 end
 figure;
 plot(dout_mean_rec)

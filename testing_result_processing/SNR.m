@@ -8,7 +8,12 @@ function SNR_result = SNR(data,fs)
     frequency = fs*(0:(NN/2))/NN;
     [fund, fundidx] = max(spectrum);
     funddb=20*log10(fund);
-    spec_nodc_nofund = [spectrum(2:fundidx-1), spectrum(fundidx+1:end)];
+    spec_nodc_nofund = [spectrum(2:fundidx-100), spectrum(fundidx+100:end)];
+    THD = 0;
+    for i =2:9
+        THD = (spectrum((fundidx-1)*i+1))^2 + THD;
+    end
+    THD=db(THD)/2
     [spur, spuridx] = max (spec_nodc_nofund);
     fundidx
     spuridx
@@ -29,7 +34,7 @@ function SNR_result = SNR(data,fs)
     enob = (sndrdb-1.76)/6.02;
      string = sprintf('Fundamental=%0.3gdBV, SNDR=%0.3gdB, SFDR=%0.3gdB, ENOB=%0.2gb\n', funddb, sndrdb, sfdrdb,enob)
      title(string);
-    xlabel('Frequency [f/fs]');
+    xlabel('Frequency [f]');
     ylabel('Amplitude [dBV]');
     ylim([-120 0]);
    % axis([0 0.5 -120 0]);

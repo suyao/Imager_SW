@@ -13,14 +13,16 @@ fclose(fid);
 weights = adc_calibration(0);
 %%
 close all;
-N = 28087;
+%N = 28087;
 N = 5000*12 ;
-fs = 96e3;
+fs = 1/96e-9;
+%N = 5000*20;
+%fs = 1/200e-9;
 idx = 1;
 data=zeros(1,N);
 for i = 2:r
     if (clk_smp(i-1) == 1 && clk_smp(i)==0)
-        data(idx)=dout(i,:)*weights'/2^(nbits-2);  
+        data(idx)=dout(i,:)*weights'/(sum(weights+1));  
         idx= idx +1;
     end
     if idx > N
