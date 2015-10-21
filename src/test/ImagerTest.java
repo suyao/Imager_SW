@@ -63,7 +63,7 @@ public class ImagerTest {
 		vrefp = 1.25;
 		vrefn = 0.7501;
 		double Iin = 1;
-		vcm = 1;
+		vcm = 0.75;
 		vrst = 0.45; 
 		double dac_values[] = {pvdd,ana33,v0, ana18, vrefp, vrefn, Iin, vcm, vrst};
 		DACCntr yvonne = new DACCntr(dac_values, 1); // board #
@@ -152,7 +152,7 @@ public class ImagerTest {
 		imager.EnableDout(true);
 		// ADC Testing
 		//DummyADCTest(0.51, yvonne, imager);
-		//ADCTest(1.0, yvonne, imager, 0); // left ADC if 0, right ADC if 1
+		ADCTest(1.0, yvonne, imager, 0); // left ADC if 0, right ADC if 1
 		//CalibrateDummyADC(10, yvonne, imager); //repeat every analog value for 100 conversions
 		//CalibrateADC(20, yvonne, imager, 0, 3, "slow"); //(itr, , ,left/right, extra_bit)
 		//SNR_ADC(20, yvonne, imager, 0, "slow");
@@ -532,7 +532,7 @@ public class ImagerTest {
 			imager.SetColCounter(1); // if col<120, output left adc, otherwise, right adc
 		else
 			imager.SetColCounter(136);
-		imager.ScanMode(true);
+		imager.ScanMode(false);
 		imager.EnableDummyADC(false); // disable dummy adc
 		imager.EnableADCCali(true);
 		imager.EnableADC(true); // enable adc
