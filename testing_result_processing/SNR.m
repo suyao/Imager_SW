@@ -8,18 +8,15 @@ function SNR_result = SNR(data,fs)
     frequency = fs*(0:(NN/2))/NN;
     [fund, fundidx] = max(spectrum);
     funddb=20*log10(fund);
-    spec_nodc_nofund = [spectrum(2:fundidx-100), spectrum(fundidx+100:end)];
+    spec_nodc_nofund = [spectrum(2:fundidx-1), spectrum(fundidx+1:end)];
     THD = 0;
-    for i =2:9
+    for i =2:15
         THD = (spectrum((fundidx-1)*i+1))^2 + THD;
     end
-    THD=db(THD)/2
+    THD_db=db(THD)/2
     [spur, spuridx] = max (spec_nodc_nofund);
-    fundidx
-    spuridx
-    spur
     sfdrdb = funddb-20*log10(spur);
-    sndr = norm(fund)/norm(spec_nodc_nofund);
+    sndr = norm(fund)/norm(spec_nodc_nofund-THD);
     sndrdb=20*log10(sndr);
     funddb=20*log10(norm(fund));
     nofunddb=20*log(norm(spec_nodc_nofund));
