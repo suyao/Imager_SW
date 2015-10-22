@@ -13,12 +13,19 @@ col_num = 240/2;
 %filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1020_1115_1f4fslow_vert.csv'; % tightly screwed upside
 %filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1020_1145_1f4fslow_vert.csv'; % loosely screwed downside
 %filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1020_1149_1f4fslow_vert.csv'; % 2 turn screwed upside
-filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1020_1155_1f4fslow_vert.csv'; % 1 turn screwed upside
+%filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1020_1155_1f4fslow_vert.csv'; % 1 turn screwed upside
 %filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1020_1155_1f4fslow_vert.csv'; % 2/3 turn screwed upside
 %filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1020_1211_1f4fslow_vert.csv'; % 5/6 turn screwed upside
 %filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1020_1218_1f4fslow_vert.csv'; % 1/2 turn screwed upside
-%filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1020_1227_1f4fslow_vert.csv'; % 1 turn screwed upside
-
+%filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1020_1227_1f4fslow_vert.csv'; % 1/2 turn out
+filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1021_1517_vert.csv'; % 0 turn
+filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1021_1556_vert.csv'; % 1/8 turn out best
+%filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1021_1556_cup.csv'; % 1/8 turn out best
+%filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1021_1630_grid.csv'; % 1/8 turn out best
+filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1021_1651_vert.csv'; % 1/16 turn out
+filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1021_1702_vert.csv'; % 3/32 turn out
+%filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1021_1800_bird.csv'; % 1/8 turn out best
+%filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1021_1800_grid.csv'; % 1/8 turn out best
 fid = fopen(filename,'r');
 c = fgetl(fid); 
 f = fscanf(fid, '%f,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d, %d, %d', [15 inf] );
@@ -27,13 +34,14 @@ new_frame = f(14,:);
 new_row = f(13,:);
 clk_smp = f(15,:);
 data= [ f(2,:);f(3,:);f(4,:);f(5,:);f(6,:);f(7,:);f(8,:);f(9,:);f(10,:);f(11,:); f(12,:)]';
-%%
-close all;
+
+%close all;
 fit_order = 3;
 vmin = 0.5;
 weights{1} = adc_calibration(0);
 weights{2} = adc_calibration(1);
 wbi = [1 2 4 8 16 32 64 128 256 512 1024];
+%%
 idx_at_frame = 0;
 rst_raw = zeros(row_num,col_num);
 px_raw = zeros(row_num,col_num);
@@ -58,7 +66,7 @@ for lr = 1:2
 
     flag = 0;
     for i = idx_at_frame:length(new_frame)
-        if frame_time > 3
+        if frame_time > 9
             idx_start = i;
             break;
         end
@@ -98,11 +106,13 @@ for lr = 1:2
     image_half_calib{lr} = (rst_calib - px_calib);
 end
 
-image_raw = [image_half{1} image_half{2}];
-image_calib = [image_half_calib{1} image_half_calib{2}];
+image_raw = [image_half{1} image_half{2}(:,2:end)];
+image_calib = [image_half_calib{1} image_half_calib{2}(:,2:end)];
 %image_raw = image_half{1};
 figure;
 imshow(flipud(image_raw));
+%imshow(fliplr(image_raw'));
 figure;
 imshow(flipud(image_calib));
+%imshow(fliplr(image_calib'));
 end   

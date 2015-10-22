@@ -149,14 +149,14 @@ public class ImagerTest {
 		
 		idx_bd="b1";
 		idx_chip="s3";
-		imager.EnableDout(true);
+		imager.EnableDout(false);
 		// ADC Testing
 		//DummyADCTest(0.51, yvonne, imager);
 		ADCTest(1.0, yvonne, imager, 0); // left ADC if 0, right ADC if 1
 		//CalibrateDummyADC(10, yvonne, imager); //repeat every analog value for 100 conversions
 		//CalibrateADC(20, yvonne, imager, 0, 3, "slow"); //(itr, , ,left/right, extra_bit)
-		//SNR_ADC(20, yvonne, imager, 0, "slow");
-		ADC_ext_input(yvonne,imager,0, "slow");// adc_idx
+		SNR_ADC(20, yvonne, imager, 0, "slow");
+		//ADC_ext_input(yvonne,imager,0, "slow");// adc_idx
 		//Pixel Readout
 		//ImagerDebugModeTest(imager, 0,32);
 		//System.out.println("Read from jtag x074: " + jdrv.readReg(ClockDomain.tc_domain, "0074"));

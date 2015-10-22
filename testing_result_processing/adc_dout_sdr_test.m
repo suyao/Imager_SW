@@ -2,7 +2,9 @@ clear all;
 close all;
 %fid = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ext_sine_slow_p5u_b1s3_1019_1138.csv','r');
 %fid = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ext_sine_fast_p5u_b1s3_1019_1158.csv','r');
-fid = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ext_sine_slow_p7ov2048_b1s3_1021_1049.csv','r');
+%fid = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ext_sine_slow_p7ov2048_b1s3_1021_1054.csv','r');
+fid = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ext_sine_slow_p7ov2048_b1s3_1021_1214_vcm075.csv','r');
+
 c = fgetl(fid); 
 f = fscanf(fid, '%f,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d, %d', [13 inf] );
 t = f(1,:)';
