@@ -15,7 +15,8 @@ filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/out
 %filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/noise_ana_1021_1110_low_b1s3_left_slow_vcm075.csv';
 %filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/noise_ana_1021_1110_high_b1s3_left_slow_vcm075.csv';
 filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/noise_ana_1021_1110_mid_b1s3_left_slow_vcm075.csv';
-
+filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/noise_ana_1022_1447_low2_b1s2_left_slow_vcm1-05.csv';
+filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/noise_ana_1022_1447_high2_b1s2_left_slow_vcm1-05.csv';
 
 fid = fopen(filename,'r');
 c = fgetl(fid); 
@@ -43,10 +44,18 @@ per=counts/sum(counts)
 %% cdf 
 per=counts/sum(counts)
 
-
+%s3
 %sigma = 0.235; x0= 0.163; % low at vcm = 0.75
 %sigma = 0.2305;x0= -0.075;   %high at vcm=0.75
-sigma = 0.18;x0= -0.0;   %mid at vcm=0.75
+%sigma = 0.18;x0= -0.0;   %mid at vcm=0.75
+
+%s2
+sigma = 0.287; x0 = -0.4365; %high with vcm = 1 
+%sigma = 0.25; x0 = -0.4313; %low with vcm = 1.1 
+%sigma = 0.15; x0 = 0.273; %high with vcm = 1.1
+sigma = 0.16; x0 = 0; %low with vcm = 1.05
+sigma = 0.287; x0 = -0.564; %high2 with vcm = 1.05
+
 
 x1 = x0+1; 
 cdf0 = 1/2*(erf((x0-0.5)/sqrt(2)/sigma)-erf((x0-1.5)/sqrt(2)/sigma))
@@ -54,10 +63,7 @@ cdf1 = 1/2*(erf((x0+0.5)/sqrt(2)/sigma)-erf((x0-0.5)/sqrt(2)/sigma))
 cdf2 = 1/2*(erf((x1+0.5)/sqrt(2)/sigma)-erf((x1-0.5)/sqrt(2)/sigma))
 cdf3 = 1/2*(erf((x1+1.5)/sqrt(2)/sigma)-erf((x1+0.5)/sqrt(2)/sigma))
 
-%% test snr
-% for i =1:256;
-%                                                                                                                                                                                                                                         
-%     y(i)=0.5*sin(2*pi*i/128)+0.5+normrnd(0,0.24/1e3);
-%     z(i)=round(2^10*y(i));
-% end
-% snr = SNR(z)
+lsb= 1/1024;
+snr = 1/2*(2^9*lsb)^2/(lsb^2/12+1e-6*sigma^2);
+snr = db(snr)/2;
+enob = (snr-1.76)/6.02

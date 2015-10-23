@@ -63,7 +63,7 @@ public class ImagerTest {
 		vrefp = 1.25;
 		vrefn = 0.7501;
 		double Iin = 1;
-		vcm = 0.75;
+		vcm = 1;
 		vrst = 0.45; 
 		double dac_values[] = {pvdd,ana33,v0, ana18, vrefp, vrefn, Iin, vcm, vrst};
 		DACCntr yvonne = new DACCntr(dac_values, 1); // board #
@@ -142,20 +142,20 @@ public class ImagerTest {
 		 */
 		imager.SetADCTiming(1,1,1);
 		// SetADCcurrent( n1, p1, n2, p2) , the larger number, the smaller the current
-		imager.SetADCcurrent(0,12,4,3); imager.SetISFcurrent(4); // chip s3 on board 2
+		imager.SetADCcurrent(0,13,4,3); imager.SetISFcurrent(4); // chip s3 on board 1
 		//imager.SetADCcurrent(2,13,7,7); imager.SetISFcurrent(5);// chip s2 on board 3
 		//imager.SetADCcurrent(3,10,5,8); imager.SetISFcurrent(5);// chip c1 on board 3
-		imager.CurrentTestPt(8);
+		imager.CurrentTestPt(2);
 		
 		idx_bd="b1";
 		idx_chip="s3";
 		imager.EnableDout(false);
 		// ADC Testing
 		//DummyADCTest(0.51, yvonne, imager);
-		ADCTest(1.0, yvonne, imager, 0); // left ADC if 0, right ADC if 1
+		//ADCTest(0.504, yvonne, imager, 0); // left ADC if 0, right ADC if 1
 		//CalibrateDummyADC(10, yvonne, imager); //repeat every analog value for 100 conversions
-		//CalibrateADC(20, yvonne, imager, 0, 3, "slow"); //(itr, , ,left/right, extra_bit)
-		SNR_ADC(20, yvonne, imager, 0, "slow");
+		CalibrateADC(20, yvonne, imager, 1, 3, "slow"); //(itr, , ,left/right, extra_bit)
+		SNR_ADC(20, yvonne, imager, 1, "slow");
 		//ADC_ext_input(yvonne,imager,0, "slow");// adc_idx
 		//Pixel Readout
 		//ImagerDebugModeTest(imager, 0,32);
@@ -304,7 +304,7 @@ public class ImagerTest {
 			int idx = yvonne.FindIdxofName("ana18");
 			double rsl_ana18 = (DACCntr.ana18_max-DACCntr.ana18_min)/DACCntr.levels*2;
 			System.out.println("ana18_max = , " + DACCntr.ana18_max);
-			int reg_min = (int) Math.round((v0-(vrefp-vrefn)-DACCntr.ana18_min)/rsl_ana18) + DACCntr.levels/4 - 32*20;
+			int reg_min = (int) Math.round((v0-DACCntr.ana18_min)/rsl_ana18) + DACCntr.levels/4 - 32*20;
 			int reg_max = (int) Math.round((v0+(vrefp-vrefn)-DACCntr.ana18_min)/rsl_ana18) + DACCntr.levels/4 + 32*20;
 			int inc = (int) Math.round(32/Math.pow(2, extra_bit));
 			System.out.println(inc);
@@ -356,8 +356,11 @@ public class ImagerTest {
 			imager.DACRstCntr(0); //don't reset dac
 			imager.OutputSel(adc_idx);
 			double value;
-			for (int i = 1; i <= 256*6; i ++){	
-				value = 0.495 * Math.sin(2* Math.PI *i/256.0) + v0;
+			int N = 1024;
+			double offset = 0.004;
+			bw.write("vcm = " + vcm + ", vrefp = " + vrefp + ", vrefn = "+ vrefn + ". Board/adc idx: " + idx_bd + idx_chip + which_adc + ".\n");
+			for (int i = 1; i <= N*2; i ++){	
+				value = 0.4985 * Math.sin(2* Math.PI *1*i/N) + v0 +offset;
 				yvonne.WriteDACValue("ana18", value, yvonne.dac_reg  )	;
 				if (i == 1)
 					try {Thread.sleep(5000);} catch (InterruptedException e) {e.printStackTrace();}

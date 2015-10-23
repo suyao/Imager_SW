@@ -3,7 +3,9 @@ close all;
 %fid = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ext_sine_slow_p5u_b1s3_1019_1138.csv','r');
 %fid = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ext_sine_fast_p5u_b1s3_1019_1158.csv','r');
 %fid = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ext_sine_slow_p7ov2048_b1s3_1021_1054.csv','r');
-fid = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ext_sine_slow_p7ov2048_b1s3_1021_1214_vcm075.csv','r');
+%fid = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ext_sine_slow_p7ov2048_b1s3_1021_1214_vcm075.csv','r');
+%fid = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ext_sine_slow_p58d514_b1s3_1022_1754_vcm1.csv','r');
+fid = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ext_sine_fast_p7ov2048_b1s3_1022_1814_vcm1.csv','r');
 
 c = fgetl(fid); 
 f = fscanf(fid, '%f,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d, %d', [13 inf] );
@@ -18,9 +20,9 @@ weights = adc_calibration(0);
 close all;
 %N = 28087;
 N = 2048*4 ;
-%fs = 1/96e-9;
+fs = 1/96e-9;
 %N = 5000*20;
-fs = 1/200e-9;
+%fs = 1/200e-9;
 idx = 1;
 data=zeros(1,N);
 for i = 2:r

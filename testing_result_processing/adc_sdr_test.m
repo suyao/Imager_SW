@@ -1,15 +1,17 @@
 clear all;
 close all;
-%fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_left_20151009_1400.txt','r');
-%fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_right_20151012_1600.txt','r'); %s2 right slow clk on board 1
-%fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_left_20151013_1125.txt','r'); %s2 left slow clk on board 1
-%fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_b1s2left_20151013_1323.txt','r'); %s2 left fast clk on board 1
 %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_b1s3slow_right_20151016_1609.txt','r');
 %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_b1s3fastright_20151016_1633.txt','r');
 %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_b1s3left_20151016_1451.txt','r');
-fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_b1s3slow_left_20151019_1104.txt','r');
+%fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_b1s3slow_left_20151019_1104.txt','r');
 %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_b1s3slow_left_20151021_1313.txt','r');
+%fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_b1s3slow_left_20151021_2224.txt','r'); %vcm = 0.75
+%fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_b1s3slow_left_20151022_0904.txt','r');
+%fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_b1s2left_20151013_1323.txt','r');
+%fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_b1s2slow_left_20151022_1454.txt','r');
+fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_b1s3slow_left_20151022_1715.txt','r');
 
+c = fgetl(fin);
 weights = adc_calibration(0);
 f = fscanf(fin, '%f %x' ,[2 inf]);
 vin = f(1,:);
@@ -33,24 +35,24 @@ for i = 1: length(vin)
 end
 
 [N, itr] = size(data);
-
+%N=256*2;
 dout_bin_mean = zeros(N,11);
-
-
+%N=1024*2;
+%N=1024*1;
 ana = zeros(N,itr-1);
 for i = 1:N
     for k=2:itr
-        ana(i,k-1)= dec2bin(data(i,k),11)*(fliplr(weights))';
+        ana(i,k-1)= double(dec2bin(data(i,k),11)-'0')*(fliplr(weights))';
     end
     dout_mean_rec(i)=mean(ana(i,:))/(sum(weights)+1);
     
     dout_single(i) = data(i,end);
-    dout_bin_single(i,:) = dec2bin(dout_single(i),11);
+    dout_bin_single(i,:) = double(dec2bin(dout_single(i),11)-'0');
     dout_single_rec(i) = floor(dout_bin_single(i,:) * (fliplr(weights))')/(sum(weights)+1);
 end
 figure;
 plot(dout_mean_rec)
-snr=SNR(dout_single(1:end)/2^9,1)
+snr=SNR(dout_single(1:end)/(sum(weights)+1),1)
 snr_rec_avg=SNR(dout_mean_rec(1:end),1)
 enob_avg = (snr_rec_avg-1.76)/6.02
 snr_rec = SNR(dout_single_rec(1:end),1)
