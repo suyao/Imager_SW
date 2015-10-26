@@ -159,17 +159,17 @@ public class ImagerTest {
 		//CalibrateADC(20, yvonne, imager, 1, 3, "slow"); //(itr, , ,left/right, extra_bit)
 		//SNR_ADC(20, yvonne, imager, 0, "fast");
 		//SNR_ADC(20, yvonne, imager, 1, "fast");
-		//ADC_ext_input(yvonne,imager,0, "fast");// adc_idx
+		ADC_ext_input(yvonne,imager,0, "fast");// adc_idx
 		//Pixel Readout
 		//ImagerDebugModeTest(imager, 0,118);
 		//System.out.println("Read from jtag x074: " + jdrv.readReg(ClockDomain.tc_domain, "0074"));
-		ImagerDebugModeTest(imager, 1,3);
+		//ImagerDebugModeTest(imager, 1,3);
 		//ImagerDebugModeTest(imager, 300,3);
 		//ReadImagerReg(jdrv);
 		//ImagerFrameTest(imager, jdrv);
 		System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
-		Partial_Settling_Calibration(50,  yvonne, imager, 0, 250e6);	
-		Partial_Settling_Calibration(50,  yvonne, imager, 1, 250e6);	
+		//Partial_Settling_Calibration(50,  yvonne, imager, 0, 250e6);	
+		//Partial_Settling_Calibration(50,  yvonne, imager, 1, 250e6);	
 		jdrv.CloseController();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd, HH:mm");
 		Date date = new Date();
