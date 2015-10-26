@@ -57,13 +57,13 @@ public class ImagerTest {
 	static DACCntr InitDAC() {
 		//Set DAC Values
 		double pvdd = 2.8;
-		double ana33 = 2.4;
+		double ana33 = 0.92;
 		v0 = 1;
 		double ana18 = 1;
 		vrefp = 1.25;
 		vrefn = 0.7501;
 		double Iin = 1;
-		vcm = 1;
+		vcm = 0.95;
 		vrst = 0.45; 
 		double dac_values[] = {pvdd,ana33,v0, ana18, vrefp, vrefn, Iin, vcm, vrst};
 		DACCntr yvonne = new DACCntr(dac_values, 1); // board #
@@ -83,6 +83,8 @@ public class ImagerTest {
 		imager.JtagReset();	// System reset
 		DACCntr yvonne = InitDAC(); //Set DAC Values
 		InitJTAG(jdrv);
+		imager.EnableDummyADCRst(false);
+		imager.SetDummyADCcurrent(15, 15, 15, 15);
 		
 		// Analog Sampler Test
 		/*
@@ -145,20 +147,21 @@ public class ImagerTest {
 		imager.SetADCcurrent(0,13,4,3); imager.SetISFcurrent(4); // chip s3 on board 1
 		//imager.SetADCcurrent(2,13,7,7); imager.SetISFcurrent(5);// chip s2 on board 3
 		//imager.SetADCcurrent(3,10,5,8); imager.SetISFcurrent(5);// chip c1 on board 3
-		imager.CurrentTestPt(2);
+		imager.CurrentTestPt(1);
 		
 		idx_bd="b1";
 		idx_chip="s3";
 		imager.EnableDout(false);
 		// ADC Testing
 		//DummyADCTest(0.51, yvonne, imager);
-		//ADCTest(0.504, yvonne, imager, 0); // left ADC if 0, right ADC if 1
+		//ADCTest(1.496, yvonne, imager, 1); // left ADC if 0, right ADC if 1
 		//CalibrateDummyADC(10, yvonne, imager); //repeat every analog value for 100 conversions
-		CalibrateADC(20, yvonne, imager, 1, 3, "slow"); //(itr, , ,left/right, extra_bit)
-		SNR_ADC(20, yvonne, imager, 1, "slow");
-		//ADC_ext_input(yvonne,imager,0, "slow");// adc_idx
+		//CalibrateADC(20, yvonne, imager, 1, 3, "slow"); //(itr, , ,left/right, extra_bit)
+		//SNR_ADC(20, yvonne, imager, 0, "fast");
+		//SNR_ADC(20, yvonne, imager, 1, "fast");
+		//ADC_ext_input(yvonne,imager,0, "fast");// adc_idx
 		//Pixel Readout
-		//ImagerDebugModeTest(imager, 0,32);
+		//ImagerDebugModeTest(imager, 0,118);
 		//System.out.println("Read from jtag x074: " + jdrv.readReg(ClockDomain.tc_domain, "0074"));
 		//ImagerDebugModeTest(imager, 1,3);
 		//ImagerDebugModeTest(imager, 300,3);
@@ -166,7 +169,7 @@ public class ImagerTest {
 		//ImagerFrameTest(imager, jdrv);
 		System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
 		//Partial_Settling_Calibration(20,  yvonne, imager, 0, 250e6);	
-		//Partial_Settling_Calibration(20,  yvonne, imager, 1, 250e6);	
+		Partial_Settling_Calibration(20,  yvonne, imager, 1, 250e6);	
 		jdrv.CloseController();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd, HH:mm");
 		Date date = new Date();
@@ -358,6 +361,11 @@ public class ImagerTest {
 			double value;
 			int N = 1024;
 			double offset = 0.004;
+			if (adc_idx == 0)
+				offset = 0.001;
+			else
+				offset = -0.004;
+			
 			bw.write("vcm = " + vcm + ", vrefp = " + vrefp + ", vrefn = "+ vrefn + ". Board/adc idx: " + idx_bd + idx_chip + which_adc + ".\n");
 			for (int i = 1; i <= N*2; i ++){	
 				value = 0.4985 * Math.sin(2* Math.PI *1*i/N) + v0 +offset;
@@ -515,7 +523,7 @@ public class ImagerTest {
 		imager.EnableADCCali(false);
 		imager.EnableADC(true); // enable adc	
 		imager.DACRstCntr(1);
-		imager.SetBitlineLoad(0,2);
+		imager.SetBitlineLoad(1,4);
 		imager.SetPxIntegrationTime(320*trow- integ_time);
 		imager.SetClkMuxDelayTime(0);
 		imager.SetBlRstDelayTime(0);
@@ -572,14 +580,24 @@ public class ImagerTest {
  		
 	}
 	static void Partial_Settling_Calibration(int itr_times, DACCntr yvonne, ImagerCntr imager, int adc_idx, double clk_freq){
+		try {Thread.sleep(20000);} catch (InterruptedException e) {e.printStackTrace();}
 		int row = 0;
-		int col = 3;
-		if (adc_idx == 1)
-				col = 123;
-	
+		int col = 118;
 		double min = 0.95; //slow clk
-		double max = 2.18;
-		//double max = 2.4; //fast clk
+		//double max = 2.18;
+		double max = 2.47; //fast clk
+		if (adc_idx == 1 ){
+			col = 122;
+			if (clk_freq == 250e6){			
+				min = 0.95; max = 2.41;
+			}else{ min = 0.93; max = 2.24; }
+		} 
+		if (adc_idx == 0) {
+			col = 118;
+			if (clk_freq == 250e6){
+				min = 0.95; max = 2.47;
+			}else {min = 0.93; max = 2.2;}		
+		}
 
 		int load_left = 1; // in fF
 		int load_right = 4;
@@ -636,8 +654,10 @@ public class ImagerTest {
 		Date date = new Date();
 		String which_adc = "left";
 		if (adc_idx == 1)
-			which_adc = "right";	
-		String filename = "./outputs/PartialSettling/"  + idx_bd + idx_chip + which_adc + load + dateFormat.format(date)+".txt";
+			which_adc = "right";
+		String speed = "_slow";
+		if (clk_freq == 250e6)  speed = "_fast";
+		String filename = "./outputs/PartialSettling/"  + idx_bd + idx_chip + which_adc + load + speed + dateFormat.format(date)+".txt";
 
 			
 		try {
@@ -649,7 +669,8 @@ public class ImagerTest {
 			BufferedWriter bw = new BufferedWriter(fw);
 			bw.write("@isf_pulse = " + pw_isf*250e6/clk_freq*1e6 + "us, sampling pulse width = " 
 					+ pw_smp*250e6/clk_freq*1e6 + "us, input clk freq is " + clk_freq/1e6 + "MHz"
-					+ "cap load is " + load + ".\n");
+					+ "cap load is " + load + ", vcm = " + vcm + ", v0 = " + v0 + ", vrefp = " + vrefp
+					+ ", vrefn = " + vrefn + ".\n");
 			double value;
 			for (int i = 0; i < 100; i ++){	
 				value = min + i*(max-min)/100;

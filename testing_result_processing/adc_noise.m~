@@ -61,14 +61,14 @@ sigma = 0.287; x0 = -0.564; %high2 with vcm = 1.05
 
 sigma = 0.164; x0 = -0.094; %low 0.506 with vcm = 1
 sigma = 0.277; x0 = -0.028; % high 1.5 with vcm = 1
-%sigma = 0.2; x0 = -0.165; % high 1.501 with vcm = 1
+sigma = 0.2; x0 = -0.165; % high 1.501 with vcm = 1
 x1 = x0+1; 
 cdf0 = 1/2*(erf((x0-0.5)/sqrt(2)/sigma)-erf((x0-1.5)/sqrt(2)/sigma))
 cdf1 = 1/2*(erf((x0+0.5)/sqrt(2)/sigma)-erf((x0-0.5)/sqrt(2)/sigma))
 cdf2 = 1/2*(erf((x1+0.5)/sqrt(2)/sigma)-erf((x1-0.5)/sqrt(2)/sigma))
 cdf3 = 1/2*(erf((x1+1.5)/sqrt(2)/sigma)-erf((x1+0.5)/sqrt(2)/sigma))
 
-lsb= 1/1008;
+lsb= 1/1024;
 snr = 1/2*(0.49)^2/(lsb^2/12+1e-6*sigma^2);
 snr = db(snr)/2;
 enob = (snr-1.76)/6.02

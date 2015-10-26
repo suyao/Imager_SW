@@ -9,7 +9,7 @@ function SNR_result = SNR(data,fs)
     [fund, fundidx] = max(spectrum);
     funddb=20*log10(fund);
     spec_nodc_nofund = [spectrum(2:fundidx-1), spectrum(fundidx+1:end)];
-    %spec_nodc_nofund = [ spectrum(5*fundidx+1:end)];
+    %spec_nodc_nofund = [ spectrum(10*fundidx+1:end)];
     THD = 0;
     for i =2:15
         THD = (spectrum((fundidx-1)*i+1))^2 + THD;
@@ -30,7 +30,7 @@ function SNR_result = SNR(data,fs)
     figure;
     plot(frequency, spectrumdb, '*-', 'linewidth', 2);
     enob = (sndrdb-1.76)/6.02;
-     string = sprintf('Fundamental=%0.3gdBV, SNDR=%0.3gdB, SFDR=%0.3gdB, ENOB=%0.2gb\n', funddb, sndrdb, sfdrdb,enob)
+     string = sprintf('Fundamental=%0.3gdBV, SNDR=%0.3gdB, SFDR=%0.3gdB, ENOB=%0.3gb\n', funddb, sndrdb, sfdrdb,enob)
      title(string);
     xlabel('Frequency [f]');
     ylabel('Amplitude [dBV]');
