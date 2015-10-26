@@ -151,10 +151,10 @@ public class ImagerTest {
 		
 		idx_bd="b1";
 		idx_chip="s3";
-		imager.EnableDout(false);
+		imager.EnableDout(true);
 		// ADC Testing
 		//DummyADCTest(0.51, yvonne, imager);
-		//ADCTest(1.496, yvonne, imager, 1); // left ADC if 0, right ADC if 1
+		//ADCTest(1.496, yvonne, imager, 0); // left ADC if 0, right ADC if 1
 		//CalibrateDummyADC(10, yvonne, imager); //repeat every analog value for 100 conversions
 		//CalibrateADC(20, yvonne, imager, 1, 3, "slow"); //(itr, , ,left/right, extra_bit)
 		//SNR_ADC(20, yvonne, imager, 0, "fast");
@@ -163,13 +163,13 @@ public class ImagerTest {
 		//Pixel Readout
 		//ImagerDebugModeTest(imager, 0,118);
 		//System.out.println("Read from jtag x074: " + jdrv.readReg(ClockDomain.tc_domain, "0074"));
-		//ImagerDebugModeTest(imager, 1,3);
+		ImagerDebugModeTest(imager, 1,3);
 		//ImagerDebugModeTest(imager, 300,3);
 		//ReadImagerReg(jdrv);
 		//ImagerFrameTest(imager, jdrv);
 		System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
-		//Partial_Settling_Calibration(20,  yvonne, imager, 0, 250e6);	
-		Partial_Settling_Calibration(20,  yvonne, imager, 1, 250e6);	
+		Partial_Settling_Calibration(50,  yvonne, imager, 0, 250e6);	
+		Partial_Settling_Calibration(50,  yvonne, imager, 1, 250e6);	
 		jdrv.CloseController();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd, HH:mm");
 		Date date = new Date();
