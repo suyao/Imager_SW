@@ -17,6 +17,8 @@ fid = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/ou
 %fid = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ext_halfsine_fast_b1s3_1023_1353_vcm0-95.csv','r');
 %fid = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/current_4_14_4_3.csv','r');
 %fid = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/timing_1_2_1.csv','r');
+%fid = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ext_sine_fast_b1s3_1026_1045_vcm0-95_jitter.csv','r');
+%fid = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ext_sine_fast_b1s3_1026_1353_vcm0-95.csv','r');
 
 
 
@@ -54,6 +56,27 @@ plot(data);
 snr=SNR(data,fs)
 enob = (snr-1.76)/6.02
 thermal_noise = sqrt(1/2*(sig/2)^2/10^(snr/10)-lsb^2/12)
+[sigma_jitter_est, sigma_noise_est, fsin, xinv] = jitter(data, fs);
+sigma_jitter_est
+sigma_noise_est
+fsin
+figure;
+plot((1:N)/N,xinv/lsb);
+hold on;
+plot((1:N)/N,data-0.5,'--r');
+xlabel('Normalized Sample Phase t/T_{in}');
+ylabel('error/LSB');
+title(sprintf('Jitter Measurement: jitter = %0.3gns, noise = %0.3glsb', sigma_jitter_est*1e9,sigma_noise_est/lsb ));
+%%
+% clear all;
+% close all;
+% fs = 1/96e-9;
+% t=1/fs:1/fs:4*2048/fs;
+% dt = normrnd(0,1e-9,[1,4*2048]);
+% dn = normrnd(0,1e-4,[1,4*2048]);
+% data=1/2*sin(2*pi*fs*3/2048*(t + dt) ) + dn;
+% figure; plot(t,data)
+% snr=SNR(data,fs)
+% [sigma_jitter_est, sigma_noise_est, fsin] = jitter(data, fs)
 
-[sigma_jitter_est, sigma_noise_est, fsin] = jitter(data, 1)
 

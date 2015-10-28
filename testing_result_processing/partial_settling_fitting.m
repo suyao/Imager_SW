@@ -1,16 +1,16 @@
 function coeff = partial_settling_fitting(fit_order,lr);
 if lr == 1
-    %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3left1fF_20151020_1049.txt'); %slow
-    fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3left1fF_fast_20151023_1638.txt'); %fast
+    %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3left0fF_20151019_1539.txt'); %slow
+    %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3left1fF_fast_20151023_1638.txt'); %fast
     %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3left1fF_slow__20151023_1627.txt'); %slow
-    %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3left0fF_20151019_1539.txt');
-    %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3left1fF_20151020_1238.txt');
+    fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3left1fF_fast_20151026_1154.txt'); %fast
+   
 elseif lr == 2
-    %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3right4fF_20151020_1053.txt'); %slow
-    fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3right4fF_fast_20151023_1641.txt'); %fast
+    %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3right2fF_20151019_1547.txt'); %slow
+    %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3right4fF_fast_20151023_1650.txt'); %fast
     %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3right4fF_slow__20151023_1630.txt'); %slow
-    %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3right2fF_20151019_1547.txt');
-    %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3right4fF_20151020_1242.txt');
+    fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3right4fF_fast_20151026_1205.txt'); %fast
+  
 end
 c = fgetl(fin);  
 f = (fscanf(fin, '%f %x' ,[2 inf]))';
@@ -49,21 +49,25 @@ for i = 1:N
     dout_mean_rec(i)=mean(ana(i,:))/(sum(weights)+1);
     
     dout_single(i) = data(i,end);
-    dout_bin_single(i,:) = dec2bin(dout_single(i),11);
+    dout_bin_single(i,:) = double(dec2bin(dout_single(i),11)-'0');
     dout_single_rec(i) = floor(dout_bin_single(i,:) * (fliplr(weights))')/(sum(weights)+1);
 end
 
 dout_mean_rec=dout_mean_rec';
+dout_single_rec = dout_single_rec';
 figure;
 plot(vin,dout_mean_rec);
-xlabel('vin');
-ylabel('dout mean calibrated');
+xlabel('SF Gate Voltage/V','FontSize', 18);
+ylabel('ADC readout','FontSize', 18);
+title('Dout vs sf Gate','FontSize', 18);
 value_raw =dout_mean_rec;
 
 f=figure('Name','Inf Norm Fit: vin=f(vout)');
 p_fit = zeros(fit_order+1, 1);
+error = 0;
 for i=1:1
     a=dout_mean_rec(1:end,i);
+    %a=dout_single_rec(1:end,i);
     b=vin(1:end,i);
     A=[ones(N,1) a a.^2 a.^3 a.^4 a.^5 a.^6];
     n=7;
@@ -111,20 +115,33 @@ for i=1:1
     legend('boxoff');
     
     str=strcat(str,sprintf('\nfitting error=%0.2fLSB',max(abs(vin_fit(1:end,i)-vin(1:end,i)))/lsb));
-    title(str);
-    ylabel('vin');
+    title(str,'FontSize', 18);
+    ylabel('SF Gate Voltage/V','FontSize', 18);
     if i<=3
-        xlabel(strcat(sprintf('vout at %i',i),'\tau'));
+        xlabel(strcat(sprintf('vout at %i',i),'\tau'),'FontSize', 18);
     else
-        xlabel('vout when fully settled');
+        xlabel('vout when fully settled','FontSize', 18);
     end  
-    %ylim([min(vin(1:end,i)-vin_lin_fit(1:end,i)) max(vin(1:end,i)-vin_lin_fit(1:end,i))]);
+    error = max(abs(vin_fit(1:end,i)-vin(1:end,i)))/lsb;
 end
 coeff =  p_fit(:,1);
 result = 0;
 for i = 1:fit_order+1
     result = coeff(i)*(value_raw.^(i-1)) + result;
 end
+if fit_order == 1;
+    str = 'st';
+elseif fit_order ==2 
+    str = 'nd';
+elseif fit_order ==3;
+    str = 'rd';
+else
+    str = 'th';
+end
+
 figure;
-plot(vin , vin - result);
+plot(vin , (vin - result)*1e3);
+xlabel('sf Gate Voltage/V','FontSize', 18);
+ylabel('fitting error/mV','FontSize', 18);
+title(sprintf('%1g%s Order Fitting Error = %0.2fLsb',fit_order,str, error),'FontSize', 18);
 

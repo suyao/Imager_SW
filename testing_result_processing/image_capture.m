@@ -3,8 +3,8 @@
 %New Row, New Frame, clk_smp
 clear all;
 close all;
-c = partial_settling_fitting(6,1);
-%c = partial_settling_fitting(5,2);
+%c = partial_settling_fitting(3,1);
+c = partial_settling_fitting(5,2);
 %%
 if (0 ==1)
 row_num = 320;
@@ -25,7 +25,9 @@ filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/out
 filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1021_1651_vert.csv'; % 1/16 turn out
 filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1021_1702_vert.csv'; % 3/32 turn out
 %filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1021_1800_bird.csv'; % 1/8 turn out best
-%filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1021_1800_grid.csv'; % 1/8 turn out best
+filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1021_1800_grid.csv'; % 1/8 turn out best
+%filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1026_1108_vert2.csv'; % 3/32 turn out
+
 fid = fopen(filename,'r');
 c = fgetl(fid); 
 f = fscanf(fid, '%f,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d, %d, %d', [15 inf] );
@@ -36,8 +38,8 @@ clk_smp = f(15,:);
 data= [ f(2,:);f(3,:);f(4,:);f(5,:);f(6,:);f(7,:);f(8,:);f(9,:);f(10,:);f(11,:); f(12,:)]';
 
 %close all;
-fit_order = 3;
-vmin = 0.5;
+fit_order = 5;
+vmin = 0.0;
 weights{1} = adc_calibration(0);
 weights{2} = adc_calibration(1);
 wbi = [1 2 4 8 16 32 64 128 256 512 1024];
@@ -45,15 +47,17 @@ wbi = [1 2 4 8 16 32 64 128 256 512 1024];
 idx_at_frame = 0;
 rst_raw = zeros(row_num,col_num);
 px_raw = zeros(row_num,col_num);
-rst_hex = zeros(row_num,col_num);
-px_hex = zeros(row_num,col_num);
-rst_calib = zeros(row_num,col_num);
-px_calib = zeros(row_num,col_num);
+
 idx_row = 0;
 wait_col = 28;
 idx_start = 2;
-
-for lr = 1:2
+frame_num_start(1)=7;
+frame_num_start(2)=7;
+for lr = 1:1:2
+    rst_hex{lr} = zeros(row_num,col_num);
+    px_hex{lr} = zeros(row_num,col_num);
+    rst_calib{lr} = zeros(row_num,col_num);
+    px_calib{lr} = zeros(row_num,col_num);
     fit_coeff{lr} = partial_settling_fitting(fit_order,lr);
     frame_time = 0;
     for i = idx_start:length(new_frame)
@@ -66,7 +70,7 @@ for lr = 1:2
 
     flag = 0;
     for i = idx_at_frame:length(new_frame)
-        if frame_time > 9
+        if frame_time > frame_num_start(lr)
             idx_start = i;
             break;
         end
@@ -85,15 +89,15 @@ for lr = 1:2
                 
                 if (idx_col <=col_num && idx_col >0)
                     
-                    rst_hex(idx_row,idx_col) = (data(i,:)*wbi');
+                    rst_hex{lr}(idx_row,idx_col) = (data(i,:)*wbi');
                     rst_raw(idx_row,idx_col) = data(i,:)*weights{lr}'/sum(weights{lr})+vmin; 
-                    rst_calib(idx_row,idx_col) = partial_settling_calib(rst_raw(idx_row,idx_col),fit_coeff{lr}); 
+                    rst_calib{lr}(idx_row,idx_col) = partial_settling_calib(rst_raw(idx_row,idx_col),fit_coeff{lr}); 
                 end
 
                 if (idx_col > col_num + wait_col && idx_col <=col_num*2+wait_col)
-                    px_hex(idx_row,idx_col-col_num - wait_col) = (data(i,:)*wbi');
+                    px_hex{lr}(idx_row,idx_col-col_num - wait_col) = (data(i,:)*wbi');
                     px_raw(idx_row,idx_col-col_num - wait_col) = data(i,:)*weights{lr}'/sum(weights{lr})+vmin;
-                    px_calib(idx_row,idx_col-col_num - wait_col) = partial_settling_calib(px_raw(idx_row,idx_col-col_num - wait_col),fit_coeff{lr});
+                    px_calib{lr}(idx_row,idx_col-col_num - wait_col) = partial_settling_calib(px_raw(idx_row,idx_col-col_num - wait_col),fit_coeff{lr});
 
                 end 
                 idx_col = idx_col + 1;
@@ -103,16 +107,18 @@ for lr = 1:2
     end
 
     image_half{lr} = (rst_raw - px_raw);
-    image_half_calib{lr} = (rst_calib - px_calib);
+    image_half_calib{lr} = (rst_calib{lr} - px_calib{lr});
 end
 
 image_raw = [image_half{1} image_half{2}(:,2:end)];
-image_calib = [image_half_calib{1} image_half_calib{2}(:,2:end)];
-%image_raw = image_half{1};
 figure;
 imshow(flipud(image_raw));
-%imshow(fliplr(image_raw'));
+
+image_calib = [image_half_calib{1} image_half_calib{2}(:,2:end)];
 figure;
 imshow(flipud(image_calib));
+
+%imshow(fliplr(image_raw'));
+
 %imshow(fliplr(image_calib'));
 end   

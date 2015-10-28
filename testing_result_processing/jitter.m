@@ -1,14 +1,16 @@
 % Jitter estimation technique proposed by Hummels, ISCAS 1995
 % x is a vector that contains an integer number of cycles of a sampled sine wave
-function [sigma_jitter_est, sigma_noise_est, fsin] = jitter(x, show_plot)
+function [sigma_jitter_est, sigma_noise_est, fsin, xinv] = jitter(x, fs)
 % take fft, remove DC, signal and harmonics
 N = length(x);
 s = fft(x);
+s(1) = 0; %remove dc component
 [sigamp, sigbin]=max(abs(s));
-A_est = sigamp/N*2;
+A_est = sigamp/N*2
 cycles = sigbin-1;
 fsin = cycles/N;
-harmbins = 1 + abs([2:8]*cycles - N*round([2:8]*cycles/N));
+fsin = fsin*fs;
+harmbins = 1 + abs([2:18]*cycles - N*round([2:18]*cycles/N));
 sn=s;
 sn(1)=eps;
 sn(sigbin)=eps;
