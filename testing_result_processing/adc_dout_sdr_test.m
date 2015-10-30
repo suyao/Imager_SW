@@ -74,7 +74,7 @@ title(sprintf('Jitter Measurement: jitter = %0.3gns, noise = %0.3glsb', sigma_ji
 % t=1/fs:1/fs:4*2048/fs;
 % dt = normrnd(0,1e-9,[1,4*2048]);
 % dn = normrnd(0,1e-4,[1,4*2048]);
-% data=1/2*sin(2*pi*fs*3/2048*(t + dt) ) + dn;
+% data=1/2*sin(2*pi*fs*3/2048*(t + dt) ) + dn ;
 % figure; plot(t,data)
 % snr=SNR(data,fs)
 % [sigma_jitter_est, sigma_noise_est, fsin] = jitter(data, fs)
