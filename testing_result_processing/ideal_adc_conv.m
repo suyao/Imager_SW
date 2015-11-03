@@ -1,7 +1,7 @@
 %clear all;
 %close all;
 % normrnd('seed', 3)
-clear all;
+clear dout;
 %vin=0.52204;
 vin=0.5234;
 vrefp=1.25;
@@ -15,18 +15,20 @@ msb=bit-lsb;
 number_c=2^msb+2^lsb;
 figure;
 hold on;
-for vin = 0.50:1e-4:0.55
+
     
     cp = [1.0000    2.0000    3.875    7.7500   14.8750   16.2500   32.0000 64.3750  128.3750  256.3750  481.7500];
+    cp = [1 2 4 7.7500   14.8750  1.8824*8 1.8824*16 1.8824*32 1.8824*64 1.8824*128 1.8824*256]
+    cp = [  1    2    3.75   7.6250   14.8750   16.2500   32.1250 64.5000  128.1250  256.1250  481.5]
     cn = cp;
     ctot_p=sum(cp)+1;
     ctot_n = ctot_p;
-
+for vin = 1.0254
     %vx(1)=vcm-vin+cp(bit)/ctot_p*vrefn+(ctot_p-cp(bit))/ctot_p*vrefp;
  
     %vy(1)=vcm-v0+cn(bit)/ctot_n*vrefp+(ctot_n-cn(bit))/ctot_n*vrefn;
-    vx(1)=vcm-vin+cp(bit)/ctot_p*vrefn+(ctot_p-cp(bit))/ctot_p*vrefp
-    vy(1)=vcm-v0+cn(bit)/ctot_n*vrefp+(ctot_n-cn(bit))/ctot_n*vrefn
+    vx(1)=vcm-vin+cp(bit)/ctot_p*vrefn+(ctot_p-cp(bit))/ctot_p*vrefp;
+    vy(1)=vcm-v0+cn(bit)/ctot_n*vrefp+(ctot_n-cn(bit))/ctot_n*vrefn;
 
     for i=1:bit;
         if vx(i)>=vy(i);
@@ -46,8 +48,11 @@ for vin = 0.50:1e-4:0.55
      %    d(k)=d(k)+2^(bit-i)*(1-dout(i));
     end
     d = bi2de(fliplr(dout));
-    plot(vin,d);
+   % plot(vin,d);
 end
+stairs(1:length(vx),vx);
+hold on;
+stairs(1:length(vy),vy,'r');
  
 
   

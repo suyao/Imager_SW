@@ -3,8 +3,8 @@
 %New Row, New Frame, clk_smp
 clear all;
 close all;
-%c = partial_settling_fitting(3,1);
-c = partial_settling_fitting(5,2);
+c = partial_settling_fitting(5,1);
+%c = partial_settling_fitting(5,2);
 %%
 if (0 ==1)
 row_num = 320;

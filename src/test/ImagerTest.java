@@ -56,19 +56,20 @@ public class ImagerTest {
 	
 	static DACCntr InitDAC() {
 		//Set DAC Values
-		double pvdd = 2.8;
-		//double ana33 = 1.9;
+		double pvdd = 3; 
+		//double pvdd = 1.5; //1.46 at DVDD33 = 2.3
+		double ana33 = 2.4;
 		//double ana33 = 0.95;
-		double ana33 = 1.45;
+		//double ana33 = 1.45;
 		v0 = 1;
 		double ana18 = 1;
 		vrefp = 1.25;
 		vrefn = 0.7501;
 		double Iin = 1;
-		vcm = 0.95;
+		vcm = 1;
 		//vrst = 1.34; 
-		//vrst = 0.49;
-		vrst = 0.98;
+		vrst = 0.49;
+		//vrst = 0.98;
 		double dac_values[] = {pvdd,ana33,v0, ana18, vrefp, vrefn, Iin, vcm, vrst};
 		DACCntr yvonne = new DACCntr(dac_values, 1); // board #
 		try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
@@ -151,30 +152,30 @@ public class ImagerTest {
 		//imager.SetADCcurrent(0,13,4,3); imager.SetISFcurrent(4); // chip s3 on board 1
 		//imager.SetADCcurrent(2,13,7,7); imager.SetISFcurrent(5);// chip s2 on board 3
 		//imager.SetADCcurrent(3,10,5,8); imager.SetISFcurrent(5);// chip c1 on board 3
-		imager.SetADCcurrent(5,10,7,8); imager.SetISFcurrent(7); // chip p21 on board 1
+		imager.SetADCcurrent(5,10,7,8); imager.SetISFcurrent(4); // chip p21 on board 1
 		imager.CurrentTestPt(4);
 		
 		idx_bd="b1";
 		idx_chip="p21";
-		imager.EnableDout(false);
+		imager.EnableDout(true);
 		// ADC Testing
 		//DummyADCTest(0.51, yvonne, imager);
-		//ADCTest(0.51, yvonne, imager, 1); // left ADC if 0, right ADC if 1
+		ADCTest(0.51, yvonne, imager, 1); // left ADC if 0, right ADC if 1
 		//CalibrateDummyADC(10, yvonne, imager); //repeat every analog value for 100 conversions
-		CalibrateADC(20, yvonne, imager, 1, 3, "slow"); //(itr, , ,left/right, extra_bit)
+		//CalibrateADC(20, yvonne, imager, 0, 3, "slow"); //(itr, , ,left/right, extra_bit)
 		//SNR_ADC(20, yvonne, imager, 0, "slow");
 		//SNR_ADC(20, yvonne, imager, 1, "slow");
 		//ADC_ext_input(yvonne,imager,0, "fast");// adc_idx
-		//Pixel Readout
-		//ImagerDebugModeTest(imager, 0,118);
+		//Pixel Read//out
+		ImagerDebugModeTest(imager, 0,118);
 		//System.out.println("Read from jtag x074: " + jdrv.readReg(ClockDomain.tc_domain, "0074"));
-		//ImagerDebugModeTest(imager, 1,3);
+		ImagerDebugModeTest(imager, 1,4);
 		//ImagerDebugModeTest(imager, 300,3);
 		//ReadImagerReg(jdrv);
-		//ImagerFrameTest(imager, jdrv);
-		//System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
-		//Partial_Settling_Calibration(50,  yvonne, imager, 0, 250e6);	
-		//Partial_Settling_Calibration(50,  yvonne, imager, 1, 250e6);	
+		ImagerFrameTest(imager, jdrv);
+		System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
+		//Partial_Settling_Calibration(50,  yvonne, imager, 0, 400, 250e6);	
+		//Partial_Settling_Calibration(50,  yvonne, imager, 1, 400, 250e6);	
 		jdrv.CloseController();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd, HH:mm");
 		Date date = new Date();
@@ -312,8 +313,8 @@ public class ImagerTest {
 			int idx = yvonne.FindIdxofName("ana18");
 			double rsl_ana18 = (DACCntr.ana18_max-DACCntr.ana18_min)/DACCntr.levels*2;
 			System.out.println("ana18_max = , " + DACCntr.ana18_max);
-			int reg_min = (int) Math.round((v0-DACCntr.ana18_min)/rsl_ana18) + DACCntr.levels/4 - 32*20;
-			int reg_max = (int) Math.round((v0+(vrefp-vrefn)-DACCntr.ana18_min)/rsl_ana18) + DACCntr.levels/4 + 32*20;
+			int reg_min = (int) Math.round((v0-(vrefp-vrefn)-DACCntr.ana18_min)/rsl_ana18) + DACCntr.levels/4 - 32*10;
+			int reg_max = (int) Math.round((v0+(vrefp-vrefn)-DACCntr.ana18_min)/rsl_ana18) + DACCntr.levels/4 + 32*10;
 			int inc = (int) Math.round(32/Math.pow(2, extra_bit));
 			System.out.println(inc);
 			for (int reg_int = reg_min; reg_int < reg_max; reg_int= reg_int + inc){
@@ -509,7 +510,7 @@ public class ImagerTest {
 		imager.ScanMode(true);
 
 		imager.RowCounterForce(false);
-		imager.SetMaxRowCounter(0);
+		imager.SetMaxRowCounter(2);
 		imager.SetRowCounter(2);
 		imager.SetSmpPeriod(tsmp);
 		imager.SetSmpPW(pw_smp);
@@ -586,7 +587,7 @@ public class ImagerTest {
  			System.out.println("Read from JTAG SC 014: " + jdrv.readReg(ClockDomain.tc_domain, "0014"));
  		
 	}
-	static void Partial_Settling_Calibration(int itr_times, DACCntr yvonne, ImagerCntr imager, int adc_idx, double clk_freq){
+	static void Partial_Settling_Calibration(int itr_times, DACCntr yvonne, ImagerCntr imager, int adc_idx, int Nstep, double clk_freq){
 		try {Thread.sleep(20000);} catch (InterruptedException e) {e.printStackTrace();}
 		int row = 0;
 		int col = 118;
@@ -679,8 +680,9 @@ public class ImagerTest {
 					+ "cap load is " + load + ", vcm = " + vcm + ", v0 = " + v0 + ", vrefp = " + vrefp
 					+ ", vrefn = " + vrefn + ".\n");
 			double value;
-			for (int i = 0; i < 100; i ++){	
-				value = min + i*(max-min)/100;
+			
+			for (int i = 0; i < Nstep; i ++){	
+				value = min + i*(max-min)/Nstep;
 				yvonne.WriteDACValue("ana33", value, yvonne.dac_reg  )	;
 				if (i == 0)
 					try {Thread.sleep(5000);} catch (InterruptedException e) {e.printStackTrace();}

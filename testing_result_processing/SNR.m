@@ -13,7 +13,7 @@ function SNR_result = SNR(data,fs)
 %     for i =2:15
 %         THD = (spectrum((fundidx-1)*i+1))^2 + THD;
 %     end
-%     THD_db=db(THD)/2
+    %THD_db=db(THD)/2
     [spur, spuridx] = max (spec_nodc_nofund);
     sfdrdb = funddb-20*log10(spur);
     sndr = norm(fund)/norm(spec_nodc_nofund);

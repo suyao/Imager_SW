@@ -10,14 +10,15 @@ v0=1;
 if (lr==0)
     %filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_b1s2slowleft3b_20151013_1036.txt'; %s2 best calibration
 
-    filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_b1s3slow_left3b_20151019_1015.txt'; %vcm = 1 
+   % filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_b1s3slow_left3b_20151019_1015.txt'; %vcm = 1 
     %filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_b1s3slow_left3b_20151021_1348.txt'; %vcm = 0.75
     %filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_b1s3slow_left3b_20151021_2126.txt'; %vcm = 0.75
     %filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_b1s3slow_left3b_20151021_2154.txt'; %vcm = 1
     %filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_b1s3slow_left3b_20151022_0934.txt'; %vcm = 1
     %filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_b1s3slow_left3b_20151022_1647.txt'; %vcm = 1
-    %filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_b1s3slow_left3b_20151028_2005.txt'; %vcm = 1
-    %filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_b1p21slow_left3b_20151028_2054.txt'; %vcm = 1
+   % filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_b1s3slow_left3b_20151028_2005.txt'; %vcm = 1
+    filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_b1p21slow_left3b_20151028_2054.txt'; %vcm = 1
+    %filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_b1p21slow_left3b_20151102_1807.txt'; %vcm = 1
 
 elseif (lr==1)
     %filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_b1s3slowright3b_20151016_1519.txt'; %vcm = 1
@@ -81,7 +82,7 @@ for i = 1:r
     data_mean(i,2)=mean(ana(i,:))*2;
 end
 hold on;
-plot(data_mean(:,1),data_mean(:,2));
+%plot(data_mean(:,1),data_mean(:,2));
 
 
 
