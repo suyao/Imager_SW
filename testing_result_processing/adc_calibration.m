@@ -19,7 +19,8 @@ if (lr==0)
    % filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_b1s3slow_left3b_20151028_2005.txt'; %vcm = 1
     filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_b1p21slow_left3b_20151028_2054.txt'; %vcm = 1
     %filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_b1p21slow_left3b_20151102_1807.txt'; %vcm = 1
-
+    filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_b1p21slow_left3b_20151103_1152.txt'; %vcm = 1
+   
 elseif (lr==1)
     %filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_b1s3slowright3b_20151016_1519.txt'; %vcm = 1
     %filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_b1s3slow_right3b_20151022_1816.txt'; %vcm = 1
@@ -70,7 +71,7 @@ end
 
 key = key(1) - key + 2^5;
 for bit = 1:11;
-    weight(bit) = key(bit) / 2 ^5;
+    weight(bit) = key(bit) / key(1);
 end
 weight;
 2047-value;

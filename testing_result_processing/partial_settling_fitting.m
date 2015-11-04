@@ -156,6 +156,7 @@ figure;
 subplot(2,1,1);
 plot(1:length(vin),(vin - result)*1e3);
 ylabel('fitting error/mV','FontSize', 18)
+title(sprintf('%1g%s Order Fitting Error = %0.2fLsb',fit_order,str, error),'FontSize', 18);
 subplot(2,1,2);
 for i =1:N
     data_maj(i) = mode(data(i,2:end));
@@ -163,4 +164,10 @@ end
 plot(1:length(vin),data_maj);
 xlabel('ramp step index','FontSize', 18);
 ylabel('ADC output','FontSize', 18);
-title(sprintf('%1g%s Order Fitting Error = %0.2fLsb',fit_order,str, error),'FontSize', 18);
+
+figure;
+idx = 220;
+xbins = [min(data(idx,2:end)):1:max(data(idx,2:end))];
+hist(data(idx,2:end),xbins);
+title('Readout histogram at worst point','FontSize',18)
+xlabel('digital code','FontSize',18)

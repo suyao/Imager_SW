@@ -56,7 +56,7 @@ public class ImagerTest {
 	
 	static DACCntr InitDAC() {
 		//Set DAC Values
-		double pvdd = 3; 
+		double pvdd = 2.8; 
 		//double pvdd = 1.5; //1.46 at DVDD33 = 2.3
 		double ana33 = 2.4;
 		//double ana33 = 0.95;
@@ -160,9 +160,9 @@ public class ImagerTest {
 		imager.EnableDout(true);
 		// ADC Testing
 		//DummyADCTest(0.51, yvonne, imager);
-		ADCTest(0.51, yvonne, imager, 1); // left ADC if 0, right ADC if 1
+		//ADCTest(0.51, yvonne, imager, 1); // left ADC if 0, right ADC if 1
 		//CalibrateDummyADC(10, yvonne, imager); //repeat every analog value for 100 conversions
-		//CalibrateADC(20, yvonne, imager, 0, 3, "slow"); //(itr, , ,left/right, extra_bit)
+		CalibrateADC(30, yvonne, imager, 0, 4, "slow"); //(itr, , ,left/right, extra_bit)
 		//SNR_ADC(20, yvonne, imager, 0, "slow");
 		//SNR_ADC(20, yvonne, imager, 1, "slow");
 		//ADC_ext_input(yvonne,imager,0, "fast");// adc_idx
@@ -172,7 +172,7 @@ public class ImagerTest {
 		ImagerDebugModeTest(imager, 1,4);
 		//ImagerDebugModeTest(imager, 300,3);
 		//ReadImagerReg(jdrv);
-		ImagerFrameTest(imager, jdrv);
+		//ImagerFrameTest(imager, jdrv);
 		System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
 		//Partial_Settling_Calibration(50,  yvonne, imager, 0, 400, 250e6);	
 		//Partial_Settling_Calibration(50,  yvonne, imager, 1, 400, 250e6);	
@@ -313,7 +313,8 @@ public class ImagerTest {
 			int idx = yvonne.FindIdxofName("ana18");
 			double rsl_ana18 = (DACCntr.ana18_max-DACCntr.ana18_min)/DACCntr.levels*2;
 			System.out.println("ana18_max = , " + DACCntr.ana18_max);
-			int reg_min = (int) Math.round((v0-(vrefp-vrefn)-DACCntr.ana18_min)/rsl_ana18) + DACCntr.levels/4 - 32*10;
+			//int reg_min = (int) Math.round((v0-(vrefp-vrefn)-DACCntr.ana18_min)/rsl_ana18) + DACCntr.levels/4 - 32*10;
+			int reg_min = (int) Math.round((v0-DACCntr.ana18_min)/rsl_ana18) + DACCntr.levels/4 - 32*10;
 			int reg_max = (int) Math.round((v0+(vrefp-vrefn)-DACCntr.ana18_min)/rsl_ana18) + DACCntr.levels/4 + 32*10;
 			int inc = (int) Math.round(32/Math.pow(2, extra_bit));
 			System.out.println(inc);

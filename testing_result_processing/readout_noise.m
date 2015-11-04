@@ -17,9 +17,13 @@ close all;
 %filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/ReadNoise/readnoise_fast_low_0pF_row1-3_1102_1714_extrst_3-2.csv'; %inte time is 3 row
 %filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/ReadNoise/readnoise_fast_high_1pF_row1-3_1102_1714_extrst_3-3.csv'; %inte time is 3 row
 %filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/ReadNoise/readnoise_fast_high_1pF_row1-3_1102_2103_extrst_3-3.csv'; %inte time is 3 row
-filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/ReadNoise/readnoise_fast_high_1pF_row1-3_1102_2112_extrst_3-3.csv'; %pvdd=2.8, ana33=2.4, v0=1, rst/tx=3.3
+%filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/ReadNoise/readnoise_fast_high_1pF_row1-3_1102_2112_extrst_3-3.csv'; %pvdd=2.8, ana33=2.4, v0=1, rst/tx=3.3
 %filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/ReadNoise/readnoise_fast_high_1pF_row1-3_1102_2117_extrst_3-3.csv'; %pvdd=2.9, ana33=2.4, v0=1, rst/tx=3.3
 %filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/ReadNoise/readnoise_fast_high_1pF_row1-3_1102_2124_extrst_3-3.csv'; %pvdd=3,ana33=2.4,v0=1,rst/tx=3.3
+%filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/ReadNoise/readnoise_fast_high_1pF_row1-3_1103_1026_pvdd3.csv'; %pvdd=2.8, ana33=2.4, v0=1, rst/tx=3.3
+%filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/ReadNoise/readnoise_fast_high_1pF_row1-3_1103_1026_pvdd3.csv'; %pvdd=3, ana33=2.4, v0=1, rst/tx=3.3
+%filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/ReadNoise/readnoise_fast_high_1pF_row1-3_1103_1026_pvdd3-3.csv'; %pvdd=3.3, ana33=2.4, v0=1, rst/tx=3.3
+filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/ReadNoise/readnoise_fast_high_1pF_row1-3_1103_1026_pvdd2-8.csv'; %pvdd=3.3, ana33=2.4, v0=1, rst/tx=3.3
 
 
 fid = fopen(filename,'r');
@@ -43,7 +47,7 @@ close all;
 lr = 1;
 lsb = 1/(sum(weights{lr})+1);
 xbins = [-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7];
-row = 2;
+row = 0;
 for col = 1:120;
     col 
     idx_row = 0;
@@ -148,7 +152,7 @@ figure;
 %subplot(1,2,1);
 plot(sigma_list, P0./P1)
 hold on;
-plot(sigma_list, ratio*ones(1,length(sigma_list)),'r',);
+plot(sigma_list, ratio*ones(1,length(sigma_list)),'r');
 ylabel('P0/P1','FontSize', 18);
 xlabel('sigma_{noise}','FontSize', 18);
 grid on;
@@ -175,7 +179,7 @@ snr = db(snr)/2;
 enob = (snr-1.76)/6.02
 
 %%
-sigma = 0.62;
+sigma = 0.31;
 clear diff;
 for i = 1:11740
     v1(i) = normrnd(0.0, sigma);

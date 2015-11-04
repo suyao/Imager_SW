@@ -22,7 +22,7 @@ fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/ou
 
 
 c = fgetl(fin);
-weights = adc_calibration(1);
+weights = adc_calibration(0);
 f = fscanf(fin, '%f %x' ,[2 inf]);
 vin = f(1,:);
 dout = f(2,:);
