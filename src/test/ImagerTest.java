@@ -56,7 +56,7 @@ public class ImagerTest {
 	
 	static DACCntr InitDAC() {
 		//Set DAC Values
-		double pvdd = 2.8; 
+		double pvdd = 3.1; 
 		//double pvdd = 1.5; //1.46 at DVDD33 = 2.3
 		double ana33 = 2.4;
 		//double ana33 = 0.95;
@@ -149,30 +149,30 @@ public class ImagerTest {
 		 */
 		imager.SetADCTiming(1,1,1);
 		// SetADCcurrent( n1, p1, n2, p2) , the larger number, the smaller the current
-		//imager.SetADCcurrent(0,13,4,3); imager.SetISFcurrent(4); // chip s3 on board 1
+		imager.SetADCcurrent(0,13,4,3); imager.SetISFcurrent(4); // chip s3 on board 1
 		//imager.SetADCcurrent(2,13,7,7); imager.SetISFcurrent(5);// chip s2 on board 3
 		//imager.SetADCcurrent(3,10,5,8); imager.SetISFcurrent(5);// chip c1 on board 3
-		imager.SetADCcurrent(5,10,7,8); imager.SetISFcurrent(4); // chip p21 on board 1
+		//imager.SetADCcurrent(5,10,7,8); imager.SetISFcurrent(4); // chip p21 on board 1
 		imager.CurrentTestPt(4);
 		
 		idx_bd="b1";
-		idx_chip="p21";
+		idx_chip="s3";
 		imager.EnableDout(true);
 		// ADC Testing
 		//DummyADCTest(0.51, yvonne, imager);
 		//ADCTest(0.51, yvonne, imager, 1); // left ADC if 0, right ADC if 1
 		//CalibrateDummyADC(10, yvonne, imager); //repeat every analog value for 100 conversions
-		CalibrateADC(30, yvonne, imager, 0, 4, "slow"); //(itr, , ,left/right, extra_bit)
+		//CalibrateADC(30, yvonne, imager, 0, 4, "slow"); //(itr, , ,left/right, extra_bit)
 		//SNR_ADC(20, yvonne, imager, 0, "slow");
 		//SNR_ADC(20, yvonne, imager, 1, "slow");
 		//ADC_ext_input(yvonne,imager,0, "fast");// adc_idx
 		//Pixel Read//out
-		ImagerDebugModeTest(imager, 0,118);
+		//ImagerDebugModeTest(imager, 0,118);
 		//System.out.println("Read from jtag x074: " + jdrv.readReg(ClockDomain.tc_domain, "0074"));
 		ImagerDebugModeTest(imager, 1,4);
 		//ImagerDebugModeTest(imager, 300,3);
 		//ReadImagerReg(jdrv);
-		//ImagerFrameTest(imager, jdrv);
+		ImagerFrameTest(imager, jdrv);
 		System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
 		//Partial_Settling_Calibration(50,  yvonne, imager, 0, 400, 250e6);	
 		//Partial_Settling_Calibration(50,  yvonne, imager, 1, 400, 250e6);	
@@ -511,7 +511,7 @@ public class ImagerTest {
 		imager.ScanMode(true);
 
 		imager.RowCounterForce(false);
-		imager.SetMaxRowCounter(2);
+		//imager.SetMaxRowCounter(2);
 		imager.SetRowCounter(2);
 		imager.SetSmpPeriod(tsmp);
 		imager.SetSmpPW(pw_smp);
@@ -537,7 +537,7 @@ public class ImagerTest {
 		imager.JtagReset();
 		jdrv.readReg(ClockDomain.tc_domain, "0000");
 		System.out.println("Left half Frame Test Starts:");
-		if (1==0) {
+		if (1==1) {
 		try {Thread.sleep(100);} catch (InterruptedException e) {e.printStackTrace();}
 		imager.OutputSel(right);	
 		System.out.println("Right half Frame Test Starts:");
@@ -547,7 +547,12 @@ public class ImagerTest {
 	}
 	
 	static void ADC_ext_input( DACCntr yvonne, ImagerCntr imager, int adc_idx, String speed){
+		
 		System.out.println("ADC output to logic analyzer begins...");
+		double tsmp = 4*(25)*Math.pow(10, -9); //sampling period 96ns
+		double pw_smp = 4*(10)*Math.pow(10, -9); //sampling pulse width 40ns
+		imager.SetSmpPeriod(tsmp);
+		imager.SetSmpPW(pw_smp);
 		if (adc_idx == 0)
 			imager.SetColCounter(1); // if col<120, output left adc, otherwise, right adc
 		else
