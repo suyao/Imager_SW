@@ -26,9 +26,6 @@ hold on;
     ctot_p=sum(cp)+1;
     ctot_n = ctot_p;
 for vin = 0.5:1e-5:0.52
-    %vx(1)=vcm-vin+cp(bit)/ctot_p*vrefn+(ctot_p-cp(bit))/ctot_p*vrefp;
- 
-    %vy(1)=vcm-v0+cn(bit)/ctot_n*vrefp+(ctot_n-cn(bit))/ctot_n*vrefn;
     vx(1)=vcm-vin+cp(bit)/ctot_p*vrefn+(ctot_p-cp(bit))/ctot_p*vrefp;
     vy(1)=vcm-v0+cn(bit)/ctot_n*vrefp+(ctot_n-cn(bit))/ctot_n*vrefn;
 

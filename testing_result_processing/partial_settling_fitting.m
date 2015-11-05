@@ -1,22 +1,22 @@
-%function coeff = partial_settling_fitting(fit_order,lr);
-close all;
-clear all;
-lr = 1;
-fit_order = 6;
+function coeff = partial_settling_fitting(fit_order,lr);
+% close all;
+% clear all;
+% lr = 1;
+% fit_order = 5;
 if lr == 1
     %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3left0fF_20151019_1539.txt'); %slow
-    %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3left1fF_fast_20151023_1638.txt'); %fast
+    fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3left1fF_fast_20151023_1638.txt'); %fast
     %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3left1fF_slow__20151023_1627.txt'); %slow
     %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3left1fF_fast_20151026_1154.txt'); %fast
     %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1p21left1fF_slow_20151102_1920.txt'); %fast
     %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1p21left1fF_fast_20151102_1950.txt'); %fast
-    fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1p21left1fF_fast_20151102_2013.txt'); %fast
+    %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1p21left1fF_fast_20151102_2013.txt'); %fast
    
 elseif lr == 2
     %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3right2fF_20151019_1547.txt'); %slow
-    %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3right4fF_fast_20151023_1650.txt'); %fast
+    fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3right4fF_fast_20151023_1650.txt'); %fast
     %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3right4fF_slow__20151023_1630.txt'); %slow
-    fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3right4fF_fast_20151026_1205.txt'); %fast
+    %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3right4fF_fast_20151026_1205.txt'); %fast
   
 end
 c = fgetl(fin);  
@@ -165,9 +165,9 @@ plot(1:length(vin),data_maj);
 xlabel('ramp step index','FontSize', 18);
 ylabel('ADC output','FontSize', 18);
 
-figure;
-idx = 220;
-xbins = [min(data(idx,2:end)):1:max(data(idx,2:end))];
-hist(data(idx,2:end),xbins);
-title('Readout histogram at worst point','FontSize',18)
-xlabel('digital code','FontSize',18)
+% figure;
+% idx = 394;
+% xbins = [min(data(idx,2:end)):1:max(data(idx,2:end))];
+% hist(data(idx,2:end),xbins);
+% title('Readout histogram at worst point','FontSize',18)
+% xlabel('digital code','FontSize',18)

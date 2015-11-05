@@ -2,11 +2,11 @@
 %Time[s], Channel 0, Channel 1, Channel 2, Channel 3, Channel 4, Channel 5, Channel 6, Channel 7, Channel 8, Channel 9, Channel 10, 
 %New Row, New Frame, clk_smp
 clear all;
-close all;
-c = partial_settling_fitting(5,1);
+%close all;
+%c = partial_settling_fitting(5,1);
 %c = partial_settling_fitting(5,2);
 %%
-if (0 ==1)
+if (1 ==1)
 row_num = 320;
 col_num = 240/2;
 %filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1019_1711_vert.csv';
@@ -27,7 +27,8 @@ filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/out
 %filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1021_1800_bird.csv'; % 1/8 turn out best
 filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1021_1800_grid.csv'; % 1/8 turn out best
 %filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1026_1108_vert2.csv'; % 3/32 turn out
-
+filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1104_1108_vert_pvdd2-8.csv'; % 1/8 turn out best
+filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1104_1108_vert_pvdd3-1.csv'; % 1/8 turn out best
 fid = fopen(filename,'r');
 c = fgetl(fid); 
 f = fscanf(fid, '%f,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d, %d, %d', [15 inf] );
@@ -38,7 +39,7 @@ clk_smp = f(15,:);
 data= [ f(2,:);f(3,:);f(4,:);f(5,:);f(6,:);f(7,:);f(8,:);f(9,:);f(10,:);f(11,:); f(12,:)]';
 
 %close all;
-fit_order = 5;
+fit_order = 3;
 vmin = 0.0;
 weights{1} = adc_calibration(0);
 weights{2} = adc_calibration(1);
