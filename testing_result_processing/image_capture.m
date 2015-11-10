@@ -2,11 +2,11 @@
 %Time[s], Channel 0, Channel 1, Channel 2, Channel 3, Channel 4, Channel 5, Channel 6, Channel 7, Channel 8, Channel 9, Channel 10, 
 %New Row, New Frame, clk_smp
 clear all;
-%close all;
-%c = partial_settling_fitting(5,1);
+close all;
+c = partial_settling_fitting(5,1);
 %c = partial_settling_fitting(5,2);
 %%
-if (1 ==1)
+if (0 ==1)
 row_num = 320;
 col_num = 240/2;
 %filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1019_1711_vert.csv';

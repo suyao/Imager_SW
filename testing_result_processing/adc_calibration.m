@@ -4,9 +4,6 @@ vrefp=1.25;
 vrefn=0.75;
 vcm=1;
 v0=1;
-%fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_output_b3.txt','r');
-%fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_left2b_20151009_1309.txt','r'); 
-%fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_right3b_20151012_1512.txt','r'); %s2 right slow clk on board 1
 if (lr==0)
     %filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_b1s2slowleft3b_20151013_1036.txt'; %s2 best calibration
 
@@ -17,16 +14,18 @@ if (lr==0)
     %filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_b1s3slow_left3b_20151022_0934.txt'; %vcm = 1
     %filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_b1s3slow_left3b_20151022_1647.txt'; %vcm = 1
    % filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_b1s3slow_left3b_20151028_2005.txt'; %vcm = 1
-    filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_b1p21slow_left3b_20151028_2054.txt'; %vcm = 1
+    %filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_b1p21slow_left3b_20151028_2054.txt'; %vcm = 1
     %filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_b1p21slow_left3b_20151102_1807.txt'; %vcm = 1
     %filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_b1p21slow_left3b_20151103_1152.txt'; %vcm = 1
     %filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_b1p21slow_left4b_20151103_1700.txt'; %vcm = 1
-   
+    filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_b1p21slow_left5b_20151106_1150.txt'; %vcm = 1
+    
 elseif (lr==1)
     %filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_b1s3slowright3b_20151016_1519.txt'; %vcm = 1
     %filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_b1s3slow_right3b_20151022_1816.txt'; %vcm = 1
-    filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_b1p21slow_right3b_20151029_1549.txt'; %vcm = 1
-
+  %  filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC//ADC_ramp_b1p21slow_right3b_20151029_1549.txt'; %vcm = 1
+    filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_b1s3slow_right5b_20151106_1940.txt'; %vcm = 1
+   
 end
 
 fin = fopen(filename,'r'); %s2 left fast clk on board 1
@@ -74,6 +73,7 @@ key = key(1) - key + 2^5;
 for bit = 1:11;
     weight(bit) = key(bit) / key(1);
 end
+weight= (weight-weight(1)+weight(2)-weight(1))/weight(1);
 weight;
 2047-value;
 for i = 1:r

@@ -19,7 +19,9 @@ close all;
 %fid = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/timing_1_2_1.csv','r');
 %fid = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ext_sine_fast_b1s3_1026_1045_vcm0-95_jitter.csv','r');
 %fid = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ext_sine_fast_b1s3_1026_1353_vcm0-95.csv','r');
-fid = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ext_sine_fast_b1p21_1030_1500_vcm0-95_vpp0-9.csv','r');
+%fid = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ext_sine_fast_b1p21_1030_1500_vcm0-95_vpp0-9.csv','r');
+fid = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ext_sine_slow_b1s3_1109_1453_vcm1.csv','r');
+%fid = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ext_sine_fast_b1s3_1109_1453_vcm1.csv','r');
 
 
 
@@ -35,9 +37,9 @@ weights = adc_calibration(0);
 %%
 %close all;
 
-N = 2048*8 ;
-fs = 1/96e-9;
-%fs = 1/200e-9;
+N = 2048*4 ;
+%fs = 1/96e-9;
+fs = 1/200e-9;
 idx = 1;
 data=zeros(1,N);
 for i = 2:r

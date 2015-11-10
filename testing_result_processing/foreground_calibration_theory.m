@@ -14,7 +14,7 @@ bit=11;
 lsb=5;
 msb=bit-lsb;
 number_c=2^msb+2^lsb+1;%lsb:[1 1 2 4 8 16]; msb[1 2 4 8 16 30] bridge:2
-b_extra=3; % extra bits for foreground cali
+b_extra=4; % extra bits for foreground cali
 N=bit+b_extra;
 M=1;
 for m=1:M;
@@ -44,7 +44,8 @@ for m=1:M;
         cn(i)=cn(i)/clsb_n/(1/cn_bridge+1/clsb_n);
     end
      cp = [1   2   3.875    7.6250  14.75   16   31.75 63.5  127.3750  255.1250  480.6250];
-     cn =  [  1    2    3.75   7.6250   14.8750   16.2500   32.1250 64.5000  128.1250  256.1250  481.5];
+    % cn =  [  1    2    3.75   7.6250   14.8750   16.2500   32.1250 64.5000  128.1250  256.1250  481.5];
+     cn = cp;
      ctot_p = sum(cp)+1;
      ctot_n = sum(cn)+1;
     p(m,:)=cp;
@@ -103,45 +104,25 @@ for m=1:M;
     end
     
      c=c(1)-c+2^(b_extra+1);
-     c=c/c(1)*2
+     c=c/c(1)*2;
+     c= c-c(1)+c(2)-c(1)
     
-    NN=256;
+    NN=1024;
     for j=1:NN;
         vin_test(j)=0.5*sin(2*pi*j/NN)+v0;
-%         vx(1)=vcm-vin_test(j)+cp(bit)/ctot_p*vrefp+(ctot_p-cp(bit))/ctot_p*vrefn;
-%         vy(1)=vcm-v0+cn(bit)/ctot_n*vrefn+(ctot_n-cn(bit))/ctot_n*vrefp;
-%         for i=1:bit;
-%             if vx(i)>=vy(i);
-%                 dout(i)=0;
-%                 if i<bit;
-%                     vx(i+1)=vx(i)-(cp(bit-i+1)-cp(bit-i))/ctot_p*vrefp+(cp(bit-i+1)-cp(bit-i))/ctot_p*vrefn;
-%                     vy(i+1)=vy(i)-(cn(bit-i+1)-cn(bit-i))/ctot_n*vrefn+(cn(bit-i+1)-cn(bit-i))/ctot_n*vrefp;
-%                 end
-%             else
-%                 dout(i)=1;
-%                 if i<bit;
-%                     vx(i+1)=vx(i)+cp(bit-i)/ctot_p*vrefp-cp(bit-i)/ctot_p*vrefn;
-%                     vy(i+1)=vy(i)+cn(bit-i)/ctot_n*vrefn-cn(bit-i)/ctot_n*vrefp;
-%                 end
-%             end
-%         end
         vx(1)=vcm-vin_test(j)+cp(bit)/ctot_p*vrefn+(ctot_p-cp(bit))/ctot_p*vrefp;
         vy(1)=vcm-v0+cn(bit)/ctot_n*vrefp+(ctot_n-cn(bit))/ctot_n*vrefn;        
         for i=1:bit;
 
             if vx(i)>=vy(i);
                 dout(i)=0;
-                if i<bit;
-%                     vx(i+1)=vx(i)-(cp(bit-i+1)-cp(bit-i))/ctot_p*vrefp+(cp(bit-i+1)-cp(bit-i))/ctot_p*vrefn;
-%                     vy(i+1)=vy(i)-(cn(bit-i+1)-cn(bit-i))/ctot_n*vrefn+(cn(bit-i+1)-cn(bit-i))/ctot_n*vrefp;
+                if i<bit;         
                     vx(i+1)=vx(i)-cp(bit-i)/ctot_p*vrefp+cp(bit-i)/ctot_p*vrefn;
                     vy(i+1)=vy(i)-cn(bit-i)/ctot_n*vrefn+cn(bit-i)/ctot_n*vrefp;
                 end
             else
                 dout(i)=1;
                 if i<bit;
-%                     vx(i+1)=vx(i)+cp(bit-i)/ctot_p*vrefp-cp(bit-i)/ctot_p*vrefn;
-%                     vy(i+1)=vy(i)+cn(bit-i)/ctot_n*vrefn-cn(bit-i)/ctot_n*vrefp;
                     vx(i+1)=vx(i)+(cp(bit-i+1)-cp(bit-i))/ctot_p*vrefp-(cp(bit-i+1)-cp(bit-i))/ctot_p*vrefn;
                     vy(i+1)=vy(i)+(cn(bit-i+1)-cn(bit-i))/ctot_n*vrefn-(cn(bit-i+1)-cn(bit-i))/ctot_n*vrefp;
                 end
@@ -152,7 +133,7 @@ for m=1:M;
             dout_dec=dout_dec+2^(bit-i)*dout(i);
         end
         dout_test(j)=dout_dec/2^bit;
-        dout_rev(j)=floor(dout*(fliplr(c))')/2^bit;
+        dout_rev(j)=dout*(fliplr(c))'/(sum(c)+c(1));
     end  
      figure;
      plot(dout_test);
@@ -229,77 +210,95 @@ for m=1:M;
     axis([0 0.5 -120 0]);
     sndr_cor(m)=sndrdb;
 end
-NN=1024*8;
+
+NN=9000;
+sigma =0.25e-3;
+%sigma = 0;
+clear vin_test dout_test ana_rev dout_rev;
+for j=1:NN;  
+    vin_test(j)=v0-(vrefp-vrefn)+j/NN;
+    for k = 1:50
+        vx(1)=vcm-vin_test(j)+cp(bit)/ctot_p*vrefn+(ctot_p-cp(bit))/ctot_p*vrefp+normrnd(0,sigma);
+        vy(1)=vcm-v0+cn(bit)/ctot_n*vrefp+(ctot_n-cn(bit))/ctot_n*vrefn;        
+        for i=1:bit;
+            if vx(i)>=vy(i);
+                dout(i)=0;
+                if i<bit;                  
+                    vx(i+1)=vx(i)-cp(bit-i)/ctot_p*vrefp+cp(bit-i)/ctot_p*vrefn;
+                    vy(i+1)=vy(i)-cn(bit-i)/ctot_n*vrefn+cn(bit-i)/ctot_n*vrefp;
+                end
+            else
+                dout(i)=1;
+                if i<bit;
+                    vx(i+1)=vx(i)+(cp(bit-i+1)-cp(bit-i))/ctot_p*vrefp-(cp(bit-i+1)-cp(bit-i))/ctot_p*vrefn;
+                    vy(i+1)=vy(i)+(cn(bit-i+1)-cn(bit-i))/ctot_n*vrefn-(cn(bit-i+1)-cn(bit-i))/ctot_n*vrefp;
+                end
+            end
+        end
+
+        dout_dec=0;
+        for i=1:bit;
+            dout_dec=dout_dec+2^(bit-i)*dout(i);
+        end
+        dout_test(j,k)=dout_dec;
+        ana_rev(j,k)=dout*(fliplr(c))'/(sum(c)+c(1))+v0-(vrefp-vrefn);
+        dout_rev(j,k)=floor(dout*(fliplr(c))');
+    end 
+    ana_rev_avg(j) = mean(ana_rev(j,:));
+    dout_test_avg(j)=mean(dout_test(j,:));
+    dout_rev_avg(j)=mean(dout_rev(j,:));
+end
+ lsb = 1/(sum(c)/2+1);
+ figure;
+ subplot(3,1,1);
+ stairs(vin_test,dout_test_avg);
+ hold on;
+ stairs(vin_test,dout_rev_avg,'r');
+ ylabel('dout','FontSize',18); 
+ legend('Dout','Dout_{Cali}');
+ subplot(3,1,2);
+ error = (vin_test-ana_rev_avg)/lsb;
+ plot(vin_test,error);
+ ylabel('vin - vout_{cali} / LSB','FontSize',18);
+ title(sprintf('Error is %0.3g LSB',(max(abs(error)))),'FontSize',18);
+ subplot(3,1,3);
+ error_diff = error(2:end)-error(1:end-1);
+ plot(vin_test(2:end),error_diff);
+ title(sprintf('Error DNL =%0.3g LSB',max(abs(error_diff))),'FontSize',18);
+ xlabel('vin /v','FontSize',18);
+ c2=c/sum(c)*(sum(c)+c(1));
+ cp = c/c(1); cn = cp; ctot_p=sum(cp)+cp(1); ctot_n=ctot_p;
 for j=1:NN;
     vin_test(j)=v0-(vrefp-vrefn)+j/NN;
     vx(1)=vcm-vin_test(j)+cp(bit)/ctot_p*vrefn+(ctot_p-cp(bit))/ctot_p*vrefp;
     vy(1)=vcm-v0+cn(bit)/ctot_n*vrefp+(ctot_n-cn(bit))/ctot_n*vrefn;        
     for i=1:bit;
-
         if vx(i)>=vy(i);
             dout(i)=0;
-            if i<bit;
-%                     vx(i+1)=vx(i)-(cp(bit-i+1)-cp(bit-i))/ctot_p*vrefp+(cp(bit-i+1)-cp(bit-i))/ctot_p*vrefn;
-%                     vy(i+1)=vy(i)-(cn(bit-i+1)-cn(bit-i))/ctot_n*vrefn+(cn(bit-i+1)-cn(bit-i))/ctot_n*vrefp;
+            if i<bit;                  
                 vx(i+1)=vx(i)-cp(bit-i)/ctot_p*vrefp+cp(bit-i)/ctot_p*vrefn;
                 vy(i+1)=vy(i)-cn(bit-i)/ctot_n*vrefn+cn(bit-i)/ctot_n*vrefp;
             end
         else
             dout(i)=1;
             if i<bit;
-%                     vx(i+1)=vx(i)+cp(bit-i)/ctot_p*vrefp-cp(bit-i)/ctot_p*vrefn;
-%                     vy(i+1)=vy(i)+cn(bit-i)/ctot_n*vrefn-cn(bit-i)/ctot_n*vrefp;
                 vx(i+1)=vx(i)+(cp(bit-i+1)-cp(bit-i))/ctot_p*vrefp-(cp(bit-i+1)-cp(bit-i))/ctot_p*vrefn;
                 vy(i+1)=vy(i)+(cn(bit-i+1)-cn(bit-i))/ctot_n*vrefn-(cn(bit-i+1)-cn(bit-i))/ctot_n*vrefp;
             end
         end
     end
-%     vx(1)=vcm-vin_test(i)+cp(bit)/ctot_p*vrefp+(ctot_p-cp(bit))/ctot_p*vrefn;
-%     vy(1)=vcm-v0+cn(bit)/ctot_n*vrefn+(ctot_n-cn(bit))/ctot_n*vrefp;
-%     for i=1:bit;
-%         if vx(i)>=vy(i);
-%             dout(i)=0;
-%             if i<bit;
-%                 vx(i+1)=vx(i)-(cp(bit-i+1)-cp(bit-i))/ctot_p*vrefp+(cp(bit-i+1)-cp(bit-i))/ctot_p*vrefn;
-%                 vy(i+1)=vy(i)-(cn(bit-i+1)-cn(bit-i))/ctot_n*vrefn+(cn(bit-i+1)-cn(bit-i))/ctot_n*vrefp;
-%             end
-%         else
-%             dout(i)=1;
-%             if i<bit;
-%                 vx(i+1)=vx(i)+cp(bit-i)/ctot_p*vrefp-cp(bit-i)/ctot_p*vrefn;
-%                 vy(i+1)=vy(i)+cn(bit-i)/ctot_n*vrefn-cn(bit-i)/ctot_n*vrefp;
-%             end
-%         end
-%     end
+
     dout_dec=0;
     for i=1:bit;
         dout_dec=dout_dec+2^(bit-i)*dout(i);
     end
-    dout_test(j)=dout_dec;
-    ana_rev(j)=dout*(fliplr(c))'/(sum(c)+1)+v0-(vrefp-vrefn);
-    dout_rev(j)=floor(dout*(fliplr(c))');
-end  
- figure;
- subplot(2,1,1);
- stairs(vin_test,dout_test);
- hold on;
- stairs(vin_test,dout_rev,'r');
+    dout_rec(j)=dout_dec;
+    %ana_rev(j)=dout*(fliplr(c))'/(sum(c)+c(1))+v0-(vrefp-vrefn);
+    %dout_rev(j)=floor(dout*(fliplr(c))');
+end 
+
+figure;
+stairs(vin_test,dout_test);
+hold on;
+stairs(vin_test,dout_rec,'r');
  
- ylabel('dout','FontSize',18);
- 
- legend('Dout','Dout_{Cali}');
- subplot(2,1,2);
- plot(vin_test,(vin_test-ana_rev)/1e-3);
- lsb = 1/(sum(c)/2+1);
- ylabel('vin - vout_{cali} / mV','FontSize',18);
- title(sprintf('Error is %0.3g LSB',(max(vin_test-ana_rev)-min(vin_test-ana_rev))/lsb),'FontSize',18);
-xlabel('vin /v','FontSize',18);
- % figure;
-% bar(1:m,sndr_cor,'r');
-% hold on;
-% bar(1:m,sndr_ori);
-% 
-% cor_mean=sum(sndr_cor)/M
-% stdev_cor = sqrt(sum((sndr_cor-cor_mean).^2/M))
-% ori_mean=sum(sndr_ori)/M
-% stdev_ori = sqrt(sum((sndr_ori-ori_mean).^2/M))

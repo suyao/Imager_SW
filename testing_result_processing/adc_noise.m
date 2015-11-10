@@ -20,6 +20,10 @@ filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/out
 
 filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/noise_ana_1023_1009_low_b1s3_left_slow_vcm1.csv';
 filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/noise_ana_1023_1025_high2_b1s3_left_slow_vcm1.csv';
+filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/noise_ana_1109_1447_high_b1s3_left_slow_vcm1.csv';
+filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/noise_ana_1109_1447_mid_b1s3_left_fast_vcm1.csv';
+
+
 
 fid = fopen(filename,'r');
 c = fgetl(fid); 
@@ -62,6 +66,10 @@ sigma = 0.287; x0 = -0.564; %high2 with vcm = 1.05
 sigma = 0.164; x0 = -0.094; %low 0.506 with vcm = 1
 sigma = 0.277; x0 = -0.028; % high 1.5 with vcm = 1
 %sigma = 0.2; x0 = -0.165; % high 1.501 with vcm = 1
+
+sigma = 0.243; x0 = 0.3136; %high 1.492, vcm = 1, p21 chip slow
+sigma = 0.277; x0 = 0.186; %high 1.492, vcm = 1, p21 chip fast
+sigma = 0.2; x0 = 0.261; %mid 1.2, vcm = 1, p21 chip fast
 x1 = x0+1; 
 cdf0 = 1/2*(erf((x0-0.5)/sqrt(2)/sigma)-erf((x0-1.5)/sqrt(2)/sigma))
 cdf1 = 1/2*(erf((x0+0.5)/sqrt(2)/sigma)-erf((x0-0.5)/sqrt(2)/sigma))
