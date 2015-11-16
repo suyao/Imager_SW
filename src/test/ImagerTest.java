@@ -58,9 +58,7 @@ public class ImagerTest {
 		//Set DAC Values
 		double pvdd = 2.8; 
 		//double pvdd = 1.5; //1.46 at DVDD33 = 2.3
-		//double ana33 = 2.65;
-		double ana33 = 2.47;
-		//double ana33 = 1.45;
+		double ana33 = 0.93;
 		v0 = 1;
 		double ana18 = 1;
 		vrefp = 1.25;
@@ -152,8 +150,8 @@ public class ImagerTest {
 		//imager.SetADCcurrent(0,13,4,3); imager.SetISFcurrent(4); // chip s3 on board 1
 		//imager.SetADCcurrent(2,13,7,7); imager.SetISFcurrent(5);// chip s2 on board 3
 		//imager.SetADCcurrent(3,10,5,8); imager.SetISFcurrent(5);// chip c1 on board 3
-		imager.SetADCcurrent(6,9,7,8); imager.SetISFcurrent(4); // chip p21 on board 1
-		imager.CurrentTestPt(4);
+		imager.SetADCcurrent(6,9,7,8); imager.SetISFcurrent(5); // chip p21 on board 1
+		imager.CurrentTestPt(8);
 		
 		idx_bd="b1";
 		idx_chip="p21";
@@ -169,7 +167,7 @@ public class ImagerTest {
 		//SNR_ADC(30, yvonne, imager, 1, "fast");
 		//ADC_ext_input(yvonne,imager,0, "fast");// adc_idx
 		//Pixel Readout
-		//ImagerDebugModeTest(imager, 0,122);
+		ImagerDebugModeTest(imager, 0,122,1, 4);
 		//System.out.println("Read from jtag x074: " + jdrv.readReg(ClockDomain.tc_domain, "0074"));
 		//ImagerDebugModeTest(imager, 1,118);
 		//ImagerDebugModeTest(imager, 300,3);
@@ -178,8 +176,10 @@ public class ImagerTest {
 		//imager.EnableDout(false);
 		//ReadNoiseTest(imager, jdrv);
 		System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
-		//Partial_Settling_Calibration(50,  yvonne, imager, 0, 3, 250e6);	
-		//Partial_Settling_Calibration(50,  yvonne, imager, 1, 3, 250e6);	
+		Partial_Settling_Calibration(50,  yvonne, imager, 0, -3, 0, 2, 250e6);	//(left/right, extra_bot, left load, right load, freq)
+		Partial_Settling_Calibration(50,  yvonne, imager, 1, -3, 0, 2, 250e6);	
+		Partial_Settling_Calibration(50,  yvonne, imager, 0, -3, 1, 4, 250e6);
+		Partial_Settling_Calibration(50,  yvonne, imager, 1, -3, 1, 4, 250e6);
 		jdrv.CloseController();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd, HH:mm");
 		Date date = new Date();
@@ -432,7 +432,7 @@ public class ImagerTest {
 		System.out.println("Finished Analog Sampler Test");
 	}
 	
-	static void ImagerDebugModeTest(ImagerCntr imager, int row, int col){
+	static void ImagerDebugModeTest(ImagerCntr imager, int row, int col, int leftload, int rightload){
 		int col_num = 240;
 		double tsmp = 24*4*Math.pow(10, -9); //sampling period 96ns
 		double pw_smp = 10*4*Math.pow(10, -9); //sampling pulse width 40ns
@@ -470,7 +470,7 @@ public class ImagerTest {
 		imager.EnableADCCali(false);
 		imager.EnableADC(true); // enable adc	
 		imager.DACRstCntr(1); //dac rst mode
-		imager.SetBitlineLoad(1,4);
+		imager.SetBitlineLoad(leftload,rightload);
 		imager.SetBlRstDelayTime(0);
 		//imager.SetPxIntegrationTime(160*trow);
 		if (col < 120)
@@ -613,7 +613,7 @@ static void ReadNoiseTest(ImagerCntr imager, JtagDriver jdrv){
 	static void ADC_ext_input( DACCntr yvonne, ImagerCntr imager, int adc_idx, String speed){
 		
 		System.out.println("ADC output to logic analyzer begins...");
-		double tsmp = 4*(24)*Math.pow(10, -9); //sampling period 96ns
+		double tsmp = 4*(25)*Math.pow(10, -9); //sampling period 96ns
 		double pw_smp = 4*(10)*Math.pow(10, -9); //sampling pulse width 40ns
 		imager.SetSmpPeriod(tsmp);
 		imager.SetSmpPW(pw_smp);
@@ -657,12 +657,11 @@ static void ReadNoiseTest(ImagerCntr imager, JtagDriver jdrv){
  			System.out.println("Read from JTAG SC 014: " + jdrv.readReg(ClockDomain.tc_domain, "0014"));
  		
 	}
-	static void Partial_Settling_Calibration(int itr_times, DACCntr yvonne, ImagerCntr imager, int adc_idx, int extra_bit, double clk_freq){
+	static void Partial_Settling_Calibration(int itr_times, DACCntr yvonne, ImagerCntr imager, int adc_idx, int extra_bit, int load_left, int load_right, double clk_freq){
 		
 		int row = 0;
 		int col = 118;
 		double min = 0.95; //slow clk
-		//double max = 2.18;
 		double max = 2.47; //fast clk
 		if (adc_idx == 1 ){
 			col = 122;
@@ -677,8 +676,8 @@ static void ReadNoiseTest(ImagerCntr imager, JtagDriver jdrv){
 			}else {min = 0.93; max = 2.3;}		
 		}
 
-		int load_left = 1; // in fF
-		int load_right = 4;
+		//int load_left = 1; // in fF
+		//int load_right = 4;
 		int rstMode = 1;
 		double tsmp = 96*Math.pow(10, -9); //sampling period 96ns
 		double pw_smp = 40*Math.pow(10, -9); //sampling pulse width 40ns
