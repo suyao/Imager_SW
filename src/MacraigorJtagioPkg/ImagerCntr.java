@@ -318,7 +318,7 @@ public class ImagerCntr extends MacraigorJtagio {
 	}
 	
 	public void SetClkMuxPW (double pw){
-		int p = (int) Math.round(pw/tsmp);
+		int p = (int) Math.round(pw/Tclk_fast);
 		int width = 5;
 		int max = (int) Math.pow(2, width);
 		if (p >= max) {

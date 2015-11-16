@@ -20,6 +20,8 @@ public class DACCntr
 	private static int idx_board;
 	public static double ana18_min;
 	public static double ana18_max;
+	public static double ana33_min;
+	public static double ana33_max;
 	public static int levels = (int) Math.pow (2.0, bits);
 	public String dac_reg[] = new String[ch_length];
 	
@@ -84,7 +86,7 @@ public class DACCntr
 			case 1:
 		        switch (idx) { // board #3
 		        	case 0:  max = 2.7964; min = 0.93603; break;   //PVDD		 
-		            case 1:  max = 2.8097; min = 0.93923; break;  //ana33           
+		            case 1:  max = 2.8097; min = 0.93923; ana33_max = max; ana33_min = min; break;  //ana33           
 		            case 2:  max = 1.5261; min = 0.50989; break;  //v0		 
 		            case 3:  max = 1.53015;  min = 0.511715; ana18_max = max; ana18_min = min;  break; //ana18		 
 		            case 4:  max = 1.5221; min = 0.503785;  break;  //vrefp			 
@@ -97,7 +99,7 @@ public class DACCntr
 			case 2:
 		        switch (idx) { // board #3
 		        	case 0:  max = 2.8061; min = 0.9336; break;   //PVDD		 
-		            case 1:  max = 2.8088; min = 0.93610; break;  //ana33           
+		            case 1:  max = 2.8088; min = 0.93610; ana33_max = max; ana33_min = min; break;  //ana33           
 		            case 2:  max = 1.5244; min = 0.50560; break;  //v0		 
 		            case 3:  max = 1.5233;  min = 0.504575; ana18_max = max; ana18_min = min;  break; //ana18		 
 		            case 4:  max = 1.5290; min = 0.51005;  break;  //vrefp			 
@@ -110,7 +112,7 @@ public class DACCntr
 			case 3:
 		        switch (idx) { // board #3
 		        	case 0:  max = 2.7893; min = 0.93013; break; //PVDD		 
-		            case 1:  max = 2.8118; min = 0.93892; break;	//ana33          
+		            case 1:  max = 2.8118; min = 0.93892; ana33_max = max; ana33_min = min; break;//ana33          
 		            case 2:  max = 1.5231; min = 0.50546; break;   //v0		
 		            case 3:  max = 1.5269;  min = 0.507665; ana18_max = max; ana18_min = min;  break;//ana18	 
 		            case 4:  max = 1.5290; min = 0.51023;  break;	//vrefp 				 
@@ -123,7 +125,7 @@ public class DACCntr
 			case 4:
 		        switch (idx) { // board #3
 	        	case 0:  max = 2.7896; min = 0.9295; break;   //PVDD		 
-	            case 1:  max = 2.8064; min = 0.93541; break;  //ana33           
+	            case 1:  max = 2.8064; min = 0.93541; ana33_max = max; ana33_min = min; break; //ana33           
 	            case 2:  max = 1.5306; min = 0.50754; break;  //v0		 
 	            case 3:  max = 1.5325;  min = 0.51218; ana18_max = max; ana18_min = min;  break; //ana18		 
 	            case 4:  max = 1.5258; min = 0.504675;  break;  //vrefp			 

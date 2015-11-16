@@ -48,7 +48,7 @@ col_num = 240/2;
 %% close all;
 close all;
 lr = 1;
-lsb = 1/(sum(weights{lr})+1);
+lsb = 1/(sum(weights{lr})+weights{lr}(1));
 xbins = [-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7];
 row = 2;
 for col = 1:120;

@@ -1,8 +1,8 @@
-%function coeff = partial_settling_fitting(fit_order,lr);
-close all;
-clear all;
-lr = 1;
-fit_order = 1;
+function coeff = partial_settling_fitting(fit_order,lr);
+% close all;
+% clear all;
+% lr = 2;
+% fit_order = 3;
 if lr == 1
     %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3left0fF_20151019_1539.txt'); %slow
     %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3left1fF_fast_20151023_1638.txt'); %fast
@@ -14,15 +14,16 @@ if lr == 1
     %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1p21left1fF_slow_20151106_1411.txt'); %fast
     %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1p21left1fF_slow_20151106_1500.txt'); %fast
     %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1p21left1fF_fast_20151106_1623.txt'); %fast
-    %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1p21left1fF_slow_20151109_1228.txt'); %fast
+    %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1p21left1fF_slow_20151109_1228.txt'); %slow
     fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1p21left1fF_fast_20151109_1751.txt'); %fast
   
 elseif lr == 2
     %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3right2fF_20151019_1547.txt'); %slow
-    fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3right4fF_fast_20151023_1650.txt'); %fast
+    %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3right4fF_fast_20151023_1650.txt'); %fast
     %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3right4fF_slow__20151023_1630.txt'); %slow
     %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3right4fF_fast_20151026_1205.txt'); %fast
-  
+    fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1p21right4fF_fast_20151110_1220.txt'); %fast
+    
 end
 c = fgetl(fin);  
 f = (fscanf(fin, '%f %x' ,[2 inf]))';
@@ -158,17 +159,17 @@ xlabel('sf Gate Voltage/V','FontSize', 18);
 ylabel('fitting error/mV','FontSize', 18);
 title(sprintf('%1g%s Order Fitting Error = +/-%0.2fLsb',fit_order,str, error),'FontSize', 18);
 figure;
-subplot(3,1,1);
+subplot(4,1,1);
 plot(1:length(vin),(vin - result)/lsb);
 ylabel('fitting error/mV','FontSize', 18)
 title(sprintf('%1g%s Order Fitting Error = +/-%0.2fLsb',fit_order,str, error),'FontSize', 18);
-subplot(3,1,2);
+subplot(4,1,2);
 for i =1:N
     data_maj(i) = mode(data(i,2:end));
 end
 plot(1:length(vin),data_maj);
 ylabel('ADC output','FontSize', 18);
-subplot(3,1,3);
+subplot(4,1,3);
 error = (vin - result)/lsb;
 error_dnl = error(2:end)-error(1:end-1);
 plot(1:length(error_dnl),error_dnl);
@@ -179,6 +180,14 @@ x=1:10:length(error_dnl);
 plot(x,0.5*ones(1,length(x)),'--r');
 plot(x,-0.5*ones(1,length(x)),'--r');
 ylabel('LSB','FontSize', 18);
+subplot(4,1,4);
+for i = 1:N
+    result_single(i)=partial_settling_calib(ana(i,2)/(sum(weights)+weights(1)),coeff);
+end
+error_single = (vin - result_single')/lsb;
+error_single_dnl = error_single(2:end)-error_single(1:end-1);
+plot(1:length(error_single_dnl),error_single_dnl);
+
 % figure;
 % idx = 394;
 % xbins = [min(data(idx,2:end)):1:max(data(idx,2:end))];

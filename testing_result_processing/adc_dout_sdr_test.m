@@ -20,8 +20,8 @@ close all;
 %fid = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ext_sine_fast_b1s3_1026_1045_vcm0-95_jitter.csv','r');
 %fid = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ext_sine_fast_b1s3_1026_1353_vcm0-95.csv','r');
 %fid = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ext_sine_fast_b1p21_1030_1500_vcm0-95_vpp0-9.csv','r');
-fid = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ext_sine_slow_b1s3_1109_1453_vcm1.csv','r');
-%fid = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ext_sine_fast_b1s3_1109_1453_vcm1.csv','r');
+%fid = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ext_sine_slow_b1s3_1109_1453_vcm1.csv','r');
+fid = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ext_sine_fast_b1s3_1109_1453_vcm1.csv','r');
 
 
 
@@ -44,7 +44,7 @@ idx = 1;
 data=zeros(1,N);
 for i = 2:r
     if (clk_smp(i-1) == 1 && clk_smp(i)==0)
-        data(idx)=dout(i,:)*weights'/(sum(weights+1));  
+        data(idx)=dout(i,:)*weights'/(sum(weights+weights(1)));  
         idx= idx +1;
     end
     if idx > N
@@ -53,7 +53,7 @@ for i = 2:r
 end
 
 sig = max(data)-min(data);
-lsb = 1/(1+sum(weights));
+lsb = 1/(weights(1)+sum(weights));
 figure;
 plot(data);
 snr=SNR(data,fs)

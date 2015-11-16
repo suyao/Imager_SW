@@ -45,6 +45,7 @@ for m=1:M;
     end
      cp = [1   2   3.875    7.6250  14.75   16   31.75 63.5  127.3750  255.1250  480.6250];
     % cn =  [  1    2    3.75   7.6250   14.8750   16.2500   32.1250 64.5000  128.1250  256.1250  481.5];
+    cp = [1   2   4.1724    8.4483   16.2759 17.6897   35.2759   70.8276  141.1724  282.1724 531.1034];
      cn = cp;
      ctot_p = sum(cp)+1;
      ctot_n = sum(cn)+1;
@@ -210,10 +211,10 @@ for m=1:M;
     axis([0 0.5 -120 0]);
     sndr_cor(m)=sndrdb;
 end
-
-NN=9000;
+%%
+NN=9327;
 sigma =0.25e-3;
-%sigma = 0;
+% sigma = 0;
 clear vin_test dout_test ana_rev dout_rev;
 for j=1:NN;  
     vin_test(j)=v0-(vrefp-vrefn)+j/NN;
@@ -250,22 +251,29 @@ for j=1:NN;
 end
  lsb = 1/(sum(c)/2+1);
  figure;
- subplot(3,1,1);
+ subplot(4,1,1);
  stairs(vin_test,dout_test_avg);
  hold on;
  stairs(vin_test,dout_rev_avg,'r');
  ylabel('dout','FontSize',18); 
  legend('Dout','Dout_{Cali}');
- subplot(3,1,2);
- error = (vin_test-ana_rev_avg)/lsb;
- plot(vin_test,error);
+ subplot(4,1,2);
+ error_avg = (vin_test-ana_rev_avg)/lsb;
+ plot(vin_test,error_avg);
  ylabel('vin - vout_{cali} / LSB','FontSize',18);
- title(sprintf('Error is %0.3g LSB',(max(abs(error)))),'FontSize',18);
- subplot(3,1,3);
- error_diff = error(2:end)-error(1:end-1);
+ title(sprintf('Error is %0.3g LSB',(max(abs(error_avg)))),'FontSize',18);
+ subplot(4,1,3);
+ error_diff = error_avg(2:end)-error_avg(1:end-1);
  plot(vin_test(2:end),error_diff);
  title(sprintf('Error DNL =%0.3g LSB',max(abs(error_diff))),'FontSize',18);
+ subplot(4,1,4);
+ error = (vin_test' - ana_rev(:,1))/lsb;
+ error_diff_single = error(2:end)-error(1:end-1);
+ plot(vin_test(2:end),error_diff_single);
+  title(sprintf('Error DNL =%0.3g LSB',max(abs(error_diff_single))),'FontSize',18);
  xlabel('vin /v','FontSize',18);
+ 
+ 
  c2=c/sum(c)*(sum(c)+c(1));
  cp = c/c(1); cn = cp; ctot_p=sum(cp)+cp(1); ctot_n=ctot_p;
 for j=1:NN;
@@ -296,9 +304,10 @@ for j=1:NN;
     %ana_rev(j)=dout*(fliplr(c))'/(sum(c)+c(1))+v0-(vrefp-vrefn);
     %dout_rev(j)=floor(dout*(fliplr(c))');
 end 
-
 figure;
-stairs(vin_test,dout_test);
+hist(error_diff);
+figure;
+stairs(vin_test,dout_test(:,1));
 hold on;
 stairs(vin_test,dout_rec,'r');
  
