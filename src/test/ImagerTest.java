@@ -54,11 +54,11 @@ public class ImagerTest {
 	}
 
 	
-	static DACCntr InitDAC() {
+	static DACCntr InitDAC(String bd_idx) {
 		//Set DAC Values
 		double pvdd = 2.8; 
 		//double pvdd = 1.5; //1.46 at DVDD33 = 2.3
-		double ana33 = 0.93;
+		double ana33 = 2;
 		v0 = 1;
 		double ana18 = 1;
 		vrefp = 1.25;
@@ -69,13 +69,24 @@ public class ImagerTest {
 		vrst = 0.49;
 		//vrst = 0.98;
 		double dac_values[] = {pvdd,ana33,v0, ana18, vrefp, vrefn, Iin, vcm, vrst};
-		DACCntr yvonne = new DACCntr(dac_values, 1); // board #
+		int idx_bd = 1;
+		switch (bd_idx){
+		case "b1": idx_bd = 1; break;
+		case "b2": idx_bd = 2; break;
+		case "b3": idx_bd = 3; break;
+		case "b4": idx_bd = 4; break;
+		default : idx_bd = 1; break;
+		}
+		System.out.println( "Test Board " + idx_bd);
+		DACCntr yvonne = new DACCntr(dac_values, idx_bd); // board #
 		try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
 		vrefn = 0.75;
 		return yvonne;
 	}
 	
 	public static void main(String[] args) {
+		idx_bd="b1";
+		idx_chip="p21";
 		JtagDriver jdrv = new JtagDriver(16, 8, 32, 12);
 		ImagerCntr imager = new ImagerCntr(jdrv);
 		// Initialize jtag, Reset JTAG, Read IDCODE
@@ -84,7 +95,7 @@ public class ImagerTest {
 		jdrv.reset();
 		System.out.println("IDCODE: " + jdrv.readID());
 		imager.JtagReset();	// System reset
-		DACCntr yvonne = InitDAC(); //Set DAC Values
+		DACCntr yvonne = InitDAC(idx_bd); //Set DAC Values
 		InitJTAG(jdrv);
 		imager.EnableDummyADCRst(false);
 		imager.SetDummyADCcurrent(15, 15, 15, 15);
@@ -129,7 +140,7 @@ public class ImagerTest {
   		   2: sampler 0 at signal mode, sampler 1 at calibration mode
 		   3: both samplers at calibration mode
 		 */
-		imager.SetSamplerMode(0);
+		imager.SetSamplerMode(-1);
 		//imager.EnableSamplerTrig(true);
 		AnalogSampler(12,11,imager);
 				
@@ -147,15 +158,14 @@ public class ImagerTest {
 		 */
 		imager.SetADCTiming(1,1,1);
 		// SetADCcurrent( n1, p1, n2, p2) , the larger number, the smaller the current
-		//imager.SetADCcurrent(0,13,4,3); imager.SetISFcurrent(4); // chip s3 on board 1
+		imager.SetADCcurrent(0,13,4,3); imager.SetISFcurrent(4); // chip s3 on board 1
 		//imager.SetADCcurrent(2,13,7,7); imager.SetISFcurrent(5);// chip s2 on board 3
 		//imager.SetADCcurrent(3,10,5,8); imager.SetISFcurrent(5);// chip c1 on board 3
-		imager.SetADCcurrent(6,9,7,8); imager.SetISFcurrent(5); // chip p21 on board 1
+		//imager.SetADCcurrent(6,9,7,8); imager.SetISFcurrent(5); // chip p21 on board 1
 		imager.CurrentTestPt(8);
 		
-		idx_bd="b1";
-		idx_chip="p21";
-		imager.EnableDout(false);
+		
+		imager.EnableDout(true);
 		// ADC Testing
 		//DummyADCTest(0.51, yvonne, imager);
 		//ADCTest(0.502, yvonne, imager, 0); // left ADC if 0, right ADC if 1
@@ -167,19 +177,19 @@ public class ImagerTest {
 		//SNR_ADC(30, yvonne, imager, 1, "fast");
 		//ADC_ext_input(yvonne,imager,0, "fast");// adc_idx
 		//Pixel Readout
-		ImagerDebugModeTest(imager, 0,122,1, 4);
+		ImagerDebugModeTest(imager,10,118,0, 4);
 		//System.out.println("Read from jtag x074: " + jdrv.readReg(ClockDomain.tc_domain, "0074"));
 		//ImagerDebugModeTest(imager, 1,118);
 		//ImagerDebugModeTest(imager, 300,3);
 		//ReadImagerReg(jdrv);
-		//ImagerFrameTest(imager, jdrv);
+		ImagerFrameTest(imager, jdrv);
 		//imager.EnableDout(false);
 		//ReadNoiseTest(imager, jdrv);
 		System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
-		Partial_Settling_Calibration(50,  yvonne, imager, 0, -3, 0, 2, 250e6);	//(left/right, extra_bot, left load, right load, freq)
-		Partial_Settling_Calibration(50,  yvonne, imager, 1, -3, 0, 2, 250e6);	
-		Partial_Settling_Calibration(50,  yvonne, imager, 0, -3, 1, 4, 250e6);
-		Partial_Settling_Calibration(50,  yvonne, imager, 1, -3, 1, 4, 250e6);
+		//Partial_Settling_Calibration(50,  yvonne, imager, 0, -3, 0, 2, 30e6);	//(left/right, extra_bot, left load, right load, freq)
+		//Partial_Settling_Calibration(50,  yvonne, imager, 1, -3, 0, 2, 250e6);	
+		//Partial_Settling_Calibration(50,  yvonne, imager, 0, -3, 1, 4, 250e6);
+		//Partial_Settling_Calibration(50,  yvonne, imager, 1, -3, 1, 4, 250e6);
 		jdrv.CloseController();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd, HH:mm");
 		Date date = new Date();
@@ -189,7 +199,7 @@ public class ImagerTest {
 	
 	static void InitJTAG(JtagDriver jdrv){
 		ImagerCntr imager = new ImagerCntr(jdrv);
-		jdrv.SetSpeed(6);
+		jdrv.SetSpeed(8);
 		int a =jdrv.GetSpeed();
 		System.out.println("TCK speed: " + a);
 		String RO;
@@ -537,7 +547,7 @@ public class ImagerTest {
 		imager.EnableADCCali(false);
 		imager.EnableADC(true); // enable adc	
 		imager.DACRstCntr(1);
-		imager.SetBitlineLoad(1,4);
+		imager.SetBitlineLoad(0,2);
 		imager.SetPxIntegrationTime(320*trow- integ_time);
 		imager.SetClkMuxDelayTime(0);
 		imager.SetBlRstDelayTime(0);
@@ -679,8 +689,8 @@ static void ReadNoiseTest(ImagerCntr imager, JtagDriver jdrv){
 		//int load_left = 1; // in fF
 		//int load_right = 4;
 		int rstMode = 1;
-		double tsmp = 96*Math.pow(10, -9); //sampling period 96ns
-		double pw_smp = 40*Math.pow(10, -9); //sampling pulse width 40ns
+		double tsmp = 4*29*Math.pow(10, -9); //sampling period 96ns
+		double pw_smp = 4*15*Math.pow(10, -9); //sampling pulse width 40ns
 		double pw_tx = (10*1) * tsmp;
 		double pw_isf = 10 * tsmp;
 		double dly_isf = 16 * tsmp + pw_tx -10*tsmp; // this value has to be larger than dly_rst + pw_rst
@@ -770,6 +780,9 @@ static void ReadNoiseTest(ImagerCntr imager, JtagDriver jdrv){
 					bw.write(value + " " + ADC_out_str +"\n");
 					System.out.println("               Output: " + ADC_out_str);
 				}
+				if (ADC_out_str == "000007FF")
+					break;
+				
 			}
 			bw.close();
 			System.out.println("Test Partial settling Finishes");
