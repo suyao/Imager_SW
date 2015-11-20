@@ -27,7 +27,8 @@ elseif lr == 2
     %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3right4fF_fast_20151026_1205.txt'); %fast
     %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1p21right4fF_fast_20151110_1220.txt'); %fast
     %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1p21right2fF_fast_20151116_1344.txt'); %fast
-    fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1p21right4fF_fast_20151116_1434.txt'); %fast
+    %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1p21right4fF_fast_20151116_1434.txt'); %fast
+    fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3right4fF_slow_20151119_1913.txt'); %slow
     
 end
 c = fgetl(fin);  

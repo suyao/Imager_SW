@@ -29,7 +29,8 @@ filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/out
 %filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1026_1108_vert2.csv'; % 3/32 turn out
 filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1104_1108_vert_pvdd2-8.csv'; % 1/8 turn out best
 filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1104_1108_vert_pvdd3-1.csv'; % 1/8 turn out best
-filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/uniform_light_1119_2047_slow_1pF4pF.csv';
+filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/uniform_stronglight_1119_2047_slow_1pF4pF.csv';
+filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/uniform_dimlight_1119_2154_slow_1pF4pF.csv';
 
 fid = fopen(filename,'r');
 c = fgetl(fid); 
@@ -46,7 +47,10 @@ vmin = 0.0;
 weights{1} = adc_calibration(0);
 weights{2} = adc_calibration(1);
 wbi = [1 2 4 8 16 32 64 128 256 512 1024];
+fit_coeff{1} = partial_settling_fitting(fit_order,1);
+fit_coeff{2} = partial_settling_fitting(fit_order,2);
 %%
+close all;
 idx_at_frame = 0;
 rst_raw = zeros(row_num,col_num);
 px_raw = zeros(row_num,col_num);
@@ -54,14 +58,14 @@ px_raw = zeros(row_num,col_num);
 idx_row = 0;
 wait_col = 28;
 idx_start = 2;
-frame_num_start(1)=7;
-frame_num_start(2)=7;
+frame_num_start(1)=4;
+frame_num_start(2)=4;
 for lr = 1:1:2
     rst_hex{lr} = zeros(row_num,col_num);
     px_hex{lr} = zeros(row_num,col_num);
     rst_calib{lr} = zeros(row_num,col_num);
     px_calib{lr} = zeros(row_num,col_num);
-    fit_coeff{lr} = partial_settling_fitting(fit_order,lr);
+    
     frame_time = 0;
     for i = idx_start:length(new_frame)
         if ((new_frame(i-1) == 1) && (new_frame(i) == 0))

@@ -30,6 +30,8 @@ filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/out
 filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/ReadNoise/readnoise_slow_high_1pF_smp91n_1119_2011_pvdd3-1.csv'; %pvdd=3.3, ana33=2.4, v0=1, rst/tx=3.3
 filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/ReadNoise/readnoise_slow_high_1pF_smp91n_1119_2011_pvdd2-8.csv'; %pvdd=3.3, ana33=2.4, v0=1, rst/tx=3.3
 filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/ReadNoise/light_slow_1pF_smp91n_1119_2011_pvdd3-1.csv'; %pvdd=3.3, ana33=2.4, v0=1, rst/tx=3.3
+filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/ReadNoise/light_medium_slow_1pF_smp91n_1119_2011_pvdd3-1.csv'; %pvdd=3.3, ana33=2.4, v0=1, rst/tx=3.3
+filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/ReadNoise/light_dim_slow_1pF_smp91n_1119_2211_pvdd3-1.csv'; %pvdd=3.3, ana33=2.4, v0=1, rst/tx=3.3
 
 
 fid = fopen(filename,'r');
@@ -54,7 +56,7 @@ fit_coeff{lr} = partial_settling_fitting(fit_order,lr);
 close all;
 lsb = 1/(sum(weights{lr})+weights{lr}(1));
 xbins = [-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7];
-row = 1;
+row = 2;
 for col = 1:10;
     col 
     idx_row = 0;

@@ -58,7 +58,7 @@ public class ImagerTest {
 		//Set DAC Values
 		double pvdd = 3.1; 
 		//double pvdd = 1.5; //1.46 at DVDD33 = 2.3
-		double ana33 = 2.24;
+		double ana33 = 1.13;
 		v0 = 1.15;
 		double ana18 = 1;
 		vrefp = 1.25;
@@ -66,7 +66,7 @@ public class ImagerTest {
 		double Iin = 1;
 		vcm = 1;
 		//vrst = 1.34; 
-		vrst = 0.49;
+		vrst = 0.64;
 		//vrst = 0.98;
 		double dac_values[] = {pvdd,ana33,v0, ana18, vrefp, vrefn, Iin, vcm, vrst};
 		int idx_bd = 1;
@@ -177,19 +177,21 @@ public class ImagerTest {
 		//SNR_ADC(30, yvonne, imager, 1, "slow");
 		//ADC_ext_input(yvonne,imager,0, "fast");// adc_idx
 		//Pixel Readout
-		ImagerDebugModeTest(imager,1,118,1, 4); //(rol, col, left load, right load)
+		ImagerDebugModeTest(imager,0,130,1, 4); //(rol, col, left load, right load)
 		//System.out.println("Read from jtag x074: " + jdrv.readReg(ClockDomain.tc_domain, "0074"));
 		//ImagerDebugModeTest(imager, 1,118);
 		//ImagerDebugModeTest(imager, 300,3);
 		//ReadImagerReg(jdrv);
-		ImagerFrameTest(imager, jdrv);
+		//ImagerFrameTest(imager, jdrv);
 		//imager.EnableDout(false);
 		//ReadNoiseTest(imager, jdrv);
 		System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
 		//Partial_Settling_Calibration(50,  yvonne, imager, 0, 1, 0, 2, 12e6);	//(left/right, extra_bot, left load, right load, freq)
 		//Partial_Settling_Calibration(50,  yvonne, imager, 1, 1, 0, 2, 120e6);	
-		//Partial_Settling_Calibration(50,  yvonne, imager, 0, 1, 1, 4, 120e6);
-		//Partial_Settling_Calibration(50,  yvonne, imager, 1, 1, 1, 4, 120e6);
+		for (int col=0; col<120;col=col+1){
+		Partial_Settling_Calibration(50,  yvonne, imager, 0, 0, 1, 4, 120e6, col);
+		Partial_Settling_Calibration(50,  yvonne, imager, 1, 0, 1, 4, 120e6, col+120);
+		}
 		jdrv.CloseController();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd, HH:mm");
 		Date date = new Date();
@@ -667,23 +669,23 @@ static void ReadNoiseTest(ImagerCntr imager, JtagDriver jdrv){
  			System.out.println("Read from JTAG SC 014: " + jdrv.readReg(ClockDomain.tc_domain, "0014"));
  		
 	}
-	static void Partial_Settling_Calibration(int itr_times, DACCntr yvonne, ImagerCntr imager, int adc_idx, int extra_bit, int load_left, int load_right, double clk_freq){
+	static void Partial_Settling_Calibration(int itr_times, DACCntr yvonne, ImagerCntr imager, int adc_idx, int extra_bit, int load_left, int load_right, double clk_freq, int col){
 		
 		int row = 0;
-		int col = 118;
+		//int col = 118;
 		double min = 0.95; //slow clk
 		double max = 2.47; //fast clk
 		if (adc_idx == 1 ){
-			col = 122;
+			//col = 122;
 			if (clk_freq == 250e6){			
 				min = 0.95; max = 2.47;
-			}else{ min = 0.93; max = 2.24; }
+			}else{ min = 1.13; max = 2.45; }
 		} 
 		if (adc_idx == 0) {
-			col = 118;
+			//col = 118;
 			if (clk_freq == 250e6){
 				min = 0.93; max = 2.65;
-			}else {min = 0.93; max = 2.3;}		
+			}else {min = 1.13; max = 2.45;}		
 		}
 
 		//int load_left = 1; // in fF
@@ -744,7 +746,7 @@ static void ReadNoiseTest(ImagerCntr imager, JtagDriver jdrv){
 			which_adc = "right";
 		String speed = "_slow";
 		if (clk_freq == 250e6)  speed = "_fast";
-		String filename = "./outputs/PartialSettling/"  + idx_bd + idx_chip + which_adc + load + speed + dateFormat.format(date)+".txt";
+		String filename = "./outputs/PartialSettling/"  + idx_bd + idx_chip + which_adc + load + speed + col + dateFormat.format(date)+".txt";
 
 			
 		try {
