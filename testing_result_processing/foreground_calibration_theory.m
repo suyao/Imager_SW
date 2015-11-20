@@ -212,7 +212,7 @@ for m=1:M;
     sndr_cor(m)=sndrdb;
 end
 %%
-NN=9327;
+NN=9347;
 sigma =0.25e-3;
 % sigma = 0;
 clear vin_test dout_test ana_rev dout_rev;
@@ -252,25 +252,25 @@ end
  lsb = 1/(sum(c)/2+1);
  figure;
  subplot(4,1,1);
+ error_avg = (vin_test-ana_rev_avg)/lsb;
+ plot(vin_test,error_avg);
+ ylabel('vin - vout_{cali} / LSB','FontSize',18);
+ title(sprintf('Error is %0.3g LSB',(max(abs(error_avg)))),'FontSize',18);
+ subplot(4,1,2);
  stairs(vin_test,dout_test_avg);
  hold on;
  stairs(vin_test,dout_rev_avg,'r');
  ylabel('dout','FontSize',18); 
  legend('Dout','Dout_{Cali}');
- subplot(4,1,2);
- error_avg = (vin_test-ana_rev_avg)/lsb;
- plot(vin_test,error_avg);
- ylabel('vin - vout_{cali} / LSB','FontSize',18);
- title(sprintf('Error is %0.3g LSB',(max(abs(error_avg)))),'FontSize',18);
  subplot(4,1,3);
  error_diff = error_avg(2:end)-error_avg(1:end-1);
  plot(vin_test(2:end),error_diff);
- title(sprintf('Error DNL =%0.3g LSB',max(abs(error_diff))),'FontSize',18);
+ title(sprintf('Differential Error =%0.3g LSB',max(abs(error_diff))),'FontSize',18);
  subplot(4,1,4);
  error = (vin_test' - ana_rev(:,1))/lsb;
  error_diff_single = error(2:end)-error(1:end-1);
  plot(vin_test(2:end),error_diff_single);
-  title(sprintf('Error DNL =%0.3g LSB',max(abs(error_diff_single))),'FontSize',18);
+  title(sprintf('Differential Error w/o Avg'),'FontSize',18);
  xlabel('vin /v','FontSize',18);
  
  
@@ -310,4 +310,12 @@ figure;
 stairs(vin_test,dout_test(:,1));
 hold on;
 stairs(vin_test,dout_rec,'r');
+
+figure;
+xbins=[min(error_diff):0.1:max(error_diff)];
+subplot(2,1,1);
+hist(error_diff,xbins);
+subplot(2,1,2);
+xbins=[-3:1:3];
+hist(error_diff_single,xbins);
  

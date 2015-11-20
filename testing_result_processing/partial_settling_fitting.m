@@ -1,7 +1,7 @@
 function coeff = partial_settling_fitting(fit_order,lr);
-% close all;
+%  close all;
 % clear all;
-% lr = 2;
+% lr = 1;
 % fit_order = 3;
 if lr == 1
     %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3left0fF_20151019_1539.txt'); %slow
@@ -14,15 +14,20 @@ if lr == 1
     %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1p21left1fF_slow_20151106_1411.txt'); %fast
     %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1p21left1fF_slow_20151106_1500.txt'); %fast
     %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1p21left1fF_fast_20151106_1623.txt'); %fast
-    %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1p21left1fF_slow_20151109_1228.txt'); %slow
-    fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1p21left1fF_fast_20151109_1751.txt'); %fast
-  
+%    fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1p21left1fF_slow_20151109_1228.txt'); %slow
+    %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1p21left1fF_fast_20151109_1751.txt'); %fast
+    %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1p21left0fF_fast_20151116_1341.txt'); %slow
+    %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b2p21left0fF_slow_20151116_1515.txt'); %slow
+    fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3left1fF_slow_20151119_1851.txt'); %slow
+    
 elseif lr == 2
     %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3right2fF_20151019_1547.txt'); %slow
     %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3right4fF_fast_20151023_1650.txt'); %fast
     %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3right4fF_slow__20151023_1630.txt'); %slow
     %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3right4fF_fast_20151026_1205.txt'); %fast
-    fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1p21right4fF_fast_20151110_1220.txt'); %fast
+    %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1p21right4fF_fast_20151110_1220.txt'); %fast
+    %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1p21right2fF_fast_20151116_1344.txt'); %fast
+    fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1p21right4fF_fast_20151116_1434.txt'); %fast
     
 end
 c = fgetl(fin);  
@@ -51,7 +56,6 @@ for i = 1: length(vin_raw)
 end
 vin = vin';
 [N, itr] = size(data);
-
 dout_bin_mean = zeros(N,11);
 
 ana = zeros(N,itr-1);
@@ -173,13 +177,13 @@ subplot(4,1,3);
 error = (vin - result)/lsb;
 error_dnl = error(2:end)-error(1:end-1);
 plot(1:length(error_dnl),error_dnl);
-title(sprintf('%1g%s Order Fitting DNL Error = %0.2fLsb',fit_order,str, max(abs(error_dnl))),'FontSize', 18);
-xlabel('ramp step index','FontSize', 18);
+title(sprintf('%1g%s Order Fitting differential Error = %0.2fLsb',fit_order,str, max(error_dnl)),'FontSize', 18);
+
 hold on ;
 x=1:10:length(error_dnl);
 plot(x,0.5*ones(1,length(x)),'--r');
 plot(x,-0.5*ones(1,length(x)),'--r');
-ylabel('LSB','FontSize', 18);
+ylabel('Error/LSB','FontSize', 18);
 subplot(4,1,4);
 for i = 1:N
     result_single(i)=partial_settling_calib(ana(i,2)/(sum(weights)+weights(1)),coeff);
@@ -187,10 +191,17 @@ end
 error_single = (vin - result_single')/lsb;
 error_single_dnl = error_single(2:end)-error_single(1:end-1);
 plot(1:length(error_single_dnl),error_single_dnl);
+xlabel('ramp step index','FontSize', 18);
+title(sprintf('%1g%s Order Fitting differential Error w/o avg',fit_order,str),'FontSize', 18);
+ylabel('Error/LSB','FontSize', 18);
 
-% figure;
-% idx = 394;
-% xbins = [min(data(idx,2:end)):1:max(data(idx,2:end))];
-% hist(data(idx,2:end),xbins);
-% title('Readout histogram at worst point','FontSize',18)
-% xlabel('digital code','FontSize',18)
+figure;
+xbins=[min(error_dnl):0.1:max(error_dnl)];
+subplot(2,1,1);
+hist(error_dnl,xbins);
+title(sprintf('%1g%s Order Fitting differential Error Histogram',fit_order,str),'FontSize', 18);
+subplot(2,1,2);
+xbins=[-3:1:3];
+hist(error_single_dnl,xbins);
+title(sprintf('%1g%s Order Fitting differential Error w/o Avg Histogram',fit_order,str),'FontSize', 18);
+
