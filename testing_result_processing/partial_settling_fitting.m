@@ -1,8 +1,8 @@
-function coeff = partial_settling_fitting(fit_order,lr);
-%  close all;
-% clear all;
-% lr = 1;
-% fit_order = 3;
+%function coeff = partial_settling_fitting(fit_order,lr);
+ close all;
+clear all;
+lr = 1;
+fit_order = 3;
 if lr == 1
     %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3left0fF_20151019_1539.txt'); %slow
     %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3left1fF_fast_20151023_1638.txt'); %fast
@@ -14,11 +14,12 @@ if lr == 1
     %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1p21left1fF_slow_20151106_1411.txt'); %fast
     %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1p21left1fF_slow_20151106_1500.txt'); %fast
     %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1p21left1fF_fast_20151106_1623.txt'); %fast
-%    fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1p21left1fF_slow_20151109_1228.txt'); %slow
-    %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1p21left1fF_fast_20151109_1751.txt'); %fast
+%   fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1p21left1fF_slow_20151109_1228.txt'); %slow
+    fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1p21left1fF_fast_20151109_1751.txt'); %fast
     %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1p21left0fF_fast_20151116_1341.txt'); %slow
     %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b2p21left0fF_slow_20151116_1515.txt'); %slow
-    fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3left1fF_slow_20151119_1851.txt'); %slow
+    %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3left1fF_slow_20151119_1851.txt'); %slow
+    %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3left1fF_slow39_20151120_1210.txt'); %slow
     
 elseif lr == 2
     %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3right2fF_20151019_1547.txt'); %slow
@@ -29,6 +30,7 @@ elseif lr == 2
     %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1p21right2fF_fast_20151116_1344.txt'); %fast
     %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1p21right4fF_fast_20151116_1434.txt'); %fast
     fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3right4fF_slow_20151119_1913.txt'); %slow
+    %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3right4fF_slow158_20151120_1159.txt'); %slow
     
 end
 c = fgetl(fin);  

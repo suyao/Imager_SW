@@ -3,8 +3,8 @@
 %New Row, New Frame, clk_smp
 clear all;
 close all;
-%c = partial_settling_fitting(5,1);
-%c = partial_settling_fitting(5,2);
+%c = partial_settling_fitting(3,1);
+%c = partial_settling_fitting(3,2);
 %%
 if (1 ==1)
 row_num = 320;
@@ -30,7 +30,7 @@ filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/out
 filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1104_1108_vert_pvdd2-8.csv'; % 1/8 turn out best
 filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/image_capture_1104_1108_vert_pvdd3-1.csv'; % 1/8 turn out best
 filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/uniform_stronglight_1119_2047_slow_1pF4pF.csv';
-filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/uniform_dimlight_1119_2154_slow_1pF4pF.csv';
+%filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/uniform_dimlight_1119_2154_slow_1pF4pF.csv';
 
 fid = fopen(filename,'r');
 c = fgetl(fid); 
@@ -121,7 +121,7 @@ image_raw = [image_half{1} image_half{2}(:,2:end)];
 figure;
 imshow(flipud(image_raw));
 
-image_calib = [image_half_calib{1} image_half_calib{2}(:,2:end)];
+image_calib = [image_half_calib{1}*1.01 image_half_calib{2}(:,2:end)];
 figure;
 imshow(flipud(image_calib));
 

@@ -186,9 +186,12 @@ public class ImagerTest {
 		//imager.EnableDout(false);
 		//ReadNoiseTest(imager, jdrv);
 		System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
+		Partial_Settling_Calibration(50,  yvonne, imager, 0, 3, 1, 4, 120e6, 118);
+		Partial_Settling_Calibration(50,  yvonne, imager, 0, 3, 1, 4, 120e6, 122);
+		//Partial_Settling_Calibration(50,  yvonne, imager, 1, 0, 1, 4, 120e6, col+120);
 		//Partial_Settling_Calibration(50,  yvonne, imager, 0, 1, 0, 2, 12e6);	//(left/right, extra_bot, left load, right load, freq)
 		//Partial_Settling_Calibration(50,  yvonne, imager, 1, 1, 0, 2, 120e6);	
-		for (int col=0; col<120;col=col+1){
+		for (int col=46; col<120;col=col+1){
 		Partial_Settling_Calibration(50,  yvonne, imager, 0, 0, 1, 4, 120e6, col);
 		Partial_Settling_Calibration(50,  yvonne, imager, 1, 0, 1, 4, 120e6, col+120);
 		}

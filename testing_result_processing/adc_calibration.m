@@ -19,14 +19,14 @@ if (lr==0)
     %filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_b1p21slow_left3b_20151103_1152.txt'; %vcm = 1
     %filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_b1p21slow_left4b_20151103_1700.txt'; %vcm = 1
     filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_b1p21slow_left5b_20151106_1150.txt'; %vcm = 1
-    filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_b1s3slow_left5b_20151119_1504.txt'; %vcm = 1
+    %filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_b1s3slow_left5b_20151119_1504.txt'; %vcm = 1
     
 elseif (lr==1)
     %filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_b1s3slowright3b_20151016_1519.txt'; %vcm = 1
     %filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_b1s3slow_right3b_20151022_1816.txt'; %vcm = 1
   %  filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC//ADC_ramp_b1p21slow_right3b_20151029_1549.txt'; %vcm = 1
     filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_b1s3slow_right5b_20151106_1940.txt'; %vcm = 1
-    filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_b1s3slow_right5b_20151119_1654.txt'; %vcm = 1
+    %filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_ramp_b1s3slow_right5b_20151119_1654.txt'; %vcm = 1
    
 end
 
