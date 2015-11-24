@@ -249,4 +249,41 @@ public class DACCntr
 		return ch_length;
 	}
 	
+	public void SetAllSupply(double vlow, double vhigh){
+		try {
+			File file = new File("./src/YvonneCmds/supply_regs.txt");
+			if (!file.exists()) {
+				file.createNewFile();
+			}
+			FileWriter fw = new FileWriter(file.getAbsoluteFile());
+			BufferedWriter bw = new BufferedWriter(fw);
+			//set avdd18, dvdd18, iovdd18
+			int vlow_reg =(int) Math.round((vlow-1.8)/0.003773);
+			if (vlow_reg < 0 ) vlow_reg = -1*vlow_reg + 128;
+			bw.append("w 20 f8 ").append(Integer.toHexString(vlow_reg)).append("\n");	
+			bw.append("w 20 f9 ").append(Integer.toHexString(vlow_reg)).append("\n");	
+			bw.append("w 20 fa ").append(Integer.toHexString(vlow_reg)).append("\n");
+			//set dvdd33, iovdd33
+			int vhigh_reg = (int) Math.round((vhigh-3.3)/0.005282);
+			if (vhigh_reg < 0 ) vhigh_reg = -1*vhigh_reg + 128;
+			bw.append("w 20 fb ").append(Integer.toHexString(vhigh_reg)).append("\n");	
+			
+			bw.write("q");
+			bw.close();
+			fw.close();
+			System.out.println("Finish writing supply registers.");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		// Execute I2C
+		try {
+			System.out.println("Reach here, supply setting ");
+		    Runtime.getRuntime().exec("cmd /c I2CTool < ./src/YvonneCmds/supply_regs.txt");
+			  
+		} catch (IOException e) {
+        	System.out.println("exception happened - here's what I know: ");
+            e.printStackTrace();
+            System.exit(-1);
+	    }	
+	}
 }

@@ -59,7 +59,7 @@ public class ImagerTest {
 		double pvdd = 3.1; 
 		//double pvdd = 1.5; //1.46 at DVDD33 = 2.3
 		double ana33 = 1.13;
-		v0 = 1.25;
+		v0 = 1.15;
 		double ana18 = 1;
 		vrefp = 1.25;
 		//vrefn = 0.7501;
@@ -156,6 +156,7 @@ public class ImagerTest {
 		 *  7 DUMMY_amp2_p
 		 *  8 Isf
 		 */
+		//yvonne.SetAllSupply(1.8, 3.3);
 		imager.SetADCTiming(1,1,1);
 		// SetADCcurrent( n1, p1, n2, p2) , the larger number, the smaller the current
 		imager.SetADCcurrent(0,13,4,3); imager.SetISFcurrent(4); // chip s3 on board 1
@@ -168,28 +169,29 @@ public class ImagerTest {
 		imager.EnableDout(true);
 		// ADC Testing
 		//DummyADCTest(0.51, yvonne, imager);
-		//ADCTest(0.58, yvonne, imager, 0); // left ADC if 0, right ADC if 1
+		//ADCTest(0.66, yvonne, imager, 0); // left ADC if 0, right ADC if 1
 		//CalibrateDummyADC(10, yvonne, imager); //repeat every analog value for 100 conversions
 		//CalibrateADC(30, yvonne, imager, 0, 5, "slow"); //(itr, , ,left/right, extra_bit)
-		//CalibrateADC(30, yvonne, imager, 1, 5, "slow"); //(itr, , ,left/right, extra_bit)
+		CalibrateADC(30, yvonne, imager, 1, 5, "slow"); //(itr, , ,left/right, extra_bit)
 		
 		//SNR_ADC(30, yvonne, imager, 0, "slow");
 		//SNR_ADC(30, yvonne, imager, 1, "slow");
 		//ADC_ext_input(yvonne,imager,0, "fast");// adc_idx
 		//Pixel Readout
-		ImagerDebugModeTest(imager,1,130,1, 4); //(rol, col, left load, right load)
+		//ImagerDebugModeTest(imager,0,130,1, 4); //(rol, col, left load, right load)
 		//System.out.println("Read from jtag x074: " + jdrv.readReg(ClockDomain.tc_domain, "0074"));
 		//ImagerDebugModeTest(imager, 1,118);
 		//ImagerDebugModeTest(imager, 300,3);
 		//ReadImagerReg(jdrv);
 		//ImagerFrameTest(imager, jdrv);
 		//imager.EnableDout(false);
-		ReadNoiseTest(imager, jdrv);
+		//ReadNoiseTest(imager, jdrv);
 		System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
-		Partial_Settling_Calibration(50,  yvonne, imager, 0, 3, 1, 4, 120e6, 118);
-		Partial_Settling_Calibration(50,  yvonne, imager, 0, 3, 1, 4, 120e6, 122);
-		Partial_Settling_Calibration(50,  yvonne, imager, 0, 3, 1, 4, 120e6, 118);
-		Partial_Settling_Calibration(50,  yvonne, imager, 0, 3, 1, 4, 120e6, 122);
+		//Partial_Settling_Calibration(50,  yvonne, imager, 0, 3, 1, 4, 120e6, 118);
+		//Partial_Settling_Calibration(50,  yvonne, imager, 0, 3, 1, 4, 120e6, 122);
+		//Partial_Settling_Calibration(50,  yvonne, imager, 0, 3, 1, 4, 120e6, 118);
+		//Partial_Settling_Calibration(50,  yvonne, imager, 0, 3, 1, 4, 120e6, 122);
+		
 		//Partial_Settling_Calibration(50,  yvonne, imager, 1, 0, 1, 4, 120e6, col+120);
 		//Partial_Settling_Calibration(50,  yvonne, imager, 0, 1, 0, 2, 12e6);	//(left/right, extra_bit, left load, right load, freq)
 		//Partial_Settling_Calibration(50,  yvonne, imager, 1, 1, 0, 2, 120e6);	
