@@ -115,8 +115,8 @@ public class DACCntr
 		            case 1:  max = 2.8118; min = 0.93892; ana33_max = max; ana33_min = min; break;//ana33          
 		            case 2:  max = 1.5231; min = 0.50546; break;   //v0		
 		            case 3:  max = 1.5269;  min = 0.507665; ana18_max = max; ana18_min = min;  break;//ana18	 
-		            case 4:  max = 1.5290; min = 0.51023;  break;	//vrefp 				 
-		            case 5:  max = 1.5284; min = 0.50869;  break;	//vrefn		
+		            case 4:  max = 1.5238; min = 0.51115;  break;	//vrefp 				 
+		            case 5:  max = 1.5232; min = 0.51329;  break;	//vrefn		
 		            case 6:  max = 1.5311;  min = 0.51323;  break;	 //Iin	
 		            case 7:  max = 1.02660; min = 0.34154;  break;//vcm       
 		            case 8:  max = 1.02636;  min = 0.33923;  break;//vrst
