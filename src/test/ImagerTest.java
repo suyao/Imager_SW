@@ -58,7 +58,7 @@ public class ImagerTest {
 		//Set DAC Values
 		double pvdd = 3.1; 
 		//double pvdd = 1.5; //1.46 at DVDD33 = 2.3
-		double ana33 = 1.13;
+		double ana33 = 2.45;
 		v0 = 1.15;
 		double ana18 = 1;
 		vrefp = 1.25;
@@ -85,8 +85,8 @@ public class ImagerTest {
 	}
 	
 	public static void main(String[] args) {
-		idx_bd="b1";
-		idx_chip="s3";
+		idx_bd="b3";
+		idx_chip="p21";
 		JtagDriver jdrv = new JtagDriver(16, 8, 32, 12);
 		ImagerCntr imager = new ImagerCntr(jdrv);
 		// Initialize jtag, Reset JTAG, Read IDCODE
@@ -156,29 +156,28 @@ public class ImagerTest {
 		 *  7 DUMMY_amp2_p
 		 *  8 Isf
 		 */
-		//yvonne.SetAllSupply(1.8, 3.3);
+		
 		imager.SetADCTiming(1,1,1);
 		// SetADCcurrent( n1, p1, n2, p2) , the larger number, the smaller the current
-		imager.SetADCcurrent(0,13,4,3); imager.SetISFcurrent(4); // chip s3 on board 1
+		//imager.SetADCcurrent(0,13,4,3); imager.SetISFcurrent(4); // chip s3 on board 1
 		//imager.SetADCcurrent(2,13,7,7); imager.SetISFcurrent(5);// chip s2 on board 3
 		//imager.SetADCcurrent(3,10,5,8); imager.SetISFcurrent(5);// chip c1 on board 3
-		//imager.SetADCcurrent(6,9,7,8); imager.SetISFcurrent(5); // chip p21 on board 1
+		imager.SetADCcurrent(6,9,7,8); imager.SetISFcurrent(5); // chip p21 on board 1
 		imager.CurrentTestPt(8);
 		
-		
-		imager.EnableDout(true);
+		imager.EnableDout(false);
 		// ADC Testing
 		//DummyADCTest(0.51, yvonne, imager);
 		//ADCTest(0.66, yvonne, imager, 0); // left ADC if 0, right ADC if 1
 		//CalibrateDummyADC(10, yvonne, imager); //repeat every analog value for 100 conversions
 		//CalibrateADC(30, yvonne, imager, 0, 5, "slow"); //(itr, , ,left/right, extra_bit)
-		CalibrateADC(30, yvonne, imager, 1, 5, "slow"); //(itr, , ,left/right, extra_bit)
+		//CalibrateADC(30, yvonne, imager, 1, 5, "slow"); //(itr, , ,left/right, extra_bit)
 		
 		//SNR_ADC(30, yvonne, imager, 0, "slow");
 		//SNR_ADC(30, yvonne, imager, 1, "slow");
 		//ADC_ext_input(yvonne,imager,0, "fast");// adc_idx
 		//Pixel Readout
-		//ImagerDebugModeTest(imager,0,130,1, 4); //(rol, col, left load, right load)
+		//ImagerDebugModeTest(imager,0,140,0, 4); //(rol, col, left load, right load)
 		//System.out.println("Read from jtag x074: " + jdrv.readReg(ClockDomain.tc_domain, "0074"));
 		//ImagerDebugModeTest(imager, 1,118);
 		//ImagerDebugModeTest(imager, 300,3);
@@ -187,18 +186,15 @@ public class ImagerTest {
 		//imager.EnableDout(false);
 		//ReadNoiseTest(imager, jdrv);
 		System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
-		//Partial_Settling_Calibration(50,  yvonne, imager, 0, 3, 1, 4, 120e6, 118);
-		//Partial_Settling_Calibration(50,  yvonne, imager, 0, 3, 1, 4, 120e6, 122);
-		//Partial_Settling_Calibration(50,  yvonne, imager, 0, 3, 1, 4, 120e6, 118);
-		//Partial_Settling_Calibration(50,  yvonne, imager, 0, 3, 1, 4, 120e6, 122);
-		
-		//Partial_Settling_Calibration(50,  yvonne, imager, 1, 0, 1, 4, 120e6, col+120);
-		//Partial_Settling_Calibration(50,  yvonne, imager, 0, 1, 0, 2, 12e6);	//(left/right, extra_bit, left load, right load, freq)
-		//Partial_Settling_Calibration(50,  yvonne, imager, 1, 1, 0, 2, 120e6);	
-		//for (int col=46; col<120;col=col+1){
-		//Partial_Settling_Calibration(50,  yvonne, imager, 0, 0, 1, 4, 120e6, col);
-		//Partial_Settling_Calibration(50,  yvonne, imager, 1, 0, 1, 4, 120e6, col+120);
-		//}
+		double scale = 1.05;
+		for (scale = 0.95; scale <=1.15; scale = scale + 0.05){
+			SetPVDD(3.2*scale,yvonne);
+			yvonne.SetAllSupply(1.8*scale, 3.3*scale);
+			Partial_Settling_Calibration(50,  yvonne, imager, 0, 3, 1, 4, 120e6, 118);
+			Partial_Settling_Calibration(50,  yvonne, imager, 1, 3, 1, 4, 120e6, 122);
+			Partial_Settling_Calibration(50,  yvonne, imager, 0, 3, 0, 2, 120e6, 118);
+			Partial_Settling_Calibration(50,  yvonne, imager, 1, 3, 0, 2, 120e6, 122);
+		}
 		jdrv.CloseController();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd, HH:mm");
 		Date date = new Date();
@@ -796,5 +792,14 @@ static void ReadNoiseTest(ImagerCntr imager, JtagDriver jdrv){
 		} catch (IOException e) {
 			e.printStackTrace();
 		} 
+	}
+	
+	static void SetPVDD(double val,DACCntr yvonne ){
+		int idx = yvonne.FindIdxofName("PVDD");
+		double rsl = (DACCntr.pvdd_max-DACCntr.pvdd_min)/DACCntr.levels*2;
+		int reg_int = (int) Math.round((val-DACCntr.pvdd_min)/rsl) + DACCntr.levels/4;
+		String reg_str = Integer.toHexString(reg_int);
+		reg_str = "0000".substring(reg_str.length()) + reg_str; 
+		yvonne.WriteDACReg(idx, reg_str); //Write to Yvonne
 	}
 }

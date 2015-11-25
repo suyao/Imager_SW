@@ -22,6 +22,8 @@ public class DACCntr
 	public static double ana18_max;
 	public static double ana33_min;
 	public static double ana33_max;
+	public static double pvdd_max;
+	public static double pvdd_min;
 	public static int levels = (int) Math.pow (2.0, bits);
 	public String dac_reg[] = new String[ch_length];
 	
@@ -85,7 +87,7 @@ public class DACCntr
 		switch (this.idx_board) {
 			case 1:
 		        switch (idx) { // board #3
-		        	case 0:  max = 2.7964; min = 0.93603; break;   //PVDD		 
+		        	case 0:  max = 2.7964; min = 0.93603; pvdd_max = max; pvdd_min = min; break; //PVDD		 
 		            case 1:  max = 2.8097; min = 0.93923; ana33_max = max; ana33_min = min; break;  //ana33           
 		            case 2:  max = 1.5261; min = 0.50989; break;  //v0		 
 		            case 3:  max = 1.53015;  min = 0.511715; ana18_max = max; ana18_min = min;  break; //ana18		 
@@ -98,7 +100,7 @@ public class DACCntr
 		        } break;
 			case 2:
 		        switch (idx) { // board #3
-		        	case 0:  max = 2.8061; min = 0.9336; break;   //PVDD		 
+		        	case 0:  max = 2.8061; min = 0.9336; pvdd_max = max; pvdd_min = min; break; //PVDD			 
 		            case 1:  max = 2.8088; min = 0.93610; ana33_max = max; ana33_min = min; break;  //ana33           
 		            case 2:  max = 1.5244; min = 0.50560; break;  //v0		 
 		            case 3:  max = 1.5233;  min = 0.504575; ana18_max = max; ana18_min = min;  break; //ana18		 
@@ -111,12 +113,12 @@ public class DACCntr
 		        } break;
 			case 3:
 		        switch (idx) { // board #3
-		        	case 0:  max = 2.7893; min = 0.93013; break; //PVDD		 
+		        	case 0:  max = 2.7893; min = 0.93013; pvdd_max = max; pvdd_min = min; break; //PVDD		 
 		            case 1:  max = 2.8118; min = 0.93892; ana33_max = max; ana33_min = min; break;//ana33          
 		            case 2:  max = 1.5231; min = 0.50546; break;   //v0		
 		            case 3:  max = 1.5269;  min = 0.507665; ana18_max = max; ana18_min = min;  break;//ana18	 
-		            case 4:  max = 1.5238; min = 0.51115;  break;	//vrefp 				 
-		            case 5:  max = 1.5232; min = 0.51329;  break;	//vrefn		
+		            case 4:  max = 1.5290; min = 0.51033;  break;	//vrefp 				 
+		            case 5:  max = 1.52857; min = 0.50890;  break;	//vrefn		
 		            case 6:  max = 1.5311;  min = 0.51323;  break;	 //Iin	
 		            case 7:  max = 1.02660; min = 0.34154;  break;//vcm       
 		            case 8:  max = 1.02636;  min = 0.33923;  break;//vrst
@@ -124,11 +126,11 @@ public class DACCntr
 		        } break;
 			case 4:
 		        switch (idx) { // board #3
-	        	case 0:  max = 2.7896; min = 0.9295; break;   //PVDD		 
+	        	case 0:  max = 2.7896; min = 0.9295; pvdd_max = max; pvdd_min = min; break; //PVDD		 
 	            case 1:  max = 2.8064; min = 0.93541; ana33_max = max; ana33_min = min; break; //ana33           
 	            case 2:  max = 1.5306; min = 0.50754; break;  //v0		 
 	            case 3:  max = 1.5325;  min = 0.51218; ana18_max = max; ana18_min = min;  break; //ana18		 
-	            case 4:  max = 1.5258; min = 0.504675;  break;  //vrefp			 
+	            case 4:  max = 1.5290; min = 0.504675;  break;  //vrefp			 
 	            case 5:  max = 1.5329; min = 0.51276;  break; //vrefn	   		 			 		
 	            case 6:  max = 1.5300;  min = 0.51029; break; //Iin				
 	            case 7:  max = 1.02968; min = 0.34323; break; //vcm
@@ -258,13 +260,13 @@ public class DACCntr
 			FileWriter fw = new FileWriter(file.getAbsoluteFile());
 			BufferedWriter bw = new BufferedWriter(fw);
 			//set avdd18, dvdd18, iovdd18
-			int vlow_reg =(int) Math.round((vlow-1.8)/0.003773);
+			int vlow_reg =(int) Math.round((vlow-1.79)/0.003773);
 			if (vlow_reg < 0 ) vlow_reg = -1*vlow_reg + 128;
 			bw.append("w 20 f8 ").append(Integer.toHexString(vlow_reg)).append("\n");	
 			bw.append("w 20 f9 ").append(Integer.toHexString(vlow_reg)).append("\n");	
 			bw.append("w 20 fa ").append(Integer.toHexString(vlow_reg)).append("\n");
 			//set dvdd33, iovdd33
-			int vhigh_reg = (int) Math.round((vhigh-3.3)/0.005282);
+			int vhigh_reg = (int) Math.round((vhigh-3.26)/0.005282);
 			if (vhigh_reg < 0 ) vhigh_reg = -1*vhigh_reg + 128;
 			bw.append("w 20 fb ").append(Integer.toHexString(vhigh_reg)).append("\n");	
 			
@@ -286,4 +288,6 @@ public class DACCntr
             System.exit(-1);
 	    }	
 	}
+	
+
 }
