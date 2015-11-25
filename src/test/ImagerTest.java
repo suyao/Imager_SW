@@ -170,7 +170,7 @@ public class ImagerTest {
 		//DummyADCTest(0.51, yvonne, imager);
 		//ADCTest(0.66, yvonne, imager, 0); // left ADC if 0, right ADC if 1
 		//CalibrateDummyADC(10, yvonne, imager); //repeat every analog value for 100 conversions
-		//CalibrateADC(30, yvonne, imager, 0, 5, "slow"); //(itr, , ,left/right, extra_bit)
+		CalibrateADC(30, yvonne, imager, 0, 5, "slow"); //(itr, , ,left/right, extra_bit)
 		//CalibrateADC(30, yvonne, imager, 1, 5, "slow"); //(itr, , ,left/right, extra_bit)
 		
 		//SNR_ADC(30, yvonne, imager, 0, "slow");
@@ -187,7 +187,7 @@ public class ImagerTest {
 		//ReadNoiseTest(imager, jdrv);
 		System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
 		double scale = 1.05;
-		for (scale = 0.95; scale <=1.15; scale = scale + 0.05){
+		for (scale = 0.95; scale <=0.5; scale = scale + 0.05){
 			SetPVDD(3.2*scale,yvonne);
 			yvonne.SetAllSupply(1.8*scale, 3.3*scale);
 			Partial_Settling_Calibration(50,  yvonne, imager, 0, 3, 1, 4, 120e6, 118);
