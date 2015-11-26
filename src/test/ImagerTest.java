@@ -58,10 +58,10 @@ public class ImagerTest {
 		//Set DAC Values
 		double pvdd = 3.1; 
 		//double pvdd = 1.5; //1.46 at DVDD33 = 2.3
-		double ana33 = 2.45;
+		double ana33 = 2.5;
 		v0 = 1.15;
 		double ana18 = 1;
-		vrefp = 1.25;
+		vrefp = 1.35;
 		//vrefn = 0.7501;
 		double Iin = 1;
 		vcm = 1;
@@ -170,7 +170,7 @@ public class ImagerTest {
 		//DummyADCTest(0.51, yvonne, imager);
 		//ADCTest(0.66, yvonne, imager, 0); // left ADC if 0, right ADC if 1
 		//CalibrateDummyADC(10, yvonne, imager); //repeat every analog value for 100 conversions
-		CalibrateADC(30, yvonne, imager, 0, 5, "slow"); //(itr, , ,left/right, extra_bit)
+		//CalibrateADC(30, yvonne, imager, 0, 5, "slow"); //(itr, , ,left/right, extra_bit)
 		//CalibrateADC(30, yvonne, imager, 1, 5, "slow"); //(itr, , ,left/right, extra_bit)
 		
 		//SNR_ADC(30, yvonne, imager, 0, "slow");
@@ -184,16 +184,22 @@ public class ImagerTest {
 		//ReadImagerReg(jdrv);
 		//ImagerFrameTest(imager, jdrv);
 		//imager.EnableDout(false);
+		double scale = 1;
+		SetPVDD(3.2*scale,yvonne);
+		yvonne.SetAllSupply(1.8*scale, 3.3*scale);
+		try {Thread.sleep(6000);} catch (InterruptedException e) {e.printStackTrace();}
+
 		//ReadNoiseTest(imager, jdrv);
-		System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
-		double scale = 1.05;
-		for (scale = 0.95; scale <=0.5; scale = scale + 0.05){
+		//System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
+		if (1==1){
+		for (scale = 0.9; scale <=1.1; scale = scale + 0.05){
 			SetPVDD(3.2*scale,yvonne);
-			yvonne.SetAllSupply(1.8*scale, 3.3*scale);
-			Partial_Settling_Calibration(50,  yvonne, imager, 0, 3, 1, 4, 120e6, 118);
-			Partial_Settling_Calibration(50,  yvonne, imager, 1, 3, 1, 4, 120e6, 122);
-			Partial_Settling_Calibration(50,  yvonne, imager, 0, 3, 0, 2, 120e6, 118);
-			Partial_Settling_Calibration(50,  yvonne, imager, 1, 3, 0, 2, 120e6, 122);
+			yvonne.SetAllSupply(1.8*scale, 3.3*scale);		
+			Partial_Settling_Calibration(50,  yvonne, imager, 0, 3, 1, 4, 250e6, 118, scale);
+			Partial_Settling_Calibration(50,  yvonne, imager, 1, 3, 1, 4, 250e6, 122, scale);
+			Partial_Settling_Calibration(50,  yvonne, imager, 0, 3, 0, 2, 250e6, 118, scale);
+			Partial_Settling_Calibration(50,  yvonne, imager, 1, 3, 0, 2, 250e6, 122, scale);
+		}
 		}
 		jdrv.CloseController();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd, HH:mm");
@@ -595,7 +601,7 @@ static void ReadNoiseTest(ImagerCntr imager, JtagDriver jdrv){
 		imager.ScanMode(true);
 
 		imager.RowCounterForce(false);
-		imager.SetMaxRowCounter(4);
+		imager.SetMaxRowCounter(3);
 		imager.SetRowCounter(2);
 		imager.SetSmpPeriod(tsmp);
 		imager.SetSmpPW(pw_smp);
@@ -608,13 +614,13 @@ static void ReadNoiseTest(ImagerCntr imager, JtagDriver jdrv){
 		imager.SetIsfDelayTime(dly_isf);
 		imager.SetMuxDelayTime(dly_isf + pw_isf -tsmp);
 		imager.EnableDout(true);
-		imager.OutputSel(left);
+		imager.OutputSel(right);
 		imager.SetInitShiftClk(9);
 		imager.EnableDummyADC(false); // disable dummy adc
 		imager.EnableADCCali(false);
 		imager.EnableADC(true); // enable adc	
 		imager.DACRstCntr(1);
-		imager.SetBitlineLoad(1,4);
+		imager.SetBitlineLoad(0,4);
 		imager.SetBlRstPW(pw_blrst);
 		imager.SetClkMuxPW(tsmp - pw_mux);
 		imager.SetPxIntegrationTime(320*trow- integ_time);
@@ -672,7 +678,7 @@ static void ReadNoiseTest(ImagerCntr imager, JtagDriver jdrv){
  			System.out.println("Read from JTAG SC 014: " + jdrv.readReg(ClockDomain.tc_domain, "0014"));
  		
 	}
-	static void Partial_Settling_Calibration(int itr_times, DACCntr yvonne, ImagerCntr imager, int adc_idx, int extra_bit, int load_left, int load_right, double clk_freq, int col){
+	static void Partial_Settling_Calibration(int itr_times, DACCntr yvonne, ImagerCntr imager, int adc_idx, int extra_bit, int load_left, int load_right, double clk_freq, int col, double scale){
 		
 		int row = 0;
 		//int col = 118;
@@ -681,13 +687,13 @@ static void ReadNoiseTest(ImagerCntr imager, JtagDriver jdrv){
 		if (adc_idx == 1 ){
 			//col = 122;
 			if (clk_freq == 250e6){			
-				min = 0.95; max = 2.47;
+				min = 1.13; max = 2.75;
 			}else{ min = 1.13; max = 2.45; }
 		} 
 		if (adc_idx == 0) {
 			//col = 118;
 			if (clk_freq == 250e6){
-				min = 0.93; max = 2.65;
+				min = 1.13; max = 2.75;
 			}else {min = 1.13; max = 2.45;}		
 		}
 
@@ -736,10 +742,10 @@ static void ReadNoiseTest(ImagerCntr imager, JtagDriver jdrv){
 		
 		String load = "?pF";
 		if (col < 120) {
-			if (load_left ==0) load = "0fF";
+			if (load_left ==0) load = "0pF";
 			else load = "1pF";
 		} else {
-			if (load_right == 2) load = "2fF";
+			if (load_right == 2) load = "2pF";
 			else load = "4pF";
 		}
 		DateFormat dateFormat = new SimpleDateFormat("_yyyyMMdd_HHmm");
@@ -749,7 +755,13 @@ static void ReadNoiseTest(ImagerCntr imager, JtagDriver jdrv){
 			which_adc = "right";
 		String speed = "_slow";
 		if (clk_freq == 250e6)  speed = "_fast";
-		String filename = "./outputs/PartialSettling/"  + idx_bd + idx_chip + which_adc + load + speed + col + dateFormat.format(date)+".txt";
+		String sc = "_scale?";
+		if (scale == 0.9){ sc = "_scale0-9"; }
+		if (scale == 0.95){ sc = "_scale0-95"; }
+		if (scale == 1){ sc = "_scale1"; }
+		if (scale == 1.05){ sc = "_scale1-05"; }
+		if (scale == 1.1){ sc = "_scale1-1"; }
+		String filename = "./outputs/PVT/PartialSettling/"  + idx_bd + idx_chip + which_adc + load + speed + col + dateFormat.format(date)+sc+".txt";
 
 			
 		try {
@@ -800,6 +812,9 @@ static void ReadNoiseTest(ImagerCntr imager, JtagDriver jdrv){
 		int reg_int = (int) Math.round((val-DACCntr.pvdd_min)/rsl) + DACCntr.levels/4;
 		String reg_str = Integer.toHexString(reg_int);
 		reg_str = "0000".substring(reg_str.length()) + reg_str; 
+		try {Thread.sleep(3000);} catch (InterruptedException e) {e.printStackTrace();}
 		yvonne.WriteDACReg(idx, reg_str); //Write to Yvonne
+		try {Thread.sleep(3000);} catch (InterruptedException e) {e.printStackTrace();}
+		
 	}
 }

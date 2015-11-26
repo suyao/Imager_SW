@@ -181,6 +181,8 @@ public class DACCntr
 		}
 		
 		// Execute YvonneUtil
+		try {Thread.sleep(2000);} catch (InterruptedException e) {e.printStackTrace();}
+		
 		try {
 		    Runtime.getRuntime().exec("cmd /c yvonneutil < ./src/YvonneCmds/DAC_regs.txt");
 			  
@@ -188,7 +190,9 @@ public class DACCntr
         	System.out.println("exception happened - here's what I know: ");
             e.printStackTrace();
             System.exit(-1);
-	    }		
+	    }
+		try {Thread.sleep(2000);} catch (InterruptedException e) {e.printStackTrace();}
+		
 	}
 	
 	/*
@@ -244,7 +248,8 @@ public class DACCntr
         	System.out.println("exception happened - here's what I know: ");
             e.printStackTrace();
             System.exit(-1);
-	    }	
+	    }
+		
 	}
 	
 	public int GetChannelNum(){
@@ -278,6 +283,7 @@ public class DACCntr
 			e.printStackTrace();
 		}
 		// Execute I2C
+		try {Thread.sleep(6000);} catch (InterruptedException e) {e.printStackTrace();}
 		try {
 			System.out.println("Reach here, supply setting ");
 		    Runtime.getRuntime().exec("cmd /c I2CTool < ./src/YvonneCmds/supply_regs.txt");
@@ -286,7 +292,8 @@ public class DACCntr
         	System.out.println("exception happened - here's what I know: ");
             e.printStackTrace();
             System.exit(-1);
-	    }	
+	    }
+		try {Thread.sleep(6000);} catch (InterruptedException e) {e.printStackTrace();}
 	}
 	
 
