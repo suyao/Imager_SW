@@ -1,6 +1,7 @@
 %image capture
 %Time[s], Channel 0, Channel 1, Channel 2, Channel 3, Channel 4, Channel 5, Channel 6, Channel 7, Channel 8, Channel 9, Channel 10, 
 %New Row, New Frame, clk_smp
+
 clear all;
 close all;
 
@@ -32,9 +33,32 @@ filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/out
 %filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/ReadNoise/light_slow_1pF_smp91n_1119_2011_pvdd3-1.csv'; %pvdd=3.3, ana33=2.4, v0=1, rst/tx=3.3
 %filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/ReadNoise/light_medium_slow_1pF_smp91n_1119_2011_pvdd3-1.csv'; %pvdd=3.3, ana33=2.4, v0=1, rst/tx=3.3
 %filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/ReadNoise/light_dim_slow_1pF_smp91n_1119_2211_pvdd3-1.csv'; %pvdd=3.3, ana33=2.4, v0=1, rst/tx=3.3
-
 filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PVT/ReadNoise/readnoise_slow_p21_left_1pF_scale0-95.csv'; %pvdd=3.3, ana33=2.4, v0=1, rst/tx=3.3
 filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PVT/ReadNoise/readnoise_slow_p21_right_2pF_scale1.csv'; %pvdd=3.3, ana33=2.4, v0=1, rst/tx=3.3
+
+
+filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PVT/ReadNoise/readnoise_fast_p21_left_0pF_scale0-9.csv';
+filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PVT/ReadNoise/readnoise_fast_p21_left_1pF_scale0-9.csv';
+filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PVT/ReadNoise/readnoise_fast_p21_right_2pF_scale0-9.csv';
+filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PVT/ReadNoise/readnoise_fast_p21_right_4pF_scale0-9.csv';
+filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PVT/ReadNoise/readnoise_fast_p21_left_0pF_scale0-95.csv';
+filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PVT/ReadNoise/readnoise_fast_p21_left_1pF_scale0-95.csv';
+filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PVT/ReadNoise/readnoise_fast_p21_right_2pF_scale0-95.csv';
+filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PVT/ReadNoise/readnoise_fast_p21_right_4pF_scale0-95.csv';
+%filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PVT/ReadNoise/readnoise_fast_p21_left_0pF_scale1.csv';
+%filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PVT/ReadNoise/readnoise_fast_p21_left_1pF_scale1.csv';
+%filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PVT/ReadNoise/readnoise_fast_p21_right_2pF_scale1.csv';
+%filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PVT/ReadNoise/readnoise_fast_p21_right_4pF_scale1.csv';
+filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PVT/ReadNoise/readnoise_fast_p21_left_0pF_scale1-05.csv';
+filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PVT/ReadNoise/readnoise_fast_p21_left_1pF_scale1-05.csv';
+filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PVT/ReadNoise/readnoise_fast_p21_right_2pF_scale1-05.csv';
+filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PVT/ReadNoise/readnoise_fast_p21_right_4pF_scale1-05.csv';
+filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PVT/ReadNoise/readnoise_fast_p21_left_0pF_scale1-1.csv';
+filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PVT/ReadNoise/readnoise_fast_p21_left_1pF_scale1-1.csv';
+filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PVT/ReadNoise/readnoise_fast_p21_right_2pF_scale1-1.csv';
+filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PVT/ReadNoise/readnoise_fast_p21_right_4pF_scale1-1.csv';
+
+
 
 fid = fopen(filename,'r');
 c = fgetl(fid); 
@@ -51,14 +75,18 @@ wbi = [1 2 4 8 16 32 64 128 256 512 1024];
 row_num = 4;
 col_num = 240/2;
 fit_order=3;
-lr = 2;
+if (strfind(filename,'left')>1)
+    lr = 1;
+elseif (strfind(filename,'right')>1)
+    lr = 2;
+end
 weights{lr} = adc_calibration(lr-1);
-fit_coeff{lr} = partial_settling_fitting(fit_order,lr);
+%fit_coeff{lr} = partial_settling_fitting(fit_order,lr);
 %%
 close all;
 lsb = 1/(sum(weights{lr})+weights{lr}(1));
 xbins = [-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7];
-row = 1; 
+row = 3; 
 idx_row = 0;
 wait_col = 28;
 count = 0;
@@ -78,14 +106,14 @@ for i = 2:length(new_frame)
             rst_hex(idx_col,count) = (data(i,:)*wbi');
             rst_raw(idx_col,count) = data(i,:)*weights{lr}'/(sum(weights{lr})+weights{lr}(1))+vmin;  
             rst_time(idx_col,count) = time(i);
-            rst_calib(idx_col,count) = partial_settling_calib(rst_raw(idx_col,count),fit_coeff{lr}); 
+           % rst_calib(idx_col,count) = partial_settling_calib(rst_raw(idx_col,count),fit_coeff{lr}); 
         end
 
         if (idx_col > col_num + wait_col && idx_col <=col_num*2+wait_col)
             px_hex(idx_col-col_num - wait_col,count) = (data(i,:)*wbi');
             px_raw(idx_col-col_num - wait_col,count) = data(i,:)*weights{lr}'/(sum(weights{lr})+weights{lr}(1))+vmin;
             px_time(idx_col-col_num - wait_col,count) = time(i);
-            px_calib(idx_col-col_num - wait_col,count) = partial_settling_calib(px_raw(idx_col-col_num - wait_col,count),fit_coeff{lr}); 
+          %  px_calib(idx_col-col_num - wait_col,count) = partial_settling_calib(px_raw(idx_col-col_num - wait_col,count),fit_coeff{lr}); 
 
         end 
         idx_col = idx_col + 1;
@@ -98,6 +126,7 @@ cds = cds/lsb;
 px_mean = mean(px_raw,2);
 rst_mean = mean(rst_raw,2);
 for col=1:col_num
+    if (floor(min(cds(col,:))) <ceil(max(cds(col,:))))
         xbins = [floor(min(cds(col,:))):1:ceil(max(cds(col,:)))];
         [hist_counts, value]=hist(cds(col,:),xbins);
         per = hist_counts/sum(hist_counts);
@@ -105,21 +134,25 @@ for col=1:col_num
         mid_per(col) = max(per); 
         maj_rst_hex(col)=mode(rst_hex(col));
         [hmax,hmidx]=max(hist_counts);
-        hist_0(col)=hist_counts(hmidx);
-        hist_n1(col)=hist_counts(hmidx-1);
-        hist_1(col)=hist_counts(hmidx+1);
+        if (length(hist_counts)>=hmidx+1 && hmidx >1)
+            hist_0(col)=hist_counts(hmidx);
+            hist_n1(col)=hist_counts(hmidx-1);
+            hist_1(col)=hist_counts(hmidx+1);
+        end
 
-    rst_calib_mean=mean(rst_calib,2);
-    px_calib_mean=mean(px_calib,2);
+   % rst_calib_mean=mean(rst_calib,2);
+   % px_calib_mean=mean(px_calib,2);
 
-    rst_bins = [min(rst_raw(col)/lsb):1:max(rst_raw(col)/lsb)];
+    rst_bins = [min(rst_raw(col,:)/lsb):1:max(rst_raw(col,:)/lsb)];
 
-    [hist_rst_counts,value_rst]=hist(rst_raw(col)/lsb,rst_bins);
+    [hist_rst_counts,value_rst]=hist(rst_raw(col,:)/lsb,rst_bins);
     [max_val,max_idx]=max(hist_rst_counts);
     if (max_idx<length(hist_rst_counts) && max_idx>1)
         hist_rst_0(col) = hist_rst_counts(max_idx);
         hist_rst_1(col) = hist_rst_counts(max_idx+1);
         hist_rst_n1(col) = hist_rst_counts(max_idx-1);
+    end
+    
     end
 end
 % end
@@ -149,13 +182,13 @@ ylabel('Single readout w/o cds','FontSize', 18);
 grid on;
 ratio_cds = sum(hist_0)/(sum(hist_1)+sum(hist_n1))*2
 
-
-figure;
-subplot(2,1,1);
-light_mean_calib = rst_calib_mean - px_calib_mean;
-plot(1:col,light_mean_calib(1:col));
-subplot(2,1,2);
-hist(light_mean_calib/lsb);
+% 
+% figure;
+% subplot(2,1,1);
+% light_mean_calib = rst_calib_mean - px_calib_mean;
+% plot(1:col,light_mean_calib(1:col));
+% subplot(2,1,2);
+% hist(light_mean_calib/lsb);
 % subplot(2,1,2);
 % plot(1:120,cds_input);
 
@@ -164,9 +197,9 @@ hist(light_mean_calib/lsb);
 % title('RST Readout Histogram');
 % ratio_rst = sum(hist_rst_0)/(sum(hist_rst_1)+sum(hist_rst_n1))*2
 
-%%
+
 nMon = 20000;  % number of Monte Carlo trials for each point
-sigma_list = [0.1:0.001:1.5];
+sigma_list = [0.1:0.001:1];
 P0 = zeros(1, length(sigma_list));
 P1 = P0;
 P2 = P0;
@@ -194,7 +227,7 @@ figure;
 plot(sigma_list, P0./P1)
 hold on;
 plot(sigma_list, ratio_cds*ones(1,length(sigma_list)),'r');
-plot(sigma_list, ratio_rst*ones(1,length(sigma_list)),'g');
+%plot(sigma_list, ratio_rst*ones(1,length(sigma_list)),'g');
 ylabel('P0/P1','FontSize', 18);
 xlabel('sigma_{noise}','FontSize', 18);
 grid on;
