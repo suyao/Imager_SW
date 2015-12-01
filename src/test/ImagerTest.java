@@ -165,7 +165,7 @@ public class ImagerTest {
 		//imager.SetADCcurrent(3,10,5,8); imager.SetISFcurrent(5);// chip c1 on board 3
 		imager.SetADCcurrent(6,9,7,8); imager.SetISFcurrent(5); // chip p21 on board 1
 		imager.CurrentTestPt(8);
-		double scale = 1.1;
+		double scale = 1.0;
 		SetPVDD(3.2*scale,yvonne);
 		yvonne.SetAllSupply(1.8*scale, 3.3*scale);
 		try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
@@ -183,23 +183,23 @@ public class ImagerTest {
 		//SNR_ADC(30, yvonne, imager, 1, "slow");
 		//ADC_ext_input(yvonne,imager,0, "fast");// adc_idx
 		//Pixel Readout
-		//ImagerDebugModeTest(imager,0,140,0, 4); //(rol, col, left load, right load)
+		ImagerDebugModeTest(imager,2,10,0, 4); //(rol, col, left load, right load)
 		//System.out.println("Read from jtag x074: " + jdrv.readReg(ClockDomain.tc_domain, "0074"));
 		//ImagerDebugModeTest(imager, 1,118);
 		//ImagerDebugModeTest(imager, 300,3);
 		//ReadImagerReg(jdrv);
 		//ImagerFrameTest(imager, jdrv);
 		//imager.EnableDout(false);
-		//ReadNoiseTest(imager, jdrv);
+		ReadNoiseTest(imager, jdrv);
 		//System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
-		if (1==1){
+		if (1==0){
 		for (scale = 0.9; scale <=1.1; scale = scale + 0.05){
 			SetPVDD(3.2*scale,yvonne);
 			yvonne.SetAllSupply(1.8*scale, 3.3*scale);		
-			Partial_Settling_Calibration(50,  yvonne, imager, 0, -2, 1, 4, 120e6, 118, scale);
-			Partial_Settling_Calibration(50,  yvonne, imager, 1, -2, 1, 4, 120e6, 122, scale);
-			Partial_Settling_Calibration(50,  yvonne, imager, 0, -2, 0, 2, 120e6, 118, scale);
-			Partial_Settling_Calibration(50,  yvonne, imager, 1, -2, 0, 2, 120e6, 122, scale);
+			//Partial_Settling_Calibration(50,  yvonne, imager, 0, -2, 1, 4, 250e6, 118, scale);
+			//Partial_Settling_Calibration(50,  yvonne, imager, 1, -2, 1, 4, 250e6, 122, scale);
+			Partial_Settling_Calibration(50,  yvonne, imager, 0, 3, 0, 2, 250e6, 118, scale);
+			//Partial_Settling_Calibration(50,  yvonne, imager, 1, -2, 0, 2, 250e6, 122, scale);
 		}
 		}
 		jdrv.CloseController();
@@ -602,7 +602,7 @@ static void ReadNoiseTest(ImagerCntr imager, JtagDriver jdrv){
 		imager.ScanMode(true);
 
 		imager.RowCounterForce(false);
-		imager.SetMaxRowCounter(3);
+		imager.SetMaxRowCounter(4);
 		imager.SetRowCounter(2);
 		imager.SetSmpPeriod(tsmp);
 		imager.SetSmpPW(pw_smp);
@@ -701,8 +701,8 @@ static void ReadNoiseTest(ImagerCntr imager, JtagDriver jdrv){
 		//int load_left = 1; // in fF
 		//int load_right = 4;
 		int rstMode = 1;
-		double tsmp = 4*29*Math.pow(10, -9); //sampling period 96ns
-		double pw_smp = 4*15*Math.pow(10, -9); //sampling pulse width 40ns
+		double tsmp = 4*25*Math.pow(10, -9); //sampling period 96ns
+		double pw_smp = 4*11*Math.pow(10, -9); //sampling pulse width 40ns
 		double pw_tx = (10*1) * tsmp;
 		double pw_isf = 10 * tsmp;
 		double dly_isf = 16 * tsmp + pw_tx -10*tsmp; // this value has to be larger than dly_rst + pw_rst
@@ -749,7 +749,7 @@ static void ReadNoiseTest(ImagerCntr imager, JtagDriver jdrv){
 			if (load_right == 2) load = "2pF";
 			else load = "4pF";
 		}
-		String smp_pw = "_pwsmp"+Integer.toString((int) Math.round(pw_smp/1.2*2.5/Math.pow(10,  -9)))+"ns";
+		String smp_pw = "_pwsmp"+Integer.toString((int) Math.round(pw_smp/Math.pow(10,  -9)))+"ns";
 		DateFormat dateFormat = new SimpleDateFormat("_yyyyMMdd_HHmm");
 		Date date = new Date();
 		String which_adc = "left";

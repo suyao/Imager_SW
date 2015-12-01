@@ -12,7 +12,7 @@ close all;
 % filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/ReadNoise/light_medium_slow_1pF_smp91n_1119_2211_pvdd3-1.csv'; %3 rows
 % filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/ReadNoise/light_diffuseron_slow_1pF_smp91n_1123_1320_pvdd3-1.csv'; %5 rows
 % filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/ReadNoise/light_diffuseroff_fullsettling_slow_1pF_smp91n_1123_1320_pvdd3-1.csv'; % 4 rows
-filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/ReadNoise/light_cover_slow_1pF_smp91n_1123_1320_pvdd3-1.csv'; %5 rows
+filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/uniform_light4_p21_1201_1114_fast_0pF_5rows.csv'; %5 rows
 
 
 fid = fopen(filename,'r');
@@ -86,9 +86,11 @@ for row = 3:5;
             mid_per(col) = max(per); 
             maj_rst_hex(col)=mode(rst_hex(col));
             [hmax,hmidx]=max(hist_counts);
-            hist_0(col)=hist_counts(hmidx);
-            hist_n1(col)=hist_counts(hmidx-1);
-            hist_1(col)=hist_counts(hmidx+1);
+            if (length(hist_counts)>=hmidx+1 && hmidx >1)
+                hist_0(col)=hist_counts(hmidx);
+                hist_n1(col)=hist_counts(hmidx-1);
+                hist_1(col)=hist_counts(hmidx+1);
+            end
 
         rst_calib_mean=mean(rst_calib,2);
         px_calib_mean=mean(px_calib,2);
@@ -131,7 +133,7 @@ for row = 3:5;
     ratio_cds = sum(hist_0)/(sum(hist_1)+sum(hist_n1))*2
 
 
-    fn = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/testing_result_processing/col_gain_longersettling.txt'; %pvdd=3.3, ana33=2.4, v0=1, rst/tx=3.3
+    fn = strcat('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/testing_result_processing/col_gain_p21_row',int2str(row),'.txt');
     fr = fopen(fn,'r');
     f = (fscanf(fr, '%f ' ,[1 inf]))';
     col_gain = f(:,1);
@@ -146,8 +148,13 @@ for row = 3:5;
     hold on;
     grid on;
     %plot(1:120,rst_calib(:,1)-px_calib(:,1),'black');
-    %plot(1:120,light_mean_calib./col_gain,'r');
-
+    plot(1:120,light_mean_calib./col_gain,'r');
+    
+%     col_gain = light_mean/mean(light_mean);
+%     fn = strcat('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/testing_result_processing/col_gain_p21_row',int2str(row),'.txt');
+%     fw = fopen(fn,'w');
+%     fprintf(fw, '%0.4g\n',col_gain);
+%     fclose(fw);
 end 
 % figure;
 % subplot(1,2,1);
@@ -157,11 +164,7 @@ end
 % xbins = [min(light_mean./col_gain):lsb:max(light_mean./col_gain)];
 % hist(light_mean./col_gain,xbins);
 % 
-% col_gain = light_mean/mean(light_mean);
-% fn = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/testing_result_processing/col_gain_longersettling.txt'; %pvdd=3.3, ana33=2.4, v0=1, rst/tx=3.3
-% fw = fopen(fn,'w');
-% fprintf(fw, '%0.4g\n',col_gain);
-% fclose(fw);
+
 %%
 % figure;
 % xbins = [min(light_mean/lsb):2:max(light_mean/lsb)];
