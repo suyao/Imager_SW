@@ -5,11 +5,14 @@ if (1==1)
 clear all;
 close all;
 
-filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/ReadNoise/readnoise_slow_high_1pF_smp91n_1119_2011_pvdd3-1.csv'; %pvdd=3.3, ana33=2.4, v0=1, rst/tx=3.3
-%filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/ReadNoise/readnoise_slow_high_1pF_smp91n_1119_2011_pvdd2-8.csv'; %pvdd=3.3, ana33=2.4, v0=1, rst/tx=3.3
-%filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/ReadNoise/light_slow_1pF_smp91n_1119_2011_pvdd3-1.csv'; %pvdd=3.3, ana33=2.4, v0=1, rst/tx=3.3
-%filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/ReadNoise/light_strong_slow_1pF_smp91n_1119_2211_pvdd3-1.csv'; %pvdd=3.3, ana33=2.4, v0=1, rst/tx=3.3
-%filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/ReadNoise/light_medium_slow_1pF_smp91n_1119_2211_pvdd3-1.csv'; %pvdd=3.3, ana33=2.4, v0=1, rst/tx=3.3
+% filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/ReadNoise/readnoise_slow_high_1pF_smp91n_1119_2011_pvdd3-1.csv'; % 3 rows
+% filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/ReadNoise/readnoise_slow_high_1pF_smp91n_1119_2011_pvdd2-8.csv'; % 3 rows
+% filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/ReadNoise/light_slow_1pF_smp91n_1119_2011_pvdd3-1.csv'; % 3 rows
+% filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/ReadNoise/light_strong_slow_1pF_smp91n_1119_2211_pvdd3-1.csv'; % 3 rows
+% filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/ReadNoise/light_medium_slow_1pF_smp91n_1119_2211_pvdd3-1.csv'; %3 rows
+% filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/ReadNoise/light_diffuseron_slow_1pF_smp91n_1123_1320_pvdd3-1.csv'; %5 rows
+% filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/ReadNoise/light_diffuseroff_fullsettling_slow_1pF_smp91n_1123_1320_pvdd3-1.csv'; % 4 rows
+filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/ReadNoise/light_cover_slow_1pF_smp91n_1123_1320_pvdd3-1.csv'; %5 rows
 
 
 fid = fopen(filename,'r');
@@ -25,7 +28,7 @@ vmin = 0.0;
 weights{1} = adc_calibration(0);
 %weights{2} = adc_calibration(1);
 wbi = [1 2 4 8 16 32 64 128 256 512 1024];
-row_num = 3;
+row_num = 5;
 col_num = 240/2;
 fit_order=3;
 lr = 1;
@@ -36,126 +39,126 @@ end
 close all;
 lsb = 1/(sum(weights{lr})+weights{lr}(1));
 xbins = [-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7];
-row = 1;
-% for col = 1:120;
-    %col = 5; 
-idx_row = 0;
-wait_col = 28;
-count = 0;
-flag = 0;
-for i = 2:length(new_frame)
-    if (new_row(i-1) == 1 && new_row(i) == 0 )
-        idx_row = idx_row + 1;
-        if (mod(idx_row,row_num) == row)      
-            count = count +1 
-%                 if (count>1) 
-%                     break;
-%                 end
-            idx_col = 0; 
-            flag = 1;
+for row = 3:5; 
+    idx_row = 0;
+    wait_col = 28;
+    count = 0;
+    flag = 0;
+    for i = 2:length(new_frame)
+        if (new_row(i-1) == 1 && new_row(i) == 0 )
+            idx_row = idx_row + 1;
+            if (mod(idx_row,row_num) == row || mod(idx_row,row_num) == row-row_num)      
+                count = count +1 
+                idx_col = 0; 
+                flag = 1;
+            end
+
         end
+        if ( flag == 1 && clk_smp(i-1) == 1 && clk_smp(i) == 0)             
+            if (idx_col <=col_num && idx_col >0)                
+                rst_hex(idx_col,count) = (data(i,:)*wbi');
+                rst_raw(idx_col,count) = data(i,:)*weights{lr}'/(sum(weights{lr})+weights{lr}(1))+vmin;  
+                rst_time(idx_col,count) = time(i);
+                rst_calib(idx_col,count) = partial_settling_calib(rst_raw(idx_col,count),fit_coeff{lr}); 
+            end
 
-    end
-    if ( flag == 1 && clk_smp(i-1) == 1 && clk_smp(i) == 0)             
-        if (idx_col <=col_num && idx_col >0)                
-            rst_hex(idx_col,count) = (data(i,:)*wbi');
-            rst_raw(idx_col,count) = data(i,:)*weights{lr}'/(sum(weights{lr})+weights{lr}(1))+vmin;  
-            rst_time(idx_col,count) = time(i);
-            rst_calib(idx_col,count) = partial_settling_calib(rst_raw(idx_col,count),fit_coeff{lr}); 
+            if (idx_col > col_num + wait_col && idx_col <=col_num*2+wait_col)
+                px_hex(idx_col-col_num - wait_col,count) = (data(i,:)*wbi');
+                px_raw(idx_col-col_num - wait_col,count) = data(i,:)*weights{lr}'/(sum(weights{lr})+weights{lr}(1))+vmin;
+                px_time(idx_col-col_num - wait_col,count) = time(i);
+                px_calib(idx_col-col_num - wait_col,count) = partial_settling_calib(px_raw(idx_col-col_num - wait_col,count),fit_coeff{lr}); 
+
+            end 
+            idx_col = idx_col + 1;
         end
-
-        if (idx_col > col_num + wait_col && idx_col <=col_num*2+wait_col)
-            px_hex(idx_col-col_num - wait_col,count) = (data(i,:)*wbi');
-            px_raw(idx_col-col_num - wait_col,count) = data(i,:)*weights{lr}'/(sum(weights{lr})+weights{lr}(1))+vmin;
-            px_time(idx_col-col_num - wait_col,count) = time(i);
-            px_calib(idx_col-col_num - wait_col,count) = partial_settling_calib(px_raw(idx_col-col_num - wait_col,count),fit_coeff{lr}); 
-
-        end 
-        idx_col = idx_col + 1;
     end
-end
-[px_col, px_count]=size(px_raw);
-cds = rst_raw(1:px_col,1:px_count)-px_raw;
-cds = cds/lsb;
-%cds_input = (rst_calib(1:length(px_calib))-px_calib)/lsb;
-px_mean = mean(px_raw,2);
-for col=1:col_num
-        xbins = [floor(min(cds(col,:))):1:ceil(max(cds(col,:)))];
-        [hist_counts, value]=hist(cds(col,:),xbins);
-        per = hist_counts/sum(hist_counts);
+    [px_col, px_count]=size(px_raw);
+    cds = rst_raw(1:px_col,1:px_count)-px_raw;
+    cds = cds/lsb;
+    %cds_input = (rst_calib(1:length(px_calib))-px_calib)/lsb;
+    px_mean = mean(px_raw,2);
+    rst_mean = mean(rst_raw,2);
+    for col=1:col_num
+            xbins = [floor(min(cds(col,:))):1:ceil(max(cds(col,:)))];
+            [hist_counts, value]=hist(cds(col,:),xbins);
+            per = hist_counts/sum(hist_counts);
 
-        mid_per(col) = max(per); 
-        maj_rst_hex(col)=mode(rst_hex(col));
-        [hmax,hmidx]=max(hist_counts);
-        hist_0(col)=hist_counts(hmidx);
-        hist_n1(col)=hist_counts(hmidx-1);
-        hist_1(col)=hist_counts(hmidx+1);
+            mid_per(col) = max(per); 
+            maj_rst_hex(col)=mode(rst_hex(col));
+            [hmax,hmidx]=max(hist_counts);
+            hist_0(col)=hist_counts(hmidx);
+            hist_n1(col)=hist_counts(hmidx-1);
+            hist_1(col)=hist_counts(hmidx+1);
 
-    rst_calib_mean=mean(rst_calib,2);
-    px_calib_mean=mean(px_calib,2);
+        rst_calib_mean=mean(rst_calib,2);
+        px_calib_mean=mean(px_calib,2);
 
-    rst_bins = [min(rst_raw(col)/lsb):1:max(rst_raw(col)/lsb)];
+        rst_bins = [min(rst_raw(col)/lsb):1:max(rst_raw(col)/lsb)];
 
-    [hist_rst_counts,value_rst]=hist(rst_raw(col)/lsb,rst_bins);
-    [max_val,max_idx]=max(hist_rst_counts);
-    if (max_idx<length(hist_rst_counts) && max_idx>1)
-        hist_rst_0(col) = hist_rst_counts(max_idx);
-        hist_rst_1(col) = hist_rst_counts(max_idx+1);
-        hist_rst_n1(col) = hist_rst_counts(max_idx-1);
+        [hist_rst_counts,value_rst]=hist(rst_raw(col)/lsb,rst_bins);
+        [max_val,max_idx]=max(hist_rst_counts);
+        if (max_idx<length(hist_rst_counts) && max_idx>1)
+            hist_rst_0(col) = hist_rst_counts(max_idx);
+            hist_rst_1(col) = hist_rst_counts(max_idx+1);
+            hist_rst_n1(col) = hist_rst_counts(max_idx-1);
+        end
     end
-end
-% end
-xbins2 = [min(rst_raw(col,:)/lsb):1:max(rst_raw(col,:)/lsb)];
-figure;
-subplot(1,3,1)
-hist(rst_raw(col,:)/lsb,xbins2);
-ylabel('1st readout','FontSize', 18);
-subplot(1,3,2)
-xbins_px = [min(px_raw(col,:)/lsb):1:max(px_raw(col,:)/lsb)];
-hist(px_raw(col,:)/lsb,xbins_px);
-ylabel('2nd readout','FontSize', 18);
-subplot(1,3,3);
-hist(cds(col,:),xbins);
-ylabel('cds result','FontSize', 18);
+    % end
+    xbins2 = [min(rst_raw(col,:)/lsb):1:max(rst_raw(col,:)/lsb)];
+    figure;
+    subplot(1,3,1)
+    hist(rst_raw(col,:)/lsb,xbins2);
+    ylabel('1st readout','FontSize', 18);
+    subplot(1,3,2)
+    xbins_px = [min(px_raw(col,:)/lsb):1:max(px_raw(col,:)/lsb)];
+    hist(px_raw(col,:)/lsb,xbins_px);
+    ylabel('2nd readout','FontSize', 18);
+    subplot(1,3,3);
+    hist(cds(col,:),xbins);
+    ylabel('cds result','FontSize', 18);
 
-figure;
-subplot(2,1,1)
-plot(mid_per);
+    figure;
+    subplot(2,1,1)
+    plot(mid_per);
 
-grid;
-ylabel('probability at center','FontSize', 18)
-subplot(2,1,2);
-xlabel('col index','FontSize', 18);
-plot(maj_rst_hex,'r');
-ylabel('Single readout w/o cds','FontSize', 18);
-grid on;
-ratio_cds = sum(hist_0)/(sum(hist_1)+sum(hist_n1))*2
+    grid;
+    ylabel('probability at center','FontSize', 18)
+    subplot(2,1,2);
+    xlabel('col index','FontSize', 18);
+    plot(maj_rst_hex,'r');
+    ylabel('Single readout w/o cds','FontSize', 18);
+    grid on;
+    ratio_cds = sum(hist_0)/(sum(hist_1)+sum(hist_n1))*2
 
 
-fn = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/testing_result_processing/col_gain.txt'; %pvdd=3.3, ana33=2.4, v0=1, rst/tx=3.3
-fr = fopen(fn,'r');
-f = (fscanf(fr, '%f ' ,[1 inf]))';
-col_gain = f(:,1);
-fclose(fr);
+    fn = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/testing_result_processing/col_gain_longersettling.txt'; %pvdd=3.3, ana33=2.4, v0=1, rst/tx=3.3
+    fr = fopen(fn,'r');
+    f = (fscanf(fr, '%f ' ,[1 inf]))';
+    col_gain = f(:,1);
+    fclose(fr);
 
-sigma= 10;
-figure;
-light_mean = rst_calib_mean - px_calib_mean;
-plot(1:120,light_mean);
-hold on;
-plot(1:120,rst_calib(:,1)-px_calib(:,1),'black');
-plot(1:120,light_mean./col_gain,'r');
+    sigma= 10;
+    figure(3);
+    light_mean_calib = rst_calib_mean - px_calib_mean;
+    light_mean = rst_mean - px_mean;
+    subplot(3,1,row-2);
+    plot(1:120,light_mean_calib);
+    hold on;
+    grid on;
+    %plot(1:120,rst_calib(:,1)-px_calib(:,1),'black');
+    %plot(1:120,light_mean_calib./col_gain,'r');
 
-figure;
-subplot(1,2,1);
-xbins = [min(light_mean):lsb:max(light_mean)];
-hist(light_mean,xbins);
-subplot(1,2,2);
-xbins = [min(light_mean./col_gain):lsb:max(light_mean./col_gain)];
-hist(light_mean./col_gain,xbins);
-
+end 
+% figure;
+% subplot(1,2,1);
+% xbins = [min(light_mean):lsb:max(light_mean)];
+% hist(light_mean,xbins);
+% subplot(1,2,2);
+% xbins = [min(light_mean./col_gain):lsb:max(light_mean./col_gain)];
+% hist(light_mean./col_gain,xbins);
+% 
 % col_gain = light_mean/mean(light_mean);
-% fn = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/testing_result_processing/col_gain.txt'; %pvdd=3.3, ana33=2.4, v0=1, rst/tx=3.3
+% fn = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/testing_result_processing/col_gain_longersettling.txt'; %pvdd=3.3, ana33=2.4, v0=1, rst/tx=3.3
 % fw = fopen(fn,'w');
 % fprintf(fw, '%0.4g\n',col_gain);
 % fclose(fw);

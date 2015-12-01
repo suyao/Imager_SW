@@ -58,7 +58,7 @@ public class ImagerTest {
 		//Set DAC Values
 		double pvdd = 3.1; 
 		//double pvdd = 1.5; //1.46 at DVDD33 = 2.3
-		double ana33 = 1.13;
+		double ana33 = 2.45;
 		v0 = 1.15;
 		double ana18 = 1;
 		vrefp = 1.25;
@@ -85,8 +85,8 @@ public class ImagerTest {
 	}
 	
 	public static void main(String[] args) {
-		idx_bd="b1";
-		idx_chip="s3";
+		idx_bd="b3";
+		idx_chip="p21";
 		JtagDriver jdrv = new JtagDriver(16, 8, 32, 12);
 		ImagerCntr imager = new ImagerCntr(jdrv);
 		// Initialize jtag, Reset JTAG, Read IDCODE
@@ -156,17 +156,22 @@ public class ImagerTest {
 		 *  7 DUMMY_amp2_p
 		 *  8 Isf
 		 */
-		yvonne.SetAllSupply(1.8, 3.3);
 		imager.SetADCTiming(1,1,1);
 		// SetADCcurrent( n1, p1, n2, p2) , the larger number, the smaller the current
-		imager.SetADCcurrent(0,13,4,3); imager.SetISFcurrent(4); // chip s3 on board 1
+		//imager.SetADCcurrent(0,13,4,3); imager.SetISFcurrent(4); // chip s3 on board 1
 		//imager.SetADCcurrent(2,13,7,7); imager.SetISFcurrent(5);// chip s2 on board 3
 		//imager.SetADCcurrent(3,10,5,8); imager.SetISFcurrent(5);// chip p11 on board 3
 		//imager.SetADCcurrent(6,9,7,8); imager.SetISFcurrent(5); // chip p21 on board 1
+		//imager.SetADCcurrent(3,10,5,8); imager.SetISFcurrent(5);// chip c1 on board 3
+		imager.SetADCcurrent(6,9,7,8); imager.SetISFcurrent(5); // chip p21 on board 1
 		imager.CurrentTestPt(8);
-		
-		
-		imager.EnableDout(true);
+		double scale = 1.1;
+		SetPVDD(3.2*scale,yvonne);
+		yvonne.SetAllSupply(1.8*scale, 3.3*scale);
+		try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
+
+	
+		imager.EnableDout(false);
 		// ADC Testing
 		//DummyADCTest(0.51, yvonne, imager);
 		//ADCTest(0.66, yvonne, imager, 0); // left ADC if 0, right ADC if 1
@@ -178,7 +183,7 @@ public class ImagerTest {
 		//SNR_ADC(30, yvonne, imager, 1, "slow");
 		//ADC_ext_input(yvonne,imager,0, "fast");// adc_idx
 		//Pixel Readout
-		//ImagerDebugModeTest(imager,0,130,1, 4); //(rol, col, left load, right load)
+		//ImagerDebugModeTest(imager,0,140,0, 4); //(rol, col, left load, right load)
 		//System.out.println("Read from jtag x074: " + jdrv.readReg(ClockDomain.tc_domain, "0074"));
 		//ImagerDebugModeTest(imager, 1,118);
 		//ImagerDebugModeTest(imager, 300,3);
@@ -186,19 +191,17 @@ public class ImagerTest {
 		//ImagerFrameTest(imager, jdrv);
 		//imager.EnableDout(false);
 		//ReadNoiseTest(imager, jdrv);
-		System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
-		//Partial_Settling_Calibration(50,  yvonne, imager, 0, 3, 1, 4, 120e6, 118);
-		//Partial_Settling_Calibration(50,  yvonne, imager, 0, 3, 1, 4, 120e6, 122);
-		//Partial_Settling_Calibration(50,  yvonne, imager, 0, 3, 1, 4, 120e6, 118);
-		//Partial_Settling_Calibration(50,  yvonne, imager, 0, 3, 1, 4, 120e6, 122);
-		
-		//Partial_Settling_Calibration(50,  yvonne, imager, 1, 0, 1, 4, 120e6, col+120);
-		//Partial_Settling_Calibration(50,  yvonne, imager, 0, 1, 0, 2, 12e6);	//(left/right, extra_bit, left load, right load, freq)
-		//Partial_Settling_Calibration(50,  yvonne, imager, 1, 1, 0, 2, 120e6);	
-		//for (int col=46; col<120;col=col+1){
-		//Partial_Settling_Calibration(50,  yvonne, imager, 0, 0, 1, 4, 120e6, col);
-		//Partial_Settling_Calibration(50,  yvonne, imager, 1, 0, 1, 4, 120e6, col+120);
-		//}
+		//System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
+		if (1==1){
+		for (scale = 0.9; scale <=1.1; scale = scale + 0.05){
+			SetPVDD(3.2*scale,yvonne);
+			yvonne.SetAllSupply(1.8*scale, 3.3*scale);		
+			Partial_Settling_Calibration(50,  yvonne, imager, 0, -2, 1, 4, 120e6, 118, scale);
+			Partial_Settling_Calibration(50,  yvonne, imager, 1, -2, 1, 4, 120e6, 122, scale);
+			Partial_Settling_Calibration(50,  yvonne, imager, 0, -2, 0, 2, 120e6, 118, scale);
+			Partial_Settling_Calibration(50,  yvonne, imager, 1, -2, 0, 2, 120e6, 122, scale);
+		}
+		}
 		jdrv.CloseController();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd, HH:mm");
 		Date date = new Date();
@@ -599,7 +602,7 @@ static void ReadNoiseTest(ImagerCntr imager, JtagDriver jdrv){
 		imager.ScanMode(true);
 
 		imager.RowCounterForce(false);
-		imager.SetMaxRowCounter(4);
+		imager.SetMaxRowCounter(3);
 		imager.SetRowCounter(2);
 		imager.SetSmpPeriod(tsmp);
 		imager.SetSmpPW(pw_smp);
@@ -618,7 +621,7 @@ static void ReadNoiseTest(ImagerCntr imager, JtagDriver jdrv){
 		imager.EnableADCCali(false);
 		imager.EnableADC(true); // enable adc	
 		imager.DACRstCntr(1);
-		imager.SetBitlineLoad(1,4);
+		imager.SetBitlineLoad(1,2);
 		imager.SetBlRstPW(pw_blrst);
 		imager.SetClkMuxPW(tsmp - pw_mux);
 		imager.SetPxIntegrationTime(320*trow- integ_time);
@@ -676,7 +679,7 @@ static void ReadNoiseTest(ImagerCntr imager, JtagDriver jdrv){
  			System.out.println("Read from JTAG SC 014: " + jdrv.readReg(ClockDomain.tc_domain, "0014"));
  		
 	}
-	static void Partial_Settling_Calibration(int itr_times, DACCntr yvonne, ImagerCntr imager, int adc_idx, int extra_bit, int load_left, int load_right, double clk_freq, int col){
+	static void Partial_Settling_Calibration(int itr_times, DACCntr yvonne, ImagerCntr imager, int adc_idx, int extra_bit, int load_left, int load_right, double clk_freq, int col, double scale){
 		
 		int row = 0;
 		//int col = 118;
@@ -685,21 +688,21 @@ static void ReadNoiseTest(ImagerCntr imager, JtagDriver jdrv){
 		if (adc_idx == 1 ){
 			//col = 122;
 			if (clk_freq == 250e6){			
-				min = 0.95; max = 2.47;
+				min = 1.13; max = 2.45;
 			}else{ min = 1.13; max = 2.45; }
 		} 
 		if (adc_idx == 0) {
 			//col = 118;
 			if (clk_freq == 250e6){
-				min = 0.93; max = 2.65;
+				min = 1.13; max = 2.45;
 			}else {min = 1.13; max = 2.45;}		
 		}
 
 		//int load_left = 1; // in fF
 		//int load_right = 4;
 		int rstMode = 1;
-		double tsmp = 4*25*Math.pow(10, -9); //sampling period 96ns
-		double pw_smp = 4*11*Math.pow(10, -9); //sampling pulse width 40ns
+		double tsmp = 4*29*Math.pow(10, -9); //sampling period 96ns
+		double pw_smp = 4*15*Math.pow(10, -9); //sampling pulse width 40ns
 		double pw_tx = (10*1) * tsmp;
 		double pw_isf = 10 * tsmp;
 		double dly_isf = 16 * tsmp + pw_tx -10*tsmp; // this value has to be larger than dly_rst + pw_rst
@@ -740,12 +743,13 @@ static void ReadNoiseTest(ImagerCntr imager, JtagDriver jdrv){
 		
 		String load = "?pF";
 		if (col < 120) {
-			if (load_left ==0) load = "0fF";
+			if (load_left ==0) load = "0pF";
 			else load = "1pF";
 		} else {
-			if (load_right == 2) load = "2fF";
+			if (load_right == 2) load = "2pF";
 			else load = "4pF";
 		}
+		String smp_pw = "_pwsmp"+Integer.toString((int) Math.round(pw_smp/1.2*2.5/Math.pow(10,  -9)))+"ns";
 		DateFormat dateFormat = new SimpleDateFormat("_yyyyMMdd_HHmm");
 		Date date = new Date();
 		String which_adc = "left";
@@ -753,7 +757,13 @@ static void ReadNoiseTest(ImagerCntr imager, JtagDriver jdrv){
 			which_adc = "right";
 		String speed = "_slow";
 		if (clk_freq == 250e6)  speed = "_fast";
-		String filename = "./outputs/PartialSettling/"  + idx_bd + idx_chip + which_adc + load + speed + col + dateFormat.format(date)+".txt";
+		String sc = "_scale?";
+		if (scale == 0.9){ sc = "_scale0-9"; }
+		if (scale == 0.95){ sc = "_scale0-95"; }
+		if (scale == 1){ sc = "_scale1"; }
+		if (scale == 1.05){ sc = "_scale1-05"; }
+		if (scale == 1.1){ sc = "_scale1-1"; }
+		String filename = "./outputs/PVT/PartialSettling/"  + idx_bd + idx_chip + which_adc + load + speed + col + smp_pw + dateFormat.format(date)+sc+".txt";
 
 			
 		try {
@@ -796,5 +806,17 @@ static void ReadNoiseTest(ImagerCntr imager, JtagDriver jdrv){
 		} catch (IOException e) {
 			e.printStackTrace();
 		} 
+	}
+	
+	static void SetPVDD(double val,DACCntr yvonne ){
+		int idx = yvonne.FindIdxofName("PVDD");
+		double rsl = (DACCntr.pvdd_max-DACCntr.pvdd_min)/DACCntr.levels*2;
+		int reg_int = (int) Math.round((val-DACCntr.pvdd_min)/rsl) + DACCntr.levels/4;
+		String reg_str = Integer.toHexString(reg_int);
+		reg_str = "0000".substring(reg_str.length()) + reg_str; 
+		try {Thread.sleep(3000);} catch (InterruptedException e) {e.printStackTrace();}
+		yvonne.WriteDACReg(idx, reg_str); //Write to Yvonne
+		try {Thread.sleep(3000);} catch (InterruptedException e) {e.printStackTrace();}
+		
 	}
 }
