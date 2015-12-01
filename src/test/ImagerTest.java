@@ -62,7 +62,7 @@ public class ImagerTest {
 		v0 = 1.15;
 		double ana18 = 1;
 		vrefp = 1.25;
-		//vrefn = 0.7501;
+		vrefn = 0.74998;
 		double Iin = 1;
 		vcm = 1;
 		//vrst = 1.34; 
@@ -156,12 +156,12 @@ public class ImagerTest {
 		 *  7 DUMMY_amp2_p
 		 *  8 Isf
 		 */
-		//yvonne.SetAllSupply(1.8, 3.3);
+		yvonne.SetAllSupply(1.8, 3.3);
 		imager.SetADCTiming(1,1,1);
 		// SetADCcurrent( n1, p1, n2, p2) , the larger number, the smaller the current
 		imager.SetADCcurrent(0,13,4,3); imager.SetISFcurrent(4); // chip s3 on board 1
 		//imager.SetADCcurrent(2,13,7,7); imager.SetISFcurrent(5);// chip s2 on board 3
-		//imager.SetADCcurrent(3,10,5,8); imager.SetISFcurrent(5);// chip c1 on board 3
+		//imager.SetADCcurrent(3,10,5,8); imager.SetISFcurrent(5);// chip p11 on board 3
 		//imager.SetADCcurrent(6,9,7,8); imager.SetISFcurrent(5); // chip p21 on board 1
 		imager.CurrentTestPt(8);
 		
@@ -172,7 +172,7 @@ public class ImagerTest {
 		//ADCTest(0.66, yvonne, imager, 0); // left ADC if 0, right ADC if 1
 		//CalibrateDummyADC(10, yvonne, imager); //repeat every analog value for 100 conversions
 		//CalibrateADC(30, yvonne, imager, 0, 5, "slow"); //(itr, , ,left/right, extra_bit)
-		CalibrateADC(30, yvonne, imager, 1, 5, "slow"); //(itr, , ,left/right, extra_bit)
+		//CalibrateADC(30, yvonne, imager, 1, 5, "slow"); //(itr, , ,left/right, extra_bit)
 		
 		//SNR_ADC(30, yvonne, imager, 0, "slow");
 		//SNR_ADC(30, yvonne, imager, 1, "slow");

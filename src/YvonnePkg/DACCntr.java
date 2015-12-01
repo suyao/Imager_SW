@@ -115,8 +115,8 @@ public class DACCntr
 		            case 1:  max = 2.8118; min = 0.93892; ana33_max = max; ana33_min = min; break;//ana33          
 		            case 2:  max = 1.5231; min = 0.50546; break;   //v0		
 		            case 3:  max = 1.5269;  min = 0.507665; ana18_max = max; ana18_min = min;  break;//ana18	 
-		            case 4:  max = 1.5238; min = 0.51115;  break;	//vrefp 				 
-		            case 5:  max = 1.5232; min = 0.51329;  break;	//vrefn		
+		            case 4:  max = 1.5289; min = 0.51023;  break;	//vrefp 				 
+		            case 5:  max = 1.5283; min = 0.50863;  break;	//vrefn		
 		            case 6:  max = 1.5311;  min = 0.51323;  break;	 //Iin	
 		            case 7:  max = 1.02660; min = 0.34154;  break;//vcm       
 		            case 8:  max = 1.02636;  min = 0.33923;  break;//vrst
@@ -264,7 +264,7 @@ public class DACCntr
 			bw.append("w 20 f9 ").append(Integer.toHexString(vlow_reg)).append("\n");	
 			bw.append("w 20 fa ").append(Integer.toHexString(vlow_reg)).append("\n");
 			//set dvdd33, iovdd33
-			int vhigh_reg = (int) Math.round((vhigh-3.3)/0.005282);
+			int vhigh_reg = (int) Math.round((vhigh-3.26)/0.005282);
 			if (vhigh_reg < 0 ) vhigh_reg = -1*vhigh_reg + 128;
 			bw.append("w 20 fb ").append(Integer.toHexString(vhigh_reg)).append("\n");	
 			
@@ -277,9 +277,7 @@ public class DACCntr
 		}
 		// Execute I2C
 		try {
-			System.out.println("Reach here, supply setting ");
 		    Runtime.getRuntime().exec("cmd /c I2CTool < ./src/YvonneCmds/supply_regs.txt");
-			  
 		} catch (IOException e) {
         	System.out.println("exception happened - here's what I know: ");
             e.printStackTrace();
