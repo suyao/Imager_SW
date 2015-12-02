@@ -192,7 +192,12 @@ public class ImagerTest {
 		//imager.EnableDout(false);
 		ReadNoiseTest(imager, jdrv);
 		//System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
-		if (1==0){
+		if (1==1){
+			scale = 0.95;
+			SetPVDD(3.2*scale,yvonne);
+			yvonne.SetAllSupply(1.8*scale, 3.3*scale);
+			Partial_Settling_Calibration(50,  yvonne, imager, 0, 3, 0, 2, 250e6, 118, scale);
+			
 		for (scale = 0.9; scale <=1.1; scale = scale + 0.05){
 			SetPVDD(3.2*scale,yvonne);
 			yvonne.SetAllSupply(1.8*scale, 3.3*scale);		
@@ -763,7 +768,7 @@ static void ReadNoiseTest(ImagerCntr imager, JtagDriver jdrv){
 		if (scale == 1){ sc = "_scale1"; }
 		if (scale == 1.05){ sc = "_scale1-05"; }
 		if (scale == 1.1){ sc = "_scale1-1"; }
-		String filename = "./outputs/PVT/PartialSettling/"  + idx_bd + idx_chip + which_adc + load + speed + col + smp_pw + dateFormat.format(date)+sc+".txt";
+		String filename = "./outputs/PVT/PartialSettling/Temperature/"  + idx_bd + idx_chip + which_adc + load + speed + col + smp_pw + dateFormat.format(date)+sc+".txt";
 
 			
 		try {
