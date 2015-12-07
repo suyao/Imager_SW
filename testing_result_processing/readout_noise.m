@@ -58,6 +58,9 @@ filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/out
 filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PVT/ReadNoise/readnoise_fast_p21_right_2pF_scale1-1.csv';
 filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PVT/ReadNoise/readnoise_fast_p21_right_4pF_scale1-1.csv';
 
+filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PVT/ReadNoise/p12/';
+filename = strcat(filename,'readnoise_fast_p12_left_0pF_scale1-1_25deg.csv');
+
 
 
 fid = fopen(filename,'r');
@@ -80,13 +83,47 @@ if (strfind(filename,'left')>1)
 elseif (strfind(filename,'right')>1)
     lr = 2;
 end
-weights{lr} = adc_calibration(lr-1);
+Vscale = ' Supply Scale = 1'; Vstr = 'Scale_1'; Temp = '25C';
+
+if (strfind(filename,'0-9')>1)
+    Vscale = ' Supply Scale = 0.9';
+    Vstr = 'Scale_0-9';
+elseif (strfind(filename,'0-95')>1)
+   Vscale = ' Supply Scale = 0.95';
+    Vstr = 'Scale_0-95';
+elseif (strfind(filename,'scale1_')>1)
+   Vscale = ' Supply Scale = 1';
+   Vstr = 'Scale_1';
+elseif (strfind(filename,'1-05')>1)
+   Vscale = ' Supply Scale = 1.05';
+    Vstr = 'Scale_1-05';
+elseif (strfind(filename,'1-1')>1)
+   Vscale = ' Supply Scale = 1.1';
+    Vstr = 'Scale_1-1';
+end
+
+if (strfind(filename,'n25deg')>1)
+    Temp = '-25C';
+elseif (strfind(filename,'_0deg')>1)
+    Temp = '0C';
+elseif (strfind(filename,'25deg')>1)
+    Temp = '25C';
+elseif (strfind(filename,'50deg')>1)
+    Temp = '50C';
+elseif (strfind(filename,'75deg')>1)
+    Temp = '75C';
+end
+%weights{lr} = adc_calibration(lr-1);
+%weights{lr} = [    0.9375    1.8750    3.7812    7.5000   14.7500 16.1562   31.9062   64.0312  127.5625  255.0625  480.3438]; %p21
+weights{lr} = [0.9062    1.8125    3.6875    7.4688   14.5625 16.0938   31.9375   63.7812  127.5312  255.1875 480.7500]; %p12
+%fit_coeff{lr} = [  1.0357 ;1.7046]; %p21 scale 1 at room temp
+fit_coeff{lr} = [  1.044 ;1.676]; %p12 scale 1 at room temp
 %fit_coeff{lr} = partial_settling_fitting(fit_order,lr);
 %%
 close all;
 lsb = 1/(sum(weights{lr})+weights{lr}(1));
 xbins = [-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7];
-row = 2; 
+row = 4; 
 idx_row = 0;
 wait_col = 28;
 count = 0;
@@ -95,7 +132,7 @@ for i = 2:length(new_frame)
     if (new_row(i-1) == 1 && new_row(i) == 0 )
         idx_row = idx_row + 1;
         if (mod(idx_row,row_num) == row || mod(idx_row,row_num) == row-row_num)      
-            count = count +1 
+            count = count +1 ;
             idx_col = 0; 
             flag = 1;
         end
@@ -180,8 +217,10 @@ xlabel('col index','FontSize', 18);
 plot(maj_rst_hex,'r');
 ylabel('Single readout w/o cds','FontSize', 18);
 grid on;
-ratio_cds = sum(hist_0)/(sum(hist_1)+sum(hist_n1))*2
-
+ratio_cds = sum(hist_0)/(sum(hist_1)+sum(hist_n1))*2;
+strcat(Vscale,', ',Temp)
+output_noise= (0.5129*exp(-0.2553*ratio_cds)+2.686*exp(-1.623*ratio_cds)+0.1107)
+input_referred_noise = fit_coeff{lr}(2)*(0.5129*exp(-0.2553*ratio_cds)+2.686*exp(-1.623*ratio_cds)+0.1107)
 % 
 % figure;
 % subplot(2,1,1);
@@ -197,7 +236,7 @@ ratio_cds = sum(hist_0)/(sum(hist_1)+sum(hist_n1))*2
 % title('RST Readout Histogram');
 % ratio_rst = sum(hist_rst_0)/(sum(hist_rst_1)+sum(hist_rst_n1))*2
 
-
+if (0==1)
 nMon = 20000;  % number of Monte Carlo trials for each point
 sigma_list = [0.1:0.001:1];
 P0 = zeros(1, length(sigma_list));
@@ -231,13 +270,7 @@ plot(sigma_list, ratio_cds*ones(1,length(sigma_list)),'r');
 ylabel('P0/P1','FontSize', 18);
 xlabel('sigma_{noise}','FontSize', 18);
 grid on;
-%subplot(1,2,2);
-%plot(sigma_list, P0./P2);
-%hold on;
-%plot(sigma_list, ratio2*ones(1,length(sigma_list)),'r');
-%ylabel('P0/P2','FontSize', 18);
-%xlabel('sigma_{noise}','FontSize', 18);
-%grid on;
+end
 %%
 if (0==1)
 [hist_counts, value]=hist(cds,xbins);

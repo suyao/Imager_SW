@@ -86,7 +86,7 @@ public class ImagerTest {
 	
 	public static void main(String[] args) {
 		idx_bd="b3";
-		idx_chip="p21";
+		idx_chip="p12"; //Steve change this to "p12" please
 		JtagDriver jdrv = new JtagDriver(16, 8, 32, 12);
 		ImagerCntr imager = new ImagerCntr(jdrv);
 		// Initialize jtag, Reset JTAG, Read IDCODE
@@ -163,7 +163,7 @@ public class ImagerTest {
 		//imager.SetADCcurrent(3,10,5,8); imager.SetISFcurrent(5);// chip p11 on board 3
 		//imager.SetADCcurrent(6,9,7,8); imager.SetISFcurrent(5); // chip p21 on board 1
 		//imager.SetADCcurrent(3,10,5,8); imager.SetISFcurrent(5);// chip c1 on board 3
-		imager.SetADCcurrent(6,9,7,8); imager.SetISFcurrent(5); // chip p21 on board 1
+		imager.SetADCcurrent(5,11,8,6); imager.SetISFcurrent(5); // chip p12 on board 1
 		imager.CurrentTestPt(8);
 		double scale = 1.0;
 		SetPVDD(3.2*scale,yvonne);
@@ -176,36 +176,45 @@ public class ImagerTest {
 		//DummyADCTest(0.51, yvonne, imager);
 		//ADCTest(0.66, yvonne, imager, 0); // left ADC if 0, right ADC if 1
 		//CalibrateDummyADC(10, yvonne, imager); //repeat every analog value for 100 conversions
-		//CalibrateADC(30, yvonne, imager, 0, 5, "slow"); //(itr, , ,left/right, extra_bit)
+		//CalibrateADC(30, yvonne, imager, 0, 5, "slow"); //(itr, , ,left/right, extra_bit) //ADC calibrate, Steve, uncomment this line when testing under room temperature
 		//CalibrateADC(30, yvonne, imager, 1, 5, "slow"); //(itr, , ,left/right, extra_bit)
 		
 		//SNR_ADC(30, yvonne, imager, 0, "slow");
 		//SNR_ADC(30, yvonne, imager, 1, "slow");
 		//ADC_ext_input(yvonne,imager,0, "fast");// adc_idx
 		//Pixel Readout
-		ImagerDebugModeTest(imager,2,10,0, 4); //(rol, col, left load, right load)
+		//ImagerDebugModeTest(imager,2,10,0, 4); //(rol, col, left load, right load)
 		//System.out.println("Read from jtag x074: " + jdrv.readReg(ClockDomain.tc_domain, "0074"));
 		//ImagerDebugModeTest(imager, 1,118);
 		//ImagerDebugModeTest(imager, 300,3);
 		//ReadImagerReg(jdrv);
 		//ImagerFrameTest(imager, jdrv);
 		//imager.EnableDout(false);
-		ReadNoiseTest(imager, jdrv);
+		//ReadNoiseTest(imager, jdrv);
 		//System.out.println("Read from JTAG SC 000: " + jdrv.readReg(ClockDomain.tc_domain, "0000"));
-		if (1==1){
+		if (1==0){ //all voltage margin test, Steve
 			scale = 0.95;
 			SetPVDD(3.2*scale,yvonne);
 			yvonne.SetAllSupply(1.8*scale, 3.3*scale);
 			Partial_Settling_Calibration(50,  yvonne, imager, 0, 3, 0, 2, 250e6, 118, scale);
 			
-		for (scale = 0.9; scale <=1.1; scale = scale + 0.05){
-			SetPVDD(3.2*scale,yvonne);
-			yvonne.SetAllSupply(1.8*scale, 3.3*scale);		
-			//Partial_Settling_Calibration(50,  yvonne, imager, 0, -2, 1, 4, 250e6, 118, scale);
-			//Partial_Settling_Calibration(50,  yvonne, imager, 1, -2, 1, 4, 250e6, 122, scale);
-			Partial_Settling_Calibration(50,  yvonne, imager, 0, 3, 0, 2, 250e6, 118, scale);
-			//Partial_Settling_Calibration(50,  yvonne, imager, 1, -2, 0, 2, 250e6, 122, scale);
+			for (scale = 0.9; scale <=1.1; scale = scale + 0.05){
+				if (scale <1 || scale > 1) { //skip scale =1
+					SetPVDD(3.2*scale,yvonne);
+					yvonne.SetAllSupply(1.8*scale, 3.3*scale);		
+					//Partial_Settling_Calibration(50,  yvonne, imager, 0, -2, 1, 4, 250e6, 118, scale);
+					//Partial_Settling_Calibration(50,  yvonne, imager, 1, -2, 1, 4, 250e6, 122, scale);
+					Partial_Settling_Calibration(50,  yvonne, imager, 0, 3, 0, 2, 250e6, 118, scale);
+					//Partial_Settling_Calibration(50,  yvonne, imager, 1, -2, 0, 2, 250e6, 122, scale);
+				}
+			}	
 		}
+		
+		if (1==1){ //specific voltage scale, Steve
+			scale = 1.0;
+			SetPVDD(3.2*scale,yvonne);
+			yvonne.SetAllSupply(1.8*scale, 3.3*scale);
+			Partial_Settling_Calibration(50,  yvonne, imager, 0, 3, 0, 2, 250e6, 118, scale);
 		}
 		jdrv.CloseController();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd, HH:mm");
@@ -607,7 +616,7 @@ static void ReadNoiseTest(ImagerCntr imager, JtagDriver jdrv){
 		imager.ScanMode(true);
 
 		imager.RowCounterForce(false);
-		imager.SetMaxRowCounter(4);
+		imager.SetMaxRowCounter(3);
 		imager.SetRowCounter(2);
 		imager.SetSmpPeriod(tsmp);
 		imager.SetSmpPW(pw_smp);
@@ -768,7 +777,7 @@ static void ReadNoiseTest(ImagerCntr imager, JtagDriver jdrv){
 		if (scale == 1){ sc = "_scale1"; }
 		if (scale == 1.05){ sc = "_scale1-05"; }
 		if (scale == 1.1){ sc = "_scale1-1"; }
-		String filename = "./outputs/PVT/PartialSettling/Temperature/"  + idx_bd + idx_chip + which_adc + load + speed + col + smp_pw + dateFormat.format(date)+sc+".txt";
+		String filename = "./outputs/PVT/PartialSettling/" +idx_chip+"/" + idx_bd + idx_chip + which_adc + load + speed + col + smp_pw + dateFormat.format(date)+sc+".txt";
 
 			
 		try {

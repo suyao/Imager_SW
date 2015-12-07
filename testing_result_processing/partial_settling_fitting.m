@@ -1,8 +1,8 @@
-function coeff = partial_settling_fitting(fit_order,lr);
-%  close all;
-%  clear all;
-%  lr = 1;
-%  fit_order = 1;
+% function coeff = partial_settling_fitting(fit_order,lr);
+ close all;
+ clear all;
+ lr = 1;
+ fit_order = 1;
 if lr == 1
     %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3left0fF_20151019_1539.txt'); %slow
     %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3left1fF_fast_20151023_1638.txt'); %fast
@@ -20,21 +20,27 @@ if lr == 1
     %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b2p21left0fF_slow_20151116_1515.txt'); %slow
     %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3left1fF_slow_20151119_1851.txt'); %slow
     %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3left1fF_slow39_20151120_1210.txt'); %slow
- %   fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3left1pF_slow118_20151123_1730.txt'); %fast
+    %%%filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3left1pF_slow118_20151123_1730.txt';
     %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3left1pF_slow118_20151123_2004.txt'); %fast
     
-    filename = ('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PVT/PartialSettling/fast_partial_settling_test/b3p21left0pF_fast118_pwsmp44ns_20151129_1700_scale0-9.txt'); %fast
-    filename = ('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PVT/PartialSettling/fast_partial_settling_test/b3p21left1pF_fast118_pwsmp44ns_20151129_1650_scale0-9.txt'); %fast
-    filename = ('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PVT/PartialSettling/fast_partial_settling_test/b3p21left0pF_fast118_pwsmp44ns_20151129_1729_scale0-95.txt'); %fast
+    %filename = ('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PVT/PartialSettling/fast_partial_settling_test/b3p21left0pF_fast118_pwsmp44ns_20151129_1700_scale0-9.txt'); %fast
+    %filename = ('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PVT/PartialSettling/fast_partial_settling_test/b3p21left1pF_fast118_pwsmp44ns_20151129_1650_scale0-9.txt'); %fast
+    %filename = ('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PVT/PartialSettling/fast_partial_settling_test/b3p21left0pF_fast118_pwsmp44ns_20151129_1729_scale0-95.txt'); %fast
     %filename = ('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PVT/PartialSettling/fast_partial_settling_test/b3p21left1pF_fast118_pwsmp44ns_20151129_1718_scale0-95.txt'); %fast
-    filename = ('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PVT/PartialSettling/fast_partial_settling_test/b3p21left0pF_fast118_pwsmp44ns_20151129_1750_scale1.txt'); %fast
+    %filename = ('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PVT/PartialSettling/fast_partial_settling_test/b3p21left0pF_fast118_pwsmp44ns_20151129_1750_scale1.txt'); %fast
+    %%%filename = ('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3left1pF_fast118_pwsmp44ns_20151202_2328_scale1.txt'); %fast
+    
     %filename = ('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PVT/PartialSettling/fast_partial_settling_test/b3p21left1pF_fast118_pwsmp44ns_20151129_1740_scale1.txt'); %fast
-    filename = ('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PVT/PartialSettling/fast_partial_settling_test/b3p21left0pF_fast118_pwsmp44ns_20151129_1812_scale1-05.txt'); %fast
+    %filename = ('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PVT/PartialSettling/fast_partial_settling_test/b3p21left0pF_fast118_pwsmp44ns_20151129_1812_scale1-05.txt'); %fast
     %filename = ('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PVT/PartialSettling/fast_partial_settling_test/b3p21left1pF_fast118_pwsmp44ns_20151129_1801_scale1-05.txt'); %fast
-    filename = ('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PVT/PartialSettling/fast_partial_settling_test/b3p21left0pF_fast118_pwsmp44ns_20151129_1834_scale1-1.txt'); %fast
+    %filename = ('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PVT/PartialSettling/fast_partial_settling_test/b3p21left0pF_fast118_pwsmp44ns_20151129_1834_scale1-1.txt'); %fast
     %filename = ('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PVT/PartialSettling/fast_partial_settling_test/b3p21left1pF_fast118_pwsmp44ns_20151129_1823_scale1-1.txt'); %fast
  
-    filename = ('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PVT/PartialSettling/b3p21left0pF_fast118_pwsmp44ns_20151130_2256_scale1.txt'); %fast
+    filename = ('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PVT/PartialSettling/');
+    filename = strcat(filename,'Temperature/b3p21left0pF_fast118_pwsmp44ns_20151202_2005_scale0-9_50deg.txt'); %fast
+    
+    
+   %filename = ('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PVT/PartialSettling/Temperature/b3p21left0pF_fast118_pwsmp44ns_20151203_1704_scale1_n25deg.txt'); %fast
    
 elseif lr == 2
     %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PartialSettling/b1s3right2fF_20151019_1547.txt'); %slow
@@ -61,13 +67,44 @@ elseif lr == 2
     filename = ('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/PVT/PartialSettling/slow_partial_settling_test/b3p21right2pF_slow122_pwsmp125ns_20151130_0112_scale1-1.txt'); 
  
 end
+if (strfind(filename,'0-9_')>1)
+    Vscale = ' Supply Scale = 0.9';
+    Vstr = 'Scale_0-9';
+elseif (strfind(filename,'0-95')>1)
+   Vscale = ' Supply Scale = 0.95';
+    Vstr = 'Scale_0-95';
+elseif (strfind(filename,'scale1_')>1)
+   Vscale = ' Supply Scale = 1';
+   Vstr = 'Scale_1';
+elseif (strfind(filename,'1-05')>1)
+   Vscale = ' Supply Scale = 1.05';
+    Vstr = 'Scale_1-05';
+elseif (strfind(filename,'1-1')>1)
+   Vscale = ' Supply Scale = 1.1';
+    Vstr = 'Scale_1-1';
+end
+
+if (strfind(filename,'n25deg')>1)
+    Temp = '-25C';
+elseif (strfind(filename,'_0deg')>1)
+    Temp = '0C';
+elseif (strfind(filename,'25deg')>1)
+    Temp = '25C';
+elseif (strfind(filename,'50deg')>1)
+    Temp = '50C';
+elseif (strfind(filename,'75deg')>1)
+    Temp = '75C';
+end
+
 fin = fopen(filename);
 c = fgetl(fin);  
 f = (fscanf(fin, '%f %x' ,[2 inf]))';
 vin_raw = f(:,1);
 dout = f(:,2);
 fclose(fin);
-weights = adc_calibration(lr-1);
+weights = [    0.9375    1.8750    3.7812    7.5000   14.7500 16.1562   31.9062   64.0312  127.5625  255.0625  480.3438]; %p21
+%weights = [0.9062    1.8125    3.6875    7.4688   14.5625 16.0938   31.9375   63.7812  127.5312  255.1875 480.7500]; %p12
+%weights = adc_calibration(lr-1);
 lsb = 1/(sum(weights)+weights(1));
 % combine same input
 v0 = vin_raw(1);
@@ -240,7 +277,11 @@ hist(error_single_dnl/linear_fit(2),xbins);
 [hist_counts,value_rst]=hist(error_single_dnl/linear_fit(2),xbins);
 title(sprintf('%1g%s Order Fitting differential Error w/o Avg Histogram',fit_order,str),'FontSize', 18);
 ratio_p0_p1 = hist_counts(4)/(hist_counts(3)+hist_counts(5))*2
+fitting_error =linear_fit(2)*( 0.5129*exp(-0.2553*ratio_p0_p1)+2.686*exp(-1.623*ratio_p0_p1)+0.1107)
+strcat(Vscale,', ',Temp)
+linear_fit(2)
 %%
+if (0==1)
 nMon = 20000;  % number of Monte Carlo trials for each point
 sigma_list = [0.1:0.001:1.5];
 P0 = zeros(1, length(sigma_list));
@@ -273,3 +314,5 @@ plot(sigma_list, ratio_p0_p1*ones(1,length(sigma_list)),'r');
 ylabel('P0/P1','FontSize', 18);
 xlabel('sigma_{noise}','FontSize', 18);
 grid on;
+
+end

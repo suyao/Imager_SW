@@ -9,7 +9,7 @@ close all;
 %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_b1s3slow_left_20151022_0904.txt','r');
 %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_b1s2left_20151013_1323.txt','r');
 %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_b1s2slow_left_20151022_1454.txt','r');
-fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_b1s3slow_left_20151022_1715.txt','r');
+%fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_b1s3slow_left_20151022_1715.txt','r');
 %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_b1s3slow_right_20151022_1843.txt','r');
 %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_b1s3fast_left_20151023_1151.txt','r');
 %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_b1s3fast_right_20151023_1217.txt','r');
@@ -17,7 +17,7 @@ fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/ou
 %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_b1p21slow_left_20151028_2121.txt','r');
 %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_b1p21slow_right_20151028_2148.txt','r');
 %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_b1p21slow_left_20151106_1431.txt','r');
-%fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_b1p21slow_left_20151109_1955.txt','r');
+fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_b1p21slow_left_20151109_1955.txt','r');
 %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_b1p21slow_right_20151109_2023.txt','r');
 %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_b1p21fast_left_20151110_1122.txt','r');
 %fin = fopen('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/CalibrateADC/ADC_SNR_b1p21fast_right_20151110_1149.txt','r');

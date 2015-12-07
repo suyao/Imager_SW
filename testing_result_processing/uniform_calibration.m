@@ -12,7 +12,10 @@ close all;
 % filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/ReadNoise/light_medium_slow_1pF_smp91n_1119_2211_pvdd3-1.csv'; %3 rows
 % filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/ReadNoise/light_diffuseron_slow_1pF_smp91n_1123_1320_pvdd3-1.csv'; %5 rows
 % filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/ReadNoise/light_diffuseroff_fullsettling_slow_1pF_smp91n_1123_1320_pvdd3-1.csv'; % 4 rows
-filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/uniform_light4_p21_1201_1114_fast_0pF_5rows.csv'; %5 rows
+filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FullFrame/uniform_light2_p21_1201_1114_fast_0pF_5rows.csv'; %5 rows
+strength = 2;
+filename = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FPN_test/s3_light';
+filename = strcat(filename,int2str(strength),'_left_1pF_slow_2015_1204.csv'); %5 rows
 
 
 fid = fopen(filename,'r');
@@ -25,15 +28,16 @@ clk_smp = f(15,:);
 data= [ f(2,:);f(3,:);f(4,:);f(5,:);f(6,:);f(7,:);f(8,:);f(9,:);f(10,:);f(11,:); f(12,:)]';
 fclose(fid);
 vmin = 0.0;
-weights{1} = adc_calibration(0);
+%weights{1} = adc_calibration(0);
+weights{1} = [ 0.9688    1.9375    3.7812    7.6250   14.8438 16.0625   32.0312   64.1875  128.0938  256.0000 481.6875];
 %weights{2} = adc_calibration(1);
 wbi = [1 2 4 8 16 32 64 128 256 512 1024];
 row_num = 5;
 col_num = 240/2;
-fit_order=3;
+fit_order=1;
 lr = 1;
-fit_coeff{lr} = partial_settling_fitting(fit_order,lr);
-
+%fit_coeff{lr} = partial_settling_fitting(fit_order,lr);
+fit_coeff{lr} =   [  1.0559; 1.4183];
 end
 %%
 close all;
@@ -99,10 +103,12 @@ for row = 3:5;
 
         [hist_rst_counts,value_rst]=hist(rst_raw(col)/lsb,rst_bins);
         [max_val,max_idx]=max(hist_rst_counts);
-        if (max_idx<length(hist_rst_counts) && max_idx>1)
-            hist_rst_0(col) = hist_rst_counts(max_idx);
-            hist_rst_1(col) = hist_rst_counts(max_idx+1);
-            hist_rst_n1(col) = hist_rst_counts(max_idx-1);
+        if (length(hist_rst_counts)>0)
+            if (max_idx<length(hist_rst_counts) && max_idx>1)
+                hist_rst_0(col) = hist_rst_counts(max_idx);
+                hist_rst_1(col) = hist_rst_counts(max_idx+1);
+                hist_rst_n1(col) = hist_rst_counts(max_idx-1);
+            end
         end
     end
     % end
@@ -133,29 +139,44 @@ for row = 3:5;
     ratio_cds = sum(hist_0)/(sum(hist_1)+sum(hist_n1))*2
 
 
-    fn = strcat('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/testing_result_processing/col_gain_p21_row',int2str(row),'.txt');
+    fn = strcat('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/testing_result_processing/col_gain_s3_1storderfit_row',int2str(row),'_fit_order',fit_order,'.txt');
     fr = fopen(fn,'r');
     f = (fscanf(fr, '%f ' ,[1 inf]))';
     col_gain = f(:,1);
     fclose(fr);
-
+    
     sigma= 10;
-    figure(3);
+    f=figure(3);
     light_mean_calib = rst_calib_mean - px_calib_mean;
     light_mean = rst_mean - px_mean;
     subplot(3,1,row-2);
-    plot(1:120,light_mean_calib);
+    plot(2:120,light_mean_calib(2:end));
+    err_raw = max(light_mean_calib(2:end)) - min(light_mean_calib(2:end));
     hold on;
     grid on;
-    %plot(1:120,rst_calib(:,1)-px_calib(:,1),'black');
-    plot(1:120,light_mean_calib./col_gain,'r');
+    %%%%plot(1:120,rst_calib(:,1)-px_calib(:,1),'black');
+    plot(2:120,light_mean_calib(2:end)./col_gain(2:end),'r');
+    err_cali = max(light_mean_calib(2:end)./col_gain(2:end)) - min(light_mean_calib(2:end)./col_gain(2:end));
+    title(sprintf('max FPN w/o cali = %0.3gLSB \n max FPN w/cali=%0.3gLSB',err_raw/lsb, err_cali/lsb),'FontSize',15);
+    ylabel(sprintf('Row %1d',row-2),'FontSize', 18);
+    if (row-2==3)
+        xlabel('column index','FontSize',18);
+    end
     
-%     col_gain = light_mean/mean(light_mean);
-%     fn = strcat('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/testing_result_processing/col_gain_p21_row',int2str(row),'.txt');
+    
+
+%     col_gain = light_mean_calib/mean(light_mean_calib);
+%     fn = strcat('/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/testing_result_processing/col_gain_s3_1storderfit_row',int2str(row),'_fit_order',fit_order,'.txt');
 %     fw = fopen(fn,'w');
-%     fprintf(fw, '%0.4g\n',col_gain);
+%     fprintf(fw, '%0.7g\n',col_gain);
 %     fclose(fw);
 end 
+
+set(f, 'Position', [200, 100, 1049, 1049]);
+fod = '/Users/suyaoji/Dropbox/research/board_design/JTAG_JAVA/Imager_SW/outputs/FPN_test/s3_light';
+fod = strcat(fod,int2str(strength),'.png');
+saveas(f,fod);
+
 % figure;
 % subplot(1,2,1);
 % xbins = [min(light_mean):lsb:max(light_mean)];
@@ -184,7 +205,7 @@ end
 % ratio_rst = sum(hist_rst_0)/(sum(hist_rst_1)+sum(hist_rst_n1))*2
 
 %%
-if (0==1)
+if (1==0)
 nMon = 20000;  % number of Monte Carlo trials for each point
 sigma_list = [0.1:0.001:1.5];
 P0 = zeros(1, length(sigma_list));
@@ -214,7 +235,7 @@ figure;
 plot(sigma_list, P0./P1)
 hold on;
 plot(sigma_list, ratio_cds*ones(1,length(sigma_list)),'r');
-plot(sigma_list, ratio_rst*ones(1,length(sigma_list)),'g');
+%plot(sigma_list, ratio_rst*ones(1,length(sigma_list)),'g');
 ylabel('P0/P1','FontSize', 18);
 xlabel('sigma_{noise}','FontSize', 18);
 grid on;
@@ -226,6 +247,7 @@ grid on;
 %xlabel('sigma_{noise}','FontSize', 18);
 %grid on;
 %%
+
 [hist_counts, value]=hist(cds,xbins);
 per = hist_counts/sum(hist_counts)
 sigma = 1; x0 = -0; 

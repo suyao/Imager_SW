@@ -212,8 +212,8 @@ for m=1:M;
     sndr_cor(m)=sndrdb;
 end
 %%
-NN=9347;
-sigma =0.25e-3;
+NN=5774;
+sigma =0.26e-3;
 % sigma = 0;
 clear vin_test dout_test ana_rev dout_rev;
 for j=1:NN;  
@@ -315,7 +315,15 @@ figure;
 xbins=[min(error_diff):0.1:max(error_diff)];
 subplot(2,1,1);
 hist(error_diff,xbins);
+xbins=[-3:1:3];
+[hist_counts,value_rst]=hist(error_diff*5,xbins);
+ratio_p0_p1 = hist_counts(4)/(hist_counts(3)+hist_counts(5))*2
+input_referred_fitting_error = (0.07914./ratio_p0_p1.^2+0.1033./ratio_p0_p1+0.04176)
+
 subplot(2,1,2);
 xbins=[-3:1:3];
 hist(error_diff_single,xbins);
+[hist_counts,value_rst]=hist(error_diff_single,xbins);
+ratio_p0_p1 = hist_counts(4)/(hist_counts(3)+hist_counts(5))*2;
+input_referred_total_error = (0.5129*exp(-0.2553*ratio_p0_p1)+2.686*exp(-1.623*ratio_p0_p1)+0.1107)
  

@@ -97,13 +97,13 @@ for lr = 1:1:2
                 if (idx_col <=col_num && idx_col >0)
                     
                     rst_hex{lr}(idx_row,idx_col) = (data(i,:)*wbi');
-                    rst_raw(idx_row,idx_col) = data(i,:)*weights{lr}'/sum(weights{lr})+vmin; 
+                    rst_raw(idx_row,idx_col) = data(i,:)*weights{lr}'/(sum(weights{lr})+weights{lr}(1))+vmin; 
                     rst_calib{lr}(idx_row,idx_col) = partial_settling_calib(rst_raw(idx_row,idx_col),fit_coeff{lr}); 
                 end
 
                 if (idx_col > col_num + wait_col && idx_col <=col_num*2+wait_col)
                     px_hex{lr}(idx_row,idx_col-col_num - wait_col) = (data(i,:)*wbi');
-                    px_raw(idx_row,idx_col-col_num - wait_col) = data(i,:)*weights{lr}'/sum(weights{lr})+vmin;
+                    px_raw(idx_row,idx_col-col_num - wait_col) = data(i,:)*weights{lr}'/(sum(weights{lr})+weights{lr}(1))+vmin;
                     px_calib{lr}(idx_row,idx_col-col_num - wait_col) = partial_settling_calib(px_raw(idx_row,idx_col-col_num - wait_col),fit_coeff{lr});
 
                 end 
